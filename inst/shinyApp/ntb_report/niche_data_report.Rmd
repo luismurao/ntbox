@@ -1,0 +1,238 @@
+---
+title: "NicheToolBox niche data report"
+date: "`r date()`"
+---
+
+This is **NicheToolBox data report** here you can find a quick view of the thinks that you have done in the software. Remember that this is free software so it comes with no waranty, please report any bugs you find at <luismurao@comunidad.unam.mx>
+
+```{r setup, echo=FALSE}
+library(knitr)
+library(rgl)
+knitr::opts_chunk$set(echo = TRUE)
+knit_hooks$set(rgl = hook_rgl, webgl = hook_webgl)
+```
+
+
+```{r results="asis",echo=FALSE}
+library(knitr)
+niche_data <- data_extraction()
+if(!is.null(niche_data)){
+  cat("## Niche data")
+  cat("\n")
+  cat(paste0("The total number niche records were: **", 
+             dim(niche_data)[1],"**"))
+  
+  cat("\n\n")
+  
+  cat(paste0("The total number of niche variables: ",
+             dim(niche_data)[2],":"), names(niche_data))
+  cat("\n")
+
+  printInfoNiche <- TRUE
+  
+} else{
+  printInfoNiche <- FALSE
+}
+
+```
+
+
+```{r results="asis",echo=FALSE}
+niche_data <- data_extraction()
+if(!is.null(niche_data)){
+  cat("## Niche values")
+  cat("\n")
+  cat("#### Raster layeres ")
+  printInfoNiche <- TRUE
+} else{
+  printInfoNiche <- FALSE
+}
+```
+
+
+```{r results='asis', echo=printInfoNiche,eval=printInfoNiche}
+print(rasterLayers())
+cat("Raster plot showing 1 layer")
+plot(rasterLayers()[[1]])
+```
+
+
+```{r results='asis', echo=FALSE,eval=printInfoNiche}
+cat("#### Niche values of", ifelse(input$extracted_area== "all_area",print("All raster area"),print("M polygon area")))
+cat("using", ifelse(input$datasetM== "gbif_dat",print("GBIF data"), print("User data")))
+```
+
+
+```{r results="asis",echo=FALSE,eval=printInfoNiche}
+cat("### Niche data summary")
+```
+
+```{r results='asis', echo=printInfoNiche,eval=FALSE}
+niche_data <- data_extraction()
+summary(niche_data)
+```
+
+```{r,eval=printInfoNiche,echo=FALSE,results='asis'}
+if(!is.null(data_extraction())){
+  cont <- 1 
+  nvars <- dim(data_extraction())[2]
+  if(nvars > 7){
+      for(i in 1:nvars){
+        if(i%%7==0){
+          print(kable(summary(data_extraction()[,cont:i])))
+          cont <- i + 1
+          }
+        }
+  }
+  lprint <- data_extraction()[,cont:nvars]
+  names(lprint) <- names(data_extraction())[cont:nvars]
+  kable(summary(lprint))
+}
+```
+
+
+```{r results="asis",echo=FALSE,eval=printInfoNiche}
+cat("## Niche space visualizations")
+```
+
+```{r, webgl=TRUE,echo=printInfoNiche,eval=printInfoNiche}
+
+niche_data <- niche_data()
+gtype <- input$gtype
+x <- input$x
+y <- input$y
+z <- input$z
+ajus <- input$fit
+ellip <- input$ellip
+prop <- as.numeric(input$ellipsoid_vol)
+if(!is.null(niche_data())){
+  open3d(windowRect=c(100,100,700,700))
+  niche_plot(data = niche_data,x = x,y = y,z = z,prop =prop,
+             gtype = gtype,ajus = ajus,ellip = ellip)
+}
+```
+
+
+```{r results="asis",echo=FALSE,eval=TRUE}
+k_means_df <- kmeans_df()
+if(!is.null(k_means_df)){
+  printInfoKmeans <- 1 
+} else printInfoKmeans <- 0
+```
+
+
+```{r results="asis",echo=FALSE,eval=printInfoKmeans}
+cat("## K-means clustering")
+
+nclusters <- length(unique(kmeans_3d_plot_data()$cluster_ids))
+cat(paste0("Total number of clusters ", "**",nclusters,"**"))
+```
+
+```{r echo=printInfoKmeans,eval=FALSE}
+kmeans_df()
+```
+
+```{r results='asis',eval=printInfoKmeans,echo=FALSE}
+if(!is.null(k_means_df)){
+  cont <- 1 
+nvars <- dim(kmeans_df())[2]
+if(nvars > 7){
+    for(i in 1:nvars){
+      if(i%%7==0){
+        print(kable(head(kmeans_df()[,cont:i])))
+        cont <- i + 1
+      }
+    }
+} else{
+print(kable(head(kmeans_df())))
+}
+}
+```
+
+```{r results="asis",echo=FALSE,eval=TRUE}
+k_means_plot <- kmeans_3d_plot_data()
+if(!is.null(k_means_plot)){
+  printKmeansPlot <- 1 
+} else printKmeansPlot <- 0
+```
+
+```{r results="asis",echo=FALSE,eval=printKmeansPlot}
+cat("### K-means clustering (niche space)")
+```
+
+
+```{r kmeans,eval=printKmeansPlot,echo=printKmeansPlot,webgl=TRUE}
+ellipsoid_cluster_plot_3d(niche_data = kmeans_3d_plot_data()$data,
+                                cluster_ids = kmeans_3d_plot_data()$cluster_ids,
+                                vgrupo = kmeans_3d_plot_data()$vgrupo,
+                                x = input$x1,y = input$y1,
+                                z = input$z1,alpha = input$alpha,ellips = input$ellips,
+                                grupos=input$grupos,input$cex1,level=input$kmeans_level)
+    
+```
+
+
+```{r results="asis",echo=FALSE,eval=printKmeansPlot}
+cat("### K-means clustering (Geographic space)")
+```
+
+```{r ,eval=printKmeansPlot,echo=printKmeansPlot}
+leaflet_cluster_map()
+```
+
+
+
+```{r results="asis",echo=FALSE,eval=TRUE}
+correlations <- corr_table()
+if(!is.null(correlations)){
+  printInfoCorre <- 1 
+} else printInfoCorre <- 0
+```
+
+```{r results="asis",echo=FALSE,eval=printInfoCorre}
+cat("## Niche correlations")
+```
+
+```{r results="asis",echo=FALSE,eval=printInfoCorre}
+cat("### Correlation finder")
+```
+
+```{r results="asis",echo=FALSE,eval=printInfoCorre}
+cat("Strong correlations according to a correlation threshold of", input$cor_threshold)
+```
+
+
+```{r, echo=printInfoCorre,eval=printInfoCorre}
+corr_finder <- summs_corr_var()$cor_vars
+print(corr_finder)
+```
+
+
+
+
+```{r results="asis",echo=FALSE,eval=printInfoCorre}
+cat("### Correlation table")
+```
+
+```{r results="asis",echo=printInfoCorre,eval=FALSE}
+corre_mat <- corr_table()
+```
+
+```{r results="asis",echo=FALSE,eval=printInfoCorre}
+if(!is.null(corr_table())){
+  corre_mat <- round(corr_table(),3)
+  print(kable(corre_mat))
+}
+
+```
+
+```{r results="asis",echo=FALSE,eval=printInfoCorre}
+cat("### Correlogram")
+```
+
+
+
+```{r corplot1, results="asis",echo=printInfoCorre,eval=printInfoCorre,cache=T,dev="pdf"}
+corr_plot()
+```
+

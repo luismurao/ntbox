@@ -1,0 +1,58 @@
+Package: ntbox
+Type: Package
+Title: From getting biodiversity data to evaluating species
+    distribution models in a friendly GUI environment
+Version: 0.2.0.0
+Date: 2016-08-11
+Author: Luis Osorio-Olvera <luimurao@gmail.com>,
+    Vijay Barve <vijay.barve@gmail.com>,
+    Narayani Barve <narayani.ku@gmail.com>,
+    Jorge Soberón <jsoberon@ku.edu>
+Maintainer: Luis Osorio-Olvera <luimurao@gmail.com>
+Description: NicheToolbox is an R package with a friendly Graphical User
+    Interface (GUI) developed using shiny framework that aims to facilitate the
+    process of building niche models and estimate the species distributions.
+Depends:
+    shiny,
+    spocc,
+    rgeos,
+    rgdal,
+    sp,
+    raster,
+    maptools,
+    dismo,
+    MASS,
+    animation,
+    rgl,
+    grid,
+    RColorBrewer,
+    ade4,
+    rmarkdown,
+    knitr,
+    mgcv,
+    spocc,
+    googleVis,
+    rasterVis,
+    png,
+    XML,
+    stringr,
+    plyr,
+    shinyBS,
+    shinyjs,
+    rglwidget,
+    dygraphs,
+    car,
+    maps,
+    corrplot,
+    dplyr,
+    cluster,
+    sqldf,
+    fields,
+    devtools,
+    psych,
+    shinythemes,
+    V8
+License: GPL-3
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 5.0.1

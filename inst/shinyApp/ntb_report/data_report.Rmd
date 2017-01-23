@@ -1,0 +1,130 @@
+---
+title: "NicheToolBox long-lat data report"
+date: "`r date()`"
+---
+
+This is **NicheToolBox data report** here you can find a quick view of the thinks that you have done in the software. Remember that this is free software so it comes with no waranty, please report any bugs you find at <luismurao@comunidad.unam.mx>
+
+
+```{r results="asis",echo=FALSE}
+library(knitr)
+occ_data <- data_gbif()
+if(!is.null(occ_data)){
+  cat("## GBIF data")
+  cat("\n")
+  cat(paste0("The total number of occurrences points were: **", dim(data_gbif())[1],"**"))
+  cat("\n")
+
+  printInfoGBIF <- TRUE
+  
+} else{
+  printInfoGBIF <- FALSE
+}
+
+```
+
+
+```{r kable,echo=printInfoGBIF,eval=printInfoGBIF}
+occ_data <- data_gbif()
+kable(head(occ_data[,c(input$xLongitudeGBIF,
+                       input$yLatitudeGBIF,
+                       "country","countryCode")]),digits=4)
+```
+
+```{r,echo=FALSE}
+library(googleVis)
+op <- options(gvis.plot.tag="chart")
+```
+
+
+```{r results="asis",echo=FALSE, eval=printInfoGBIF}
+cat("### GBIF visualizations")
+cat("\n")
+cat("#### Pie chart of occs by country (all years)")
+cat("\n")
+
+```
+
+
+```{r results='asis',echo=printInfoGBIF,eval=printInfoGBIF}
+plot(GBIF_vis()$pie)
+```
+
+
+```{r results="asis",echo=FALSE,eval= printInfoGBIF}
+cat(paste0("#### Pie chart of occs by country (year ",input$GBIFYears, ")"))
+```
+
+
+```{r results='asis',echo=printInfoGBIF,eval=printInfoGBIF}
+plot(calendar())
+```
+
+
+```{r results='asis',echo=FALSE,eval=printInfoGBIF}
+cat("#### Motion chart of records reported by year")
+```
+
+
+```{r results='asis', echo=printInfoGBIF,eval=printInfoGBIF}
+plot(GBIF_vis()$motion)
+```
+
+```{r results='asis',echo=FALSE,eval=printInfoGBIF}
+cat("#### GBIF animated history of records")
+```
+
+
+```{r results="asis",echo=FALSE,eval=printInfoGBIF}
+anifile <- paste0(tempdir(),"/",temGBIF())
+anima_save <- paste0(wf_dir_path,"/",input$genus,"_",
+                      input$species,"_animation.gif")
+if(file.exists(anima_save)) cat(paste0("![](",anima_save,")"))
+```
+
+```{r results="asis",echo=FALSE}
+library(knitr)
+occ_data <- data_user_clean()
+if(!is.null(occ_data)){
+  cat("## User data")
+  cat("\n")
+  cat(paste0("The total number of occurrences points were: **", dim(occ_data)[1],"**"))
+  cat("\n")
+
+  printInfoUser <- TRUE
+  
+} else{
+  printInfoUser <- FALSE
+}
+
+```
+
+
+```{r results='asis', echo=printInfoUser,eval=printInfoUser}
+occ_data <- data_user_clean()
+kable(head(occ_data[,c(input$xLongitudeUser,
+                     input$yLatitudeUser)]),digits=4)
+```
+
+
+```{r results="asis",echo=FALSE}
+data_map <- dataDynamic()
+if(!is.null(data_map)){
+  cat("## Dynamic Map")
+  cat("\n")
+  cat(paste0("The followig is the map of ***",input$dataset_dynMap,"*** occurrence points"))
+  printInfoDynamicM <- TRUE
+} else{
+  printInfoDynamicM <- FALSE
+}
+```
+
+
+```{r, echo=printInfoDynamicM,eval=printInfoDynamicM}
+leafMapDynamic() %>%  addTiles(
+    urlTemplate = "http://{s}.tiles.mapbox.com/v3/jcheng.map-5ebohr46/{z}/{x}/{y}.png",
+    attribution = 'Maps by <a href="http://www.mapbox.com/">Mapbox</a>'
+)
+
+```
+

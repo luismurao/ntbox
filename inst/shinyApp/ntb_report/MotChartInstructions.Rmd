@@ -1,0 +1,20 @@
+---
+title: "Display MotionChart"
+output: html_document
+---
+
+## GBIF data Motion Chart
+
+To see [GBIF](http://www.gbif.org/) MotionChart of the history of occurrences records follow this instructions (these are given in [googleVis package vignette](https://cran.r-project.org/web/packages/googleVis/vignettes/googleVis.pdf)):
+
+1. Go to the link:
+    - http://www.macromedia.com/support/documentation/en/flashplayer/help/settings_manager04.html
+    " "
+    ![](`r system.file("shinyApp/ntb_report/www/flash_settings_01.png",package = "nichetoolbox")`)
+2. Click on the dropbox which says ’Edit’ and choose ’add location’
+    ![](`r system.file("shinyApp/ntb_report/www/flash_settings_02.png",package = "nichetoolbox")`)
+    ![](`r system.file("shinyApp/ntb_report/www/flash_settings_03.png",package = "nichetoolbox")`)
+3. Click ’browse for folder’
+4. Choose the folder in which you saved your html file
+    ![](`r system.file("shinyApp/ntb_report/www/flash_settings_04.png",package = "nichetoolbox")`)
+5. Click OK
