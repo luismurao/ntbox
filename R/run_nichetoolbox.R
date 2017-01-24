@@ -4,7 +4,7 @@
 #' @examples
 #' # Run nichetoolbox package
 #' # run_nichetoobox()
-run_nichetoolbox <- function(){
-  app_path <- system.file("shinyApp",package = "nichetoolbox")
+run_ntbox <- function(){
+  app_path <- system.file("shinyApp",package = "ntbox")
   return(shiny::runApp(app_path))
 }
