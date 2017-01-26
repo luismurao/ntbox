@@ -8,6 +8,8 @@ confu_mat_optim(sdm_raster, valData, longitude, latitude, pres_aus,
   optim_by = "kappa", th_range = c(0, 1), step = 0.005)
 }
 \arguments{
+\item{sdm_raster}{SDM predicition raster}
+
 \item{valData}{A data.frame or a matrix with validation data. The data must contain
 ongitude, latitude and a column of presences (1) and absences (0).}
 
@@ -23,8 +25,6 @@ ongitude, latitude and a column of presences (1) and absences (0).}
 \item{th_range}{A vector with the minimum and max range of threshold values used in the searching process.}
 
 \item{step}{A numeric value representing the step size to be used in the searching process.}
-
-\item{prediction}{SDM predicition raster}
 }
 \value{
 Returns a data.frame with the values of: confusion matrix, kappa, tss, prevalence,

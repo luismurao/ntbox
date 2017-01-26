@@ -12,6 +12,12 @@ ellipsoid_cluster_plot_3d(niche_data, cluster_ids, x, y, z, ellips, alpha,
 
 \item{cluster_ids}{Cluster ids}
 
+\item{x}{variable on x-axes}
+
+\item{y}{variable on y-axes}
+
+\item{z}{variable on z-axes}
+
 \item{ellips}{Ellipsoid plot of each cluster}
 
 \item{alpha}{Transparency level of ellipsoid plots}
@@ -21,6 +27,8 @@ ellipsoid_cluster_plot_3d(niche_data, cluster_ids, x, y, z, ellips, alpha,
 \item{vgrupo}{A vector containing the levels of the  geographic grouping variable}
 
 \item{cex1}{Point size}
+
+\item{level}{proportion of points inside the ellipsoid}
 }
 \value{
 Returns a data.frame with coordinate data from species

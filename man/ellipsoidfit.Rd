@@ -23,6 +23,14 @@ by default all suiabilities <0.05 are cosidered as zeros}
 \item{plot}{Logical If True a plot of niche will be shown.}
 
 \item{size}{The size of the points of the niche plot.}
+
+\item{xlab1}{For x label for 2-dimensional histogram}
+
+\item{ylab1}{For y label for 2-dimensional histogram}
+
+\item{zlab1}{For z label for 2-dimensional histogram}
+
+\item{...}{Arguments passed to \code{\link[rgl]{plot3d}} function from rgl}
 }
 \value{
 Returns a list containing a data.frame with the suitability values; a suitability raster;

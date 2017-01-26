@@ -16,4 +16,10 @@ Returns a raster stack of raster layers with the same extent and resolution
 Read raster layers that that have the same extent and resolution,
              all  \link{raster} formats are accepted
 }
+\examples{
+## RasterStack with the niche variables
+# nicheStack <- rlayers_ntb(list.files(system.file("extdata",
+#                   package = "nichetoolbox"),
+#                   pattern = ".asc$",full.names = TRUE))
+}
 
