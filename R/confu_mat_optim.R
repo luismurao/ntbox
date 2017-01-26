@@ -1,8 +1,7 @@
 #' Function to find the cut-off threshold that optimizes the confusion matrix
 #' @description The function finds out which is the best cut-off threshold that
 #' optimizes the confusion matrix based on Kappa or TSS
-#' @param sdm_raster
-#' @param prediction SDM predicition raster
+#' @param sdm_raster  SDM predicition raster
 #' @param valData A data.frame or a matrix with validation data. The data must contain
 #' ongitude, latitude and a column of presences (1) and absences (0).
 #' @param longitude Column name of the longitude data
