@@ -14,28 +14,24 @@ Description: NicheToolbox is an R package with a friendly Graphical User
     process of building niche models and estimate the species distributions.
 Depends:
     shiny,
-    spocc,
     rgeos,
     rgdal,
     sp,
     raster,
     maptools,
     dismo,
-    MASS,
-    animation,
-    rgl,
-    grid,
-    RColorBrewer,
-    ade4,
-    rmarkdown,
-    knitr,
-    mgcv,
-    spocc,
-    googleVis,
-    rasterVis,
+    rgl
+Imports:
     png,
     XML,
+    rmarkdown,
+    knitr,
     stringr,
+    MASS,
+    animation,
+    mgcv,
+    googleVis,
+    rasterVis,
     plyr,
     shinyBS,
     shinyjs,
@@ -51,7 +47,11 @@ Depends:
     devtools,
     psych,
     shinythemes,
-    V8
+    grid,
+    RColorBrewer,
+    ade4,
+    V8,
+    spocc
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
