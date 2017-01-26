@@ -9,6 +9,10 @@
 #' by default all suiabilities <0.05 are cosidered as zeros
 #' @param plot Logical If True a plot of niche will be shown.
 #' @param size The size of the points of the niche plot.
+#' @param xlab1 For x label for 2-dimensional histogram
+#' @param ylab1 For y label for 2-dimensional histogram
+#' @param zlab1 For z label for 2-dimensional histogram
+#' @param ... Arguments passed to \code{\link[rgl]{plot3d}} function from rgl
 #' @return Returns a list containing a data.frame with the suitability values; a suitability raster;
 #' a data.frame with the mahalanobis and euclidean distances to the centroid.
 #' @export

@@ -2,12 +2,15 @@
 #' @description 3D plot of clusters
 #' @param niche_data A data.frame or matrix containing niche variables
 #' @param cluster_ids Cluster ids
+#' @param x variable on x-axes
+#' @param y variable on y-axes
+#' @param z variable on z-axes
+#' @param level proportion of points inside the ellipsoid
 #' @param ellips Ellipsoid plot of each cluster
 #' @param alpha Transparency level of ellipsoid plots
 #' @param grupos Logical. Show ids of a geographic grouping variable
 #' @param vgrupo A vector containing the levels of the  geographic grouping variable
 #' @param cex1 Point size
-#' @level Proportion of data to be included in ellpisoid
 #' @return Returns a data.frame with coordinate data from species
 #' @export
 
