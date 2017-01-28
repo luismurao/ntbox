@@ -20,8 +20,8 @@ Depends:
     raster,
     maptools,
     dismo,
-    rgl
-Imports:
+    rgl,
+    dygraphs,
     png,
     XML,
     rmarkdown,
@@ -36,8 +36,7 @@ Imports:
     shinyBS,
     shinyjs,
     rglwidget,
-    dygraphs,
-    car,
+    car, 
     maps,
     corrplot,
     dplyr,

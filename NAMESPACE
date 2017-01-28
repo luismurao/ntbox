@@ -22,6 +22,8 @@ import(rasterVis)
 #import(shinyjs)
 import(car)
 import(sqldf)
+importFrom("rglwidget","rglwidgetOutput")
+importFrom("dygraphs","dygraphOutput")
 importFrom("raster", "extract",
            "crop","mask","extent",
            "res","cellFromXY","freq")
