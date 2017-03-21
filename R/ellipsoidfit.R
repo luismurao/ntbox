@@ -96,12 +96,13 @@ ellipsoidfit <- function(data,centroid,covar,level=0.95,
     dfd <- dim(data1)[1] - 1
     dfn <- dim(data1)[2] - 1
     # Ellipsoid radius
-    ell.radius_E <- sqrt(dfn * qf(level, dfn, dfd))
+    #ell.radius_E <- sqrt(dfn * qf(level, dfn, dfd))
     suits2 <- suits[!is.na(suits)]
 
-    ellips_E <- ellipsoid(center=centroid,
-                          shape=covar, radius=ell.radius_E)
+    #ellips_E <- ellipsoid(center=centroid,
+    #                      shape=covar, radius=ell.radius_E)
 
+    ellips_E  <- ellipse3d(covar,centre = centroid,level = 0.99)
 
 
     if(dfd > 50000)
