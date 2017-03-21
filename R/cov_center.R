@@ -32,24 +32,24 @@
 #' ## Data input
 #' # head(covar_centroid$data)
 cov_center <- function(data,mve=TRUE,level,vars=NULL){
-
+  
   if(is.null(vars)){
-
+    
     nvars <- readline(prompt="Number of variables to fit the ellipsoid model:\n\n")
     data <- data.frame(data)
-
+    
     allvars <- names(data)
     print(nvars)
     vars <- numeric(nvars)
     cat('Select a variable form the list:\n\n')
     for (i in 1:dim(data)[2]){
       cat(i,'.-',allvars[i],'\n')
-
+      
     }
     cont <- 1
     while(0 %in% vars){
       n <- readline(prompt="Enter an option from the above list: ")
-
+      
       if(n %in% 1:dim(data)[2]){
         vars[cont] <- as.numeric(n)
         cont <- cont+1
@@ -57,13 +57,13 @@ cov_center <- function(data,mve=TRUE,level,vars=NULL){
       else{
         cat('Option not in the list:\n')
       }
-
+      
     }
   }
   data <- data[,vars]
-
+  
   if(mve){
-
+    
     # Compute the number of points of our data that represent the proportion of the data
     NDquntil <- function(nD,level){
       n <- round(nD*level)
@@ -71,7 +71,7 @@ cov_center <- function(data,mve=TRUE,level,vars=NULL){
         n <- nD
       return(n)
     }
-
+    
     n <-NDquntil(dim(data)[1],level)
     # Centroid and covarianve for the Minimum volume Ellipsoid
     cent_var <- cov.mve(data,quantile.used =n)
@@ -82,45 +82,28 @@ cov_center <- function(data,mve=TRUE,level,vars=NULL){
     centroid <- colMeans(data)
     vari <- cov(data)
   }
-  # Niche Volume (ellipsoid volume)
-  #eli_vol <- structure(list(cov = vari,
-  #                          loc = centroid,
-  #                          d2 = qchisq(0.95, df = dim(vari)[1])),
-  #                     class = "ellipsoid")
-  #niche_volume <- volume(eli_vol)
-
+  
   # Axis length computations
-
-  eigen_vals  <- eigen(vari)$values
-  eigen_vecs  <- eigen(vari)$vectors
-
-  eigen_scale  <- eigen_vecs %*% diag(sqrt(eigen_vals))
-  for(i in 1:dim(vari)[1]){
-    assign(paste0("x_m",i), rbind(centroid[i] + eigen_scale[i, ],
-                                  centroid[i] - eigen_scale[i, ]))
-  }
-  expre1 <- paste0("x_m",1:dim(vari)[1])
-  centroid_text <- paste0("c(",paste0(centroid,collapse = ","),")")
+  sigmaI <- solve(vari)/qchisq(0.99,df = dim(data)[2])
+  sigIEigenSys <- eigen(sigmaI)
+  sigIEval <- sigIEigenSys$values
+  sigIEvec <- sigIEigenSys$vectors
+  
+  stds <- 1/sqrt(sigIEval)
+  
   axis_length <- list()
-  for(k in 1:dim(vari)[1]){
-    expre2 <- paste0(expre1,"[",1,",",k,"],")
-    expre3 <- paste0("sqrt(sum((c(",paste0(expre2,collapse = ""),
-                     "NULL) - ",centroid_text ,")^2","))*2")
-    assign(letters[k],eval(parse(text=expre3)))
-    axis_length[[k]] <- eval(parse(text = letters[k]))
-
+  for(i in 1:dim(sigmaI)[1]){
+    assign(paste0(letters[i]), stds[i]*2)
+    axis_length[[i]] <- eval(parse(text=letters[i])) 
   }
+  
   names(axis_length) <- letters[1:dim(vari)[1]]
   axis_length <- unlist(axis_length)
-
-  # Ellipsoid volume 2
-  #ellip_vol <- function(n,axis_length){
-  #  term1 <- pi^(n/2) / gamma(n/2+1)
-  #  term2 <- prod(axis_length)
-  #  return(term1*term2)
-  #}
+  
   n <- dim(vari)[1]
-
+  
+  # Axis volume
+  
   ellip_vol <- function(n,axis_length){
     term1 <- 2* pi^(n/2)
     term2 <- n*gamma(n/2)
@@ -128,10 +111,33 @@ cov_center <- function(data,mve=TRUE,level,vars=NULL){
     term4 <- (term1/term2)*term3
     return(term4)
   }
-  vol2 <- ellip_vol(n,axis_length)
-
+  vol2 <- ellip_vol(n,axis_length/2)
+  
+  
+  # Semi-axis orientation
+  
+  axis_coordinates <- list()
+  
+  for(i in 1:dim(vari)[1]){
+    assign(paste0("l",i,"_inf"),
+           centroid - sigIEvec[,i]*stds[i])
+    assign(paste0("l",i,"_sup"),
+           centroid + sigIEvec[,i]*stds[i])
+    
+    coord_matrix <- matrix(c(eval(parse(text=paste0("l",i,"_sup"))),
+                             eval(parse(text=paste0("l",i,"_inf")))
+    ),byrow = T,nrow = 2)
+    colnames(coord_matrix) <- names(centroid)
+    rownames(coord_matrix) <- paste0("vec_",1:2)
+    axis_coordinates[[i]] <- coord_matrix
+    
+  }
+  
+  
+  
   return(list(centroid=centroid,covariance=vari,
-              data=data,niche_volume =vol2,
-              axis_length=axis_length))
-
+              niche_volume =vol2,
+              SemiAxis_length=axis_length/2,
+              axis_coordinates=axis_coordinates))
+  
 }
