@@ -6,7 +6,7 @@
 ```r
 if (!require('devtools')) install.packages('devtools')
 devtools::install_github('luismurao/ntbox')
-
+```
 ### Warning
 
 There is a bug in `install_github` function of the `devtools` package. Because of this sometimes you will have troubles while installing `nichetoolbox` package (see [#issue 3](https://github.com/luismurao/nichetoolbox/issues/3)). In order to install it you will first have to install some of the dependencies of the package: 
