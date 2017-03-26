@@ -48,6 +48,7 @@ If the error **there is no package called 'package_name'** is shown again, do th
 ```r
 library(ntbox)
 run_ntbox()
+
 ```
 
 ## Tutorial
