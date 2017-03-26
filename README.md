@@ -42,7 +42,6 @@ devtools::install_github('luismurao/ntbox')
 If the error **there is no package called 'package_name'** is shown again, do the above (`install.package("package_name")` and then `devtools::install_github('luismurao/ntbox')`) untill the error does not appear.
 
 
-```
 ## Usage 
 
 ```r
