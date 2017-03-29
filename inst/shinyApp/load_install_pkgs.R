@@ -1,12 +1,6 @@
 # Github dependencies
 devtools::install_github("luismurao/leaflet")
 
-# NicheToolbox dependencies
-
-#pkgs_ntb <- c('mixtools','pvclust','fpc',
-#              'snow','shinysky','vcd',
-#              'KernSmooth')
-
 pkgs_ntb <- c("ENMGadgets","shinysky")
 
 # Missing packages
