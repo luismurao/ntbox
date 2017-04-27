@@ -28,7 +28,7 @@ niche_data_k_means <- reactive({
   if(input$load_kmeas_vars){
     if(!is.null(data_extraction()) && length(input$cluster_vars)>2){
       if(input$kmeans_data_from == "wWorld")
-        return(occ_extract())
+        return(data_extraction())
       if(input$kmeans_data_from == "mLayers")
         return(occ_extract_from_mask()$data)
     }
@@ -58,15 +58,16 @@ geographic_data <- reactive({
 kmeans_df <- reactive({
   if(!is.null(niche_data_k_means())){
     niche_data <- niche_data_k_means()
+    na_index <- which(is.na(niche_data))
     level <- input$kmeans_level
     nclus <- as.numeric(input$nclust)
-    km <- kmeans(niche_data,centers=nclus,iter.max=100,trace=F)
+    km <- kmeans(na.omit(niche_data),centers=nclus,iter.max=100,trace=F)
     cluster <- km$cluster
     if(input$kmeans_data_from == "mLayers")
-      geo_dat <- occ_extract_from_mask()$xy_data
+      geo_dat <- occ_extract_from_mask()$xy_data[-na_index,]
     else
-      geo_dat <- data_to_extract()
-    kmeans_data <- data.frame(geo_dat,cluster = cluster,niche_data)
+      geo_dat <- data_to_extract()[-na_index,]
+    kmeans_data <- data.frame(geo_dat,cluster = cluster,niche_data[-na_index,])
     return(kmeans_data)
   }
   else
