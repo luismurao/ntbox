@@ -1,5 +1,29 @@
 source("server_funcs/data_gbif.R",local = TRUE)
 source("server_funcs/data_user.R",local=TRUE)
+
+observe({
+  if(!is.null(data_user_clean()) && is.null(data_gbif())){
+    updateSelectInput(session,"datasetM","Select the data set you want to work with",
+                      choices = c("User data"="updata",
+                                  #"M data from dynamic map" = "M_data",
+                                  "Just clip my layers"="clipLayers"), selected ="updata")
+  }
+  if(!is.null(data_gbif()) && is.null(data_user_clean())){
+    updateSelectInput(session,"datasetM","Select the data set you want to work with",
+                      choices = c("GBIF data"="gbif_dat",
+                                  #"M data from dynamic map" = "M_data",
+                                  "Just clip my layers"="clipLayers"), selected ="gbif_dat")
+  }
+  if(!is.null(data_user_clean()) && !is.null(data_gbif())){
+    updateSelectInput(session,"datasetM","Select the data set you want to work with",
+                      choices = c("GBIF data"="gbif_dat",
+                                  "User data"="updata",
+                                  #"M data from dynamic map" = "M_data",
+                                  "Just clip my layers"="clipLayers"), selected ="gbif_dat")
+  }
+
+})
+
 # Reactive to extract values of niche layers
 
 define_M_raster <- reactive({
@@ -19,8 +43,12 @@ define_M_raster <- reactive({
 data_to_extract <- reactive({
   if(input$datasetM == "gbif_dat" && !is.null(data_gbif()))
     return(data_gbif()[,c(input$xLongitudeGBIF,input$yLatitudeGBIF)])
+  if(input$datasetM == "gbif_dat" && !is.null(data_gbif()) && input$extracted_area == "polygon_of_M")
+    return(data_poly()[,c(input$xLongitudeGBIF,input$yLatitudeGBIF)])
   if(input$datasetM == "updata" && !is.null(data_user_clean()))
     return(data_user_clean()[,c(input$xLongitudeUser,input$yLatitudeUser)])
+  if(input$datasetM == "updata" && !is.null(data_user_clean()) && input$extracted_area == "polygon_of_M")
+    return(data_poly()[,c(input$xLongitudeUser,input$yLatitudeUser)])
   else
     return(NULL)
 })
@@ -30,14 +58,14 @@ occ_extract_from_mask <- reactive({
   isolate({
     if(input$run_extract){
       if(!is.null(define_M_raster()) && !is.null(data_to_extract())){
-        data <- data.frame(extract(define_M_raster(),
+        data_env <- data.frame(extract(define_M_raster(),
                                    data_to_extract(),na.rm=FALSE))
-        xy_data_index <- which(!is.na(data[,1]))
+        xy_data_index <- which(!is.na(data_env[,1]))
         xy_data <- data_to_extract()[xy_data_index,]
-        data_env_xy  <- data.frame(data, data_to_extract())
+        data_env_xy  <- data.frame(data_env, data_to_extract())
         data_env_xy <- na.omit(data_env_xy)
-        data <- na.omit(data)
-        return(list(data=data,xy_data=xy_data,xy_data_index=xy_data_index,data_env_xy=data_env_xy))
+        data_env <- na.omit(data_env)
+        return(list(data=data_env,xy_data=xy_data,xy_data_index=xy_data_index,data_env_xy=data_env_xy))
       }
       else
         return(NULL)
@@ -56,7 +84,7 @@ occ_extract <- reactive({
         #                   data_to_extract())
         data <- data.frame(extract(rasterLayers(),
                                    data_to_extract()))
-        data <- na.omit(data)
+        #data <- na.omit(data)
         return(data)
       }
       else
