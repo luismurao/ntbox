@@ -91,14 +91,15 @@ cov_center <- function(data,mve=TRUE,level,vars=NULL){
 
   stds <- 1/sqrt(sigIEval)
 
-  axis_length <- list()
+  axis_length <- NULL
   for(i in 1:dim(sigmaI)[1]){
-    assign(paste0(letters[i]), stds[i]*2)
-    axis_length[[i]] <- eval(parse(text=letters[i]))
+    #assign(paste0(letters[i]), stds[i]*2)
+    axis_length[i] <- stds[i]*2
+    #axis_length[[i]] <- eval(parse(text=letters[i]))
   }
 
   names(axis_length) <- letters[1:dim(vari)[1]]
-  axis_length <- unlist(axis_length)
+  #axis_length <- unlist(axis_length)
 
   n <- dim(vari)[1]
 
