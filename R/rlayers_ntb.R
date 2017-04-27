@@ -26,7 +26,7 @@ rlayers_ntb <- function(layers_path){
   }))
   # Read layers only if they have the same extent and resolution
   if(length(unique(resol))==1){
-    raster_stack <- stack(layers_paths)
+    raster_stack <- raster::stack(layers_paths)
     return(raster_stack)
   }
 
