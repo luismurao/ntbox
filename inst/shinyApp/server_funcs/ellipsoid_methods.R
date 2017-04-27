@@ -32,7 +32,7 @@ observe({
 mve_obj_all <- reactive({
   if(!is.null(occ_extract()) && !is.null(input$biosEllip) && input$selectShape == "wWorld"){
     prop_points <- as.numeric(input$prop_points)
-    niche_data <- occ_extract()
+    niche_data <- na.omit(occ_extract())
     cov_centroid <- cov_center(niche_data,
                                level=prop_points,
                                vars=input$biosEllip)
@@ -49,7 +49,7 @@ mve_obj_all <- reactive({
 mve_obj_m <- reactive({
   if(!is.null(occ_extract_from_mask()) && !is.null(input$biosEllip) && input$selectShape == "mLayers"){
     prop_points <- as.numeric(input$prop_points)
-    niche_data <- occ_extract_from_mask()$data
+    niche_data <- na.omit(occ_extract_from_mask()$data)
     cov_centroid <- cov_center(niche_data,
                                level=prop_points,
                                vars=input$biosEllip)
