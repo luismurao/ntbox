@@ -17,5 +17,5 @@ gibif_vis <- sidebarLayout(position = "left",
 
                              )),
 
-                           mainPanel(htmlOutput("gbifVis"),htmlOutput("calendarG"))
+                           mainPanel(htmlOutput("gbifMotion"),htmlOutput("gbifVis"),htmlOutput("calendarG"))
 )

@@ -151,6 +151,10 @@ GBIF_vis <- reactive({
   }
 })
 
+output$gbifMotion <- renderGvis({
+  GBIF_vis()$motion
+})
+
 output$gbifVis <- renderGvis({
   GBIF_vis()$pieMotion
 })
@@ -376,5 +380,9 @@ observe({
 
 })
 
+observe({
+  if(!is.null(selectYear()))
+    updateSelectInput(session,"GBIFYears",choices = selectYear())
+})
 
 
