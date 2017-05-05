@@ -61,13 +61,23 @@ kmeans_df <- reactive({
     na_index <- which(is.na(niche_data))
     level <- input$kmeans_level
     nclus <- as.numeric(input$nclust)
-    km <- kmeans(na.omit(niche_data),centers=nclus,iter.max=100,trace=F)
+    if(length(na_index)!=0L) niche_data <- niche_data[na_index,]
+    km <- kmeans(niche_data,centers=nclus,iter.max=100,trace=F)
     cluster <- km$cluster
-    if(input$kmeans_data_from == "mLayers")
-      geo_dat <- occ_extract_from_mask()$xy_data[-na_index,]
-    else
-      geo_dat <- data_to_extract()[-na_index,]
-    kmeans_data <- data.frame(geo_dat,cluster = cluster,niche_data[-na_index,])
+    if(input$kmeans_data_from == "mLayers"){
+      if(length(na_index)!=0L)
+        geo_dat <- occ_extract_from_mask()$xy_data[-na_index,]
+      else
+        geo_dat <- occ_extract_from_mask()$xy_data
+    }
+    else{
+      if(length(na_index)!=0L)
+        geo_dat <- data_to_extract()[-na_index,]
+      else
+        geo_dat <- data_to_extract()
+    }
+
+    kmeans_data <- data.frame(geo_dat,cluster = cluster,niche_data)
     return(kmeans_data)
   }
   else
@@ -79,6 +89,7 @@ kmeans_df <- reactive({
 
 kmeans_3d_plot_data <- reactive({
   if(!is.null(kmeans_df())){
+    print(kmeans_df())
     withProgress(message = 'Doing computations', value = 0, {
       niche_data <- niche_data_k_means()
       not_dup_niche_space <- which(!duplicated(niche_data))
