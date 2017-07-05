@@ -4,6 +4,12 @@
 # ENMGadgets package
 # https://github.com/narayanibarve/ENMGadgets
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+# Roc Parcial
+# A little modification of the funcion of Narayani Barve
+# ENMGadgets package
+# https://github.com/narayanibarve/ENMGadgets
+#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 PartialROC <- function(PresenceFile=NA, PredictionFile=NA, OmissionVal=NA, RandomPercent=NA, NoOfIteration=NA)
 {
@@ -58,6 +64,25 @@ PartialROC <- function(PresenceFile=NA, PredictionFile=NA, OmissionVal=NA, Rando
 
 }
 
+
+AreaPredictedPresence <- function(InRast)
+{
+  ### Now calculate proportionate area predicted under each suitability
+  ClassPixels = freq(InRast)
+  ### Remove the NA pixels from the table.
+  if (is.na(ClassPixels[dim(ClassPixels)[1],1])== TRUE)
+  {
+    ClassPixels = ClassPixels[-dim(ClassPixels)[1],]
+  }
+
+  ClassPixels = ClassPixels[order(nrow(ClassPixels):1),]
+  TotPixPerClass = cumsum(ClassPixels[,2])
+  PercentPixels = TotPixPerClass / sum(ClassPixels[,2])
+
+  ClassPixels = cbind(ClassPixels, TotPixPerClass, PercentPixels)
+  ClassPixels = ClassPixels[order(nrow(ClassPixels):1),]
+  return(ClassPixels)
+}
 
 AreaPredictedPresence <- function(InRast)
 {

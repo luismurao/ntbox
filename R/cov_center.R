@@ -66,7 +66,7 @@ cov_center <- function(data,mve=TRUE,level,vars=NULL){
 
     # Compute the number of points of our data that represent the proportion of the data
     NDquntil <- function(nD,level){
-      n <- round(nD*level)
+      n <- floor(nD*level)
       if(n > nD)
         n <- nD
       return(n)
