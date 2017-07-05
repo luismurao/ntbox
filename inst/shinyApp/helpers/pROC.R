@@ -10,7 +10,7 @@ PartialROC <- function(PresenceFile=NA, PredictionFile=NA, OmissionVal=NA, Rando
 
   InRast = raster(PredictionFile)
   ## Currently fixing the number of classes to 100. But later flexibility should be given in the parameter.
-  InRast = round(InRast * 100)
+  InRast = round((InRast/cellStats(InRast,max))*1000)
 
   ## This function should be called only once outside the loop. This function generates values for x-axis.
   ## As x-axis is not going to change.
