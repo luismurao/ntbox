@@ -27,7 +27,8 @@ ui_kmeans <- sidebarLayout(position = "left",
                                 conditionalPanel(condition = "input.grupos==true",
                                                  selectInput("vgrupo",label = "Select the variable",choices = names(dataset_cluster)[1])),
                                 numericInput(inputId = "cex1","Font size",min = 0.05,max = 1,step = 0.01,value = 0.35),
-                                sliderInput("alpha",label = "Ellipsoid transparency",min = 0,max=1,value = 0.1,step = 0.05)
+                                sliderInput("alpha",label = "Ellipsoid transparency",min = 0,max=1,value = 0.1,step = 0.05),
+                                downloadButton("downloadKmeans",label = "Download K-means")
                                 #downloadButton("down3dClust",label = "Download plot")),
                                 ),
                               mainPanel(

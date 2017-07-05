@@ -194,6 +194,19 @@ output$kmeans_geo_leaflet <- renderLeaflet({
 })
 
 
+output$downloadKmeans <- downloadHandler(
+  filename = function() return(paste0(input$genus,"_",input$species,"kmeans_data.csv")),
+  content = function(file) {
+    if(!is.null(kmeans_3d_plot_data())){
+      kmeans_df <- data.frame(kmeans_3d_plot_data()$lat_long,
+                              kmeans_cluster=kmeans_3d_plot_data()$cluster_ids,
+                              kmeans_3d_plot_data()$data)
+      ## Leyendo los datos de la especie e escriendolos en un .csv
+      write.csv(kmeans_df,file,row.names = FALSE)
+    }
+  }
+)
+
 observe({
 
   if(!is.null(data_extraction())){
