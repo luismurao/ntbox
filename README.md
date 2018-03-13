@@ -64,3 +64,7 @@ run_ntbox()
 
 ## Tutorial
 [nichetoolbox](https://luismurao.github.io/GSoC/gsoc_final_eval.html)
+
+## Acknowledgements
+
+Posgrado en Ciencias Biológicas UNAM for academic training; GSoC 2016, PAIPIIT IN112175 (2015) and IN116018 (2016) for partial financial support.
