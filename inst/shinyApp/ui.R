@@ -42,6 +42,9 @@ shinyUI(
              ),
              navbarMenu("SDM performance",
                         tabPanel("Partial ROC",partial_roc),
-                        tabPanel("Binary maps",ui_binary))
+                        tabPanel("Binary maps",ui_binary)),
+             navbarMenu("Model transferability",
+                        tabPanel("MOP",ui_mop)
+                        )
   )
 )
