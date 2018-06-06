@@ -26,7 +26,7 @@ dat_presence <- reactive({
 
 partialRoc <- reactive({
   sims <- as.numeric(input$iter)
-  error <- 1 - as.numeric(input$omission)
+  error <-as.numeric(input$omission)
   if(!is.null(dat_presence()) && !is.null(dat_raster())){
     pRoc <- PartialROC(PresenceFile = dat_presence(),
                        PredictionFile = dat_raster(),
