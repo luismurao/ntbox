@@ -103,8 +103,8 @@ observe({
 
 
 mop_comp <- eventReactive(input$run_mop,{
-  m_layers <- M_ras_Layers()
-  g_layers <- G_ras_Layers()
+  m_layers <- M_ras_Layers()[[input$mlayers_select]]
+  g_layers <- G_ras_Layers()[[input$glayers_select]]
   mop_names <- all(names(m_layers)==names(g_layers))
 
   per_prop <- as.numeric(as.character(input$ref_percent))
