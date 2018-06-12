@@ -112,8 +112,8 @@ mop_comp <- eventReactive(input$run_mop,{
 
     mop_anlysis <- mop(m_stack =  m_layers,
                        g_stack = g_layers,
-                       percentil_prop= per_prop,
-                       normalized = input$normalized_mop)
+                       percentil_prop= per_prop
+                       )
     return(mop_anlysis)
 
   }
@@ -146,15 +146,22 @@ output$show_m_g_layers <- renderPlot({
 
 output$mop_plot <- renderPlot({
   if(!is.null(mop_comp())){
-    colramp <- colorRampPalette(c("#2cd81c","#385caa",
-                                  "#1825df","black"))(226)
-
+    #colramp <- colorRampPalette(c("#2cd81c","#385caa",
+    #                              "#1825df","black"))(226)
+    colramp <- colorRampPalette(c("#1210d9","#7605e0",
+                                  "#a618d1","#d3168c",
+                                  "#ea1136"))(226)
     mop_raster<- mop_comp()
+
+    if(!input$normalized_mop)
+      plot(mop_raster[[1]],col=colramp)
+
+
     if(input$normalized_mop){
       colramp <- rev(colramp)
+      plot(mop_raster[[2]],col=colramp)
     }
 
-    plot(mop_raster,col=colramp)
 
 
   }
@@ -168,7 +175,10 @@ output$mop_raster <- downloadHandler(
                                  input$normalized_mop,".asc")},
   content <- function(file){
     if(!is.null(mop_comp())){
-      writeRaster(mop_comp(),filename = file)
+      if(input$normalized_mop)
+        writeRaster(mop_comp()[[2]],filename = file)
+      else
+        writeRaster(mop_comp()[[1]],filename = file)
       }
     })
 

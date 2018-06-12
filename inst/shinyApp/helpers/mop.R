@@ -1,5 +1,5 @@
 mop <- function(m_stack,g_stack,percentil_prop=0.10,
-                compute_each=1000,normalized=FALSE){
+                compute_each=1000){
   mPoints <- rasterToPoints(m_stack)
   gPoints <- rasterToPoints(g_stack)
   m1 <- mPoints[, -(1:2)]
@@ -29,20 +29,21 @@ mop <- function(m_stack,g_stack,percentil_prop=0.10,
   mop2 <- unlist(mop1)
   MOP_ALL <- data.frame(gPoints[,1:2],mop2)
   mop_max <- max(mop2)
-  MOP_ALL[out_index,3] <- mop_max*1.1
+  MOP_ALL[out_index,3] <- mop_max*1.15
   coordinates(MOP_ALL) <- ~x+y
   gridded(MOP_ALL) <- TRUE
   mop_raster <- raster(MOP_ALL)
 
-  colramp <- colorRampPalette(c("#2cd81c","#385caa",
-                                "#1825df","black"))(226)
+  #colramp <- colorRampPalette(c("#2cd81c","#385caa",
+  #                              "#1825df","black"))(226)
+  colramp <- colorRampPalette(c("#341d9a","#b81313"))(226)
 
-  if(normalized){
-    mop_raster <- 1 - (mop_raster/mop_max)
-    colramp <- rev(colramp)
-  }
+  #if(normalized){
+    mop_rasterN <- 1 - (mop_raster/mop_max)
+  #  colramp <- rev(colramp)
+  #}
 
-  return(mop_raster)
+  return(list(mop_raster,mop_rasterN))
 }
 
 
