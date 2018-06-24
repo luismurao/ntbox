@@ -30,7 +30,7 @@ ui_mop <- sidebarLayout(position = 'left',
                                wellPanel(
                                  numericInput(inputId = "ref_percent",
                                               label = "Percent of points sampled from te reference region (G)",
-                                              value = 0.1,min = 0,max = 1,step = 0.1),
+                                              value = 10,min = 1,max = 100,step = 0.1),
                                  checkboxInput("normalized_mop",label = "Normalized",value = TRUE),
                                  bsButton("run_mop","Run MOP")
 

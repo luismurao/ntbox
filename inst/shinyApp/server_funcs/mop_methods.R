@@ -107,7 +107,7 @@ mop_comp <- eventReactive(input$run_mop,{
   g_layers <- G_ras_Layers()[[input$glayers_select]]
   mop_names <- all(names(m_layers)==names(g_layers))
 
-  per_prop <- as.numeric(as.character(input$ref_percent))
+  per_prop <- as.numeric(as.character(input$ref_percent))/100
   if(mop_names){
 
     mop_anlysis <- mop(m_stack =  m_layers,
