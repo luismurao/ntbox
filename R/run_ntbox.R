@@ -8,8 +8,10 @@ run_ntbox <- function(){
 
   to_install <- system.file("shinyApp/load_install_pkgs.R",
                             package = "ntbox")
+
   cat("Looking for additiona nichetoolbox dependencies")
   cat("\nNote that the first time can take few time\n")
+
   source(to_install)
 
   app_path <- system.file("shinyApp",package = "ntbox")
