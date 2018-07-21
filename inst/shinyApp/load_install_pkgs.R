@@ -13,7 +13,8 @@ pkg_check <- c("shiny","rgeos","rgdal",
                "RColorBrewer","ade4","V8","spocc")
 
 pkgs_ntb_miss <- pkg_check[!(pkg_check %in% installed.packages())]
-if(length(pkgs_ntb_miss)>=0L){
+
+if(!identical(pkgs_ntb_miss , character(0))){
   install.packages(pkgs_ntb_miss,repos = "https://cloud.r-project.org/")
 }
 
@@ -24,9 +25,9 @@ devtools::install_github("luismurao/leaflet")
 pkgs_ntb <- c("ENMGadgets","shinysky")
 
 # Missing packages
-pkgs_ntb_miss <- pkgs_ntb[!(pkgs_ntb %in% installed.packages())]
+pkgs_ntb_miss1 <- pkgs_ntb[!(pkgs_ntb %in% installed.packages())]
 # Install missing packages
-if(length(pkgs_ntb_miss)>0L){
+if(length(pkgs_ntb_miss1)>0L){
   devtools::install_github("AnalytixWare/ShinySky")
   devtools::install_github("ENMGadgets", "narayanibarve")
 }
