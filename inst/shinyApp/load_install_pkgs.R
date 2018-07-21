@@ -18,11 +18,6 @@ if(length(pkgs_ntb_miss)>=0L){
 }
 
 
-suppressPackageStartupMessages({
-  sapply(pkgs_ntb_miss,function(x) library(x,character.only = TRUE))
-})
-
-
 # Github dependencies
 devtools::install_github("luismurao/leaflet")
 
@@ -38,7 +33,11 @@ if(length(pkgs_ntb_miss)>0L){
 library(ENMGadgets)
 library(shinysky)
 library(leaflet)
-sapply(pkgs_ntb_miss,function(x) library(x,character.only = TRUE))
+
+
+suppressPackageStartupMessages({
+  sapply(pkgs_ntb_miss,function(x) library(x,character.only = TRUE))
+})
 
 
 # Load packages
