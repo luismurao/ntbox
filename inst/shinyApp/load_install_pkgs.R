@@ -17,12 +17,6 @@ if(length(pkgs_ntb_miss)>=0L){
   install.packages(pkgs_ntb_miss,repos = "https://cloud.r-project.org/")
 }
 
-cat("Looking for additiona nichetoolbox dependencies")
-cat("\nNote that the first time can take few time\n")
-pkgs_ntb_miss <- pkgs_ntb[!(pkg_check %in% installed.packages())]
-if(length(pkgs_ntb_miss)>=0L){
-  install.packages(pkgs_ntb_miss)
-}
 
 suppressPackageStartupMessages({
   sapply(pkgs_ntb_miss,function(x) library(x,character.only = TRUE))
