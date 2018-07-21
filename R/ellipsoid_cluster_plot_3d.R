@@ -30,11 +30,11 @@ ellipsoid_cluster_plot_3d <- function(niche_data,cluster_ids,x,y,z,ellips,alpha,
   cols <- sapply(vgrupo,function(x) return(colores[x]))
 
   ifelse(grupos ==FALSE,cols <- "black",cols <- cols)
-  par3d(cex=.8)
+  rgl::par3d(cex=.8)
   if(grupos)
-    plot3d(dat_clus,type="n",col=cols)
+    rgl::plot3d(dat_clus,type="n",col=cols)
   else
-    plot3d(dat_clus,col=cols)
+    rgl::plot3d(dat_clus,col=cols)
 
   if(ellips){
     for(i in 1:nclus){
@@ -43,10 +43,11 @@ ellipsoid_cluster_plot_3d <- function(niche_data,cluster_ids,x,y,z,ellips,alpha,
       assign("z", dat_clus[km==i,3])
       dfn <- 3
       dfd <- length(x) - 1
-      ell.radius <- sqrt(dfn * qf(level, dfn, dfd))
-      ellips <- ellipsoid(center=c(mean(x), mean(y), mean(z)),
-                          shape=cov(cbind(x,y,z)), radius=ell.radius)
-      shade3d(ellips, col=colores[i], alpha=alpha,lit=FALSE)
+      #ell.radius <- sqrt(dfn * qf(level, dfn, dfd))
+      ellips <- rgl::ellipse3d(cov(cbind(x,y,z)),
+                               centre=c(mean(x), mean(y), mean(z)),
+                               level = 0.99)
+      rgl::shade3d(ellips, col=colores[i], alpha=alpha,lit=FALSE)
       #wire3d(ellips, col=i,alpha=alpha)
 
     }
@@ -55,7 +56,7 @@ ellipsoid_cluster_plot_3d <- function(niche_data,cluster_ids,x,y,z,ellips,alpha,
   if(grupos){
 
     with(dat_clus,
-         text3d(dat_clus[,1],
+         rgl::text3d(dat_clus[,1],
                 dat_clus[,2],
                 dat_clus[,3],
                 vgrupo,

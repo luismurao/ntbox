@@ -7,14 +7,21 @@
 occs_history <- function(data){
 
   # Data atributes
-
+  name <- NULL
+  country <- NULL
+  year <- NULL
+  month <- NULL
+  day <- NULL
+  count <- NULL
   namesDB <- c("name","country","year","month","day")
 
   data <- data[,namesDB]
-  s <-data %>% group_by(name,country,year) %>% summarise(count = n())
-  dat_byY <- group_by(ungroup(s),name) %>% mutate(prop = count/sum(count))
-  dat_byY <- dat_byY %>% mutate(year1=year)
-  dat_byY <- ungroup(dat_byY)
+  s <-data %>% dplyr::group_by(name,country,year) %>%
+    dplyr::summarise(count = dplyr::n())
+  dat_byY <- dplyr::group_by(dplyr::ungroup(s),name) %>%
+    dplyr::mutate(prop = count/sum(count))
+  dat_byY <- dat_byY %>% dplyr::mutate(year1=year)
+  dat_byY <-  dplyr::ungroup(dat_byY)
 
 
   myStateSettings <-'{"xZoomedDataMin":1199145600000,"colorOption":"2",
@@ -30,10 +37,13 @@ occs_history <- function(data){
   '
   dat_byY <- dat_byY[ !duplicated(dat_byY[,c("country","year")]), ]
 
-  mot <- gvisMotionChart(dat_byY, idvar="country", timevar="year",
-                         xvar="year1", yvar="count",
-                         sizevar="prop",
-                         options=list(myStateSettings))
+  mot <- googleVis::gvisMotionChart(dat_byY,
+                                    idvar="country",
+                                    timevar="year",
+                                    xvar="year1",
+                                    yvar="count",
+                                    sizevar="prop",
+                                    options=list(myStateSettings))
 
 
 

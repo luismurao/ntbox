@@ -27,8 +27,9 @@ confu_mat_optim <- function(sdm_raster,valData,longitude,latitude,pres_aus,optim
   if(class(sdm_raster) == "raster")
     stop("sdm_raster must be of class raster")
 
-  values <- extract(sdm_raster,
-                    valData[,c(longitude,latitude)])
+  values <- raster::extract(sdm_raster,
+                            valData[,c(longitude,
+                                       latitude)])
 
   obs <- valData[,pres_aus]
   na <- which(is.na(values))
@@ -39,18 +40,23 @@ confu_mat_optim <- function(sdm_raster,valData,longitude,latitude,pres_aus,optim
 
   }
 
+
   th_range <- seq(from = th_range[1],to = th_range[2],by=step)
   df_list <- list(numeric(length(th_range)))
 
 
   for(k in 1:length(th_range)){
 
-    reclass <- sapply(values, function(x){
-      if(x >= th_range[k]) return(1)
-      else return(0)
+    #reclass <- sapply(values, function(x){
+    #if(x >= th_range[k]) return(1)
+    #else return(0)
+    #})
+
+    reclass <-  (values >= th_range[k])*1
+    comb <- sapply(1:length(reclass), function(x){
+      paste0(reclass[x],pres_aus[x])
     })
 
-    comb <- paste0(reclass,obs)
     nobs <- length(comb)
     a1 <- numeric(nobs)
     b1 <- numeric(nobs)

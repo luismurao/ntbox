@@ -13,15 +13,20 @@
 rlayers_ntb <- function(layers_path){
   # Regular expression to cheack for rasters layer with different formats
   ras_formats <- "(*.asc$)|(*.bil$)|(*.sdat$)|(*.rst$)|(*.nc$)|(*.tif$)|(*.envi$)|(*.img$)"
-  layers_paths <- list.files(layers_path, pattern = ras_formats,full.names = TRUE)
+  layers_paths <- list.files(layers_path,
+                             pattern = ras_formats,
+                             full.names = TRUE)
   # Read raster layers
-  layers_list <- lapply(layers_paths, raster)
+  layers_list <- lapply(layers_paths, raster::raster)
   # Check resolution and extent
   resol <- unlist(lapply(layers_list,function(x) {
     ras_extent <- raster::extent(x)
 
-    resol <- paste0(res(x),
-                    c(ras_extent[1],ras_extent[2],ras_extent[3],ras_extent[4]),
+    resol <- paste0(raster::res(x),
+                    c(ras_extent[1],
+                      ras_extent[2],
+                      ras_extent[3],
+                      ras_extent[4]),
                     collapse = "_")
   }))
   # Read layers only if they have the same extent and resolution

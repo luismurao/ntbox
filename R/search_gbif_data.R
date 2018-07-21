@@ -27,9 +27,9 @@ searh_gbif_data <- function(genus,species,occlim=10000,writeFile=FALSE){
 
   # Gbif search
   else{
-    df_list <- occ(query = paste(genus,species),
-                   from = 'gbif',limit = occlim,
-                   gbifopts = list(hasCoordinate = TRUE))
+    df_list <- spocc::occ(query = paste(genus,species),
+                          from = 'gbif',limit = occlim,
+                          gbifopts = list(hasCoordinate = TRUE))
     # GBIF data
     data_gbif <- data.frame(df_list$gbif$data[[1]])
     # Remove NA data from longitude

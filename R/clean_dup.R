@@ -27,7 +27,8 @@
 #' # dim(ambystoma_tigrinum_clean)
 clean_dup <- function(data,longitude,latitude,threshold=0.0){
   data <- data[!is.na(data[,longitude]),]
-  dat_sp <- SpatialPointsDataFrame(data[,c(longitude ,latitude)],data)
-  dat_sp1 <- remove.duplicates(dat_sp, zero = threshold)
+  dat_sp <- sp::SpatialPointsDataFrame(data[,c(longitude ,
+                                           latitude)],data)
+  dat_sp1 <- sp::remove.duplicates(dat_sp, zero = threshold)
   return(dat_sp1@data)
 }
