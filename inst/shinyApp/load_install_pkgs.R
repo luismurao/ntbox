@@ -47,11 +47,8 @@ if(length(pkgs_ntb_miss)>0L){
 library(ENMGadgets)
 library(shinysky)
 library(leaflet)
-<<<<<<< HEAD
 sapply(pkgs_ntb_miss,function(x) library(x,character.only = TRUE))
-=======
 
->>>>>>> origin/master
 
 # Load packages
 options(rgl.useNULL=TRUE)
