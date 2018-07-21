@@ -1,4 +1,3 @@
-
 source("server_funcs/data_gbif.R",local = T)
 source("server_funcs/dynamicMapMethods.R",local = T)
 source("server_funcs/niche_layers_extract.R",local = T)
@@ -204,10 +203,10 @@ observeEvent(input$saveState, {
     # Path to report source
 
     report_path <- system.file("shinyApp/ntb_report/data_report.Rmd",
-                                package = "nichetoolbox")
+                                package = "ntbox")
 
     mchart_path <- system.file("shinyApp/ntb_report/MotChartInstructions.Rmd",
-                               package = "nichetoolbox")
+                               package = "ntbox")
 
     # save HTML path
 
@@ -343,11 +342,13 @@ observeEvent(input$saveState, {
     # Path to report source
 
     niche_data_report_path <- system.file("shinyApp/ntb_report/niche_data_report.Rmd",
-                                          package = "nichetoolbox")
+                                          package = "ntbox")
 
     # save HTML path
 
     niche_data_report_save <- paste0(wf_dir_path,"/","niche_data_report.html")
+
+
 
     render(input = niche_data_report_path,
            output_format = html_document(pandoc_args = c("+RTS", "-K64m","-RTS"),

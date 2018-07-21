@@ -13,6 +13,7 @@ knit_hooks$set(rgl = hook_rgl, webgl = hook_webgl)
 ```
 
 
+
 ```{r results="asis",echo=FALSE}
 library(knitr)
 niche_data <- data_extraction()
@@ -24,7 +25,7 @@ if(!is.null(niche_data)){
   
   cat("\n\n")
   
-  cat(paste0("The total number of niche variables: ",
+  cat(paste0("The total number of niche variables is: ",
              dim(niche_data)[2],":"), names(niche_data))
   cat("\n")
 
@@ -35,6 +36,7 @@ if(!is.null(niche_data)){
 }
 
 ```
+
 
 
 ```{r results="asis",echo=FALSE}
@@ -49,10 +51,16 @@ if(!is.null(niche_data)){
 }
 ```
 
-
 ```{r results='asis', echo=printInfoNiche,eval=printInfoNiche}
 print(rasterLayers())
+```
+
+```{r results="asis",echo=FALSE}
 cat("Raster plot showing 1 layer")
+```
+
+
+```{r results='asis', echo=printInfoNiche,eval=printInfoNiche}
 plot(rasterLayers()[[1]])
 ```
 
@@ -71,6 +79,8 @@ cat("### Niche data summary")
 niche_data <- data_extraction()
 summary(niche_data)
 ```
+
+
 
 ```{r,eval=printInfoNiche,echo=FALSE,results='asis'}
 if(!is.null(data_extraction())){
@@ -91,10 +101,6 @@ if(!is.null(data_extraction())){
 ```
 
 
-```{r results="asis",echo=FALSE,eval=printInfoNiche}
-cat("## Niche space visualizations")
-```
-
 ```{r, webgl=TRUE,echo=printInfoNiche,eval=printInfoNiche}
 
 niche_data <- niche_data()
@@ -106,11 +112,13 @@ ajus <- input$fit
 ellip <- input$ellip
 prop <- as.numeric(input$ellipsoid_vol)
 if(!is.null(niche_data())){
-  open3d(windowRect=c(100,100,700,700))
   niche_plot(data = niche_data,x = x,y = y,z = z,prop =prop,
              gtype = gtype,ajus = ajus,ellip = ellip)
+  rglwidget() 
+   
 }
 ```
+
 
 
 ```{r results="asis",echo=FALSE,eval=TRUE}
@@ -156,6 +164,8 @@ if(!is.null(k_means_plot)){
 } else printKmeansPlot <- 0
 ```
 
+
+
 ```{r results="asis",echo=FALSE,eval=printKmeansPlot}
 cat("### K-means clustering (niche space)")
 ```
@@ -168,13 +178,15 @@ ellipsoid_cluster_plot_3d(niche_data = kmeans_3d_plot_data()$data,
                                 x = input$x1,y = input$y1,
                                 z = input$z1,alpha = input$alpha,ellips = input$ellips,
                                 grupos=input$grupos,input$cex1,level=input$kmeans_level)
-    
+
+
 ```
 
 
 ```{r results="asis",echo=FALSE,eval=printKmeansPlot}
 cat("### K-means clustering (Geographic space)")
 ```
+
 
 ```{r ,eval=printKmeansPlot,echo=printKmeansPlot}
 leaflet_cluster_map()
@@ -232,7 +244,7 @@ cat("### Correlogram")
 
 
 
-```{r corplot1, results="asis",echo=printInfoCorre,eval=printInfoCorre,cache=T,dev="pdf"}
+```{r corplot1, results="asis",echo=printInfoCorre,eval=printInfoCorre,cache=T,dev="png"}
 corr_plot()
 ```
 
