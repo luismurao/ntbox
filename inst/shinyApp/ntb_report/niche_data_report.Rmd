@@ -3,13 +3,16 @@ title: "NicheToolBox niche data report"
 date: "`r date()`"
 ---
 
-This is **NicheToolBox data report** here you can find a quick view of the thinks that you have done in the software. Remember that this is free software so it comes with no waranty, please report any bugs you find at <luismurao@comunidad.unam.mx>
+This is **NicheToolBox data report** here you can find a quick view of the thinks that you have done in the software. Remember that this is free software so it comes with no waranty, please report any bugs you find at <luismurao@gmail.com>
 
 ```{r setup, echo=FALSE}
 library(knitr)
 library(rgl)
 knitr::opts_chunk$set(echo = TRUE)
 knit_hooks$set(rgl = hook_rgl, webgl = hook_webgl)
+```
+```{r,echo=FALSE}
+#rgl.open()
 ```
 
 
@@ -50,6 +53,7 @@ if(!is.null(niche_data)){
   printInfoNiche <- FALSE
 }
 ```
+
 
 ```{r results='asis', echo=printInfoNiche,eval=printInfoNiche}
 print(rasterLayers())
@@ -112,11 +116,76 @@ ajus <- input$fit
 ellip <- input$ellip
 prop <- as.numeric(input$ellipsoid_vol)
 if(!is.null(niche_data())){
+  rgl::par3d(cex = 0.8)
   niche_plot(data = niche_data,x = x,y = y,z = z,prop =prop,
              gtype = gtype,ajus = ajus,ellip = ellip)
-  rglwidget() 
-   
+  rgl::rgl.close()
 }
+```
+
+
+
+```{r results="asis",echo=FALSE,eval=TRUE}
+if(!is.null(corr_table())){
+  printInfoCorre <- 1 
+} else printInfoCorre <- 0
+```
+
+```{r results="asis",echo=FALSE,eval=printInfoCorre}
+cat("## Niche correlations")
+```
+
+```{r results="asis",echo=FALSE,eval=printInfoCorre}
+cat("### Correlation matrix")
+```
+
+```{r results="asis",echo=printInfoCorre,eval=FALSE}
+corre_mat <- corr_table()
+print(corre_mat)
+```
+
+
+```{r results="asis",echo=FALSE,eval=printInfoCorre}
+if(!is.null(corr_table())){
+  corre_mat <- round(corr_table(),3)
+  print(kable(corre_mat))
+}
+```
+
+
+```{r results="asis",echo=FALSE,eval=printInfoCorre}
+cat("### Correlation finder")
+```
+
+```{r results="asis",echo=FALSE,eval=printInfoCorre}
+cat("Strong correlations according to a correlation threshold of", input$cor_threshold)
+```
+
+
+```{r, echo=printInfoCorre,eval=printInfoCorre}
+cor_vars  <- correlation_finder(cor_mat = corre_mat,
+                                threshold = input$cor_threshold,
+                                verbose = FALSE)
+print(cor_vars)
+```
+
+
+```{r results="asis",echo=FALSE,eval=printInfoCorre}
+cat("### Correlogram")
+```
+
+
+```{r echo=TRUE,eval=TRUE}
+col1 <- colorRampPalette(
+      c("#7F0000","red","#FF7F00","yellow","white",
+        "cyan", "#007FFF", "blue","#00007F"))
+```
+
+
+```{r corplot1, results="asis",echo=printInfoCorre,eval=printInfoCorre,cache=T,dev="png"}
+corrplot(corre_mat,
+         method="ellipse",
+         col=col1(200),order = "AOE")
 ```
 
 
@@ -190,61 +259,5 @@ cat("### K-means clustering (Geographic space)")
 
 ```{r ,eval=printKmeansPlot,echo=printKmeansPlot}
 leaflet_cluster_map()
-```
-
-
-
-```{r results="asis",echo=FALSE,eval=TRUE}
-correlations <- corr_table()
-if(!is.null(correlations)){
-  printInfoCorre <- 1 
-} else printInfoCorre <- 0
-```
-
-```{r results="asis",echo=FALSE,eval=printInfoCorre}
-cat("## Niche correlations")
-```
-
-```{r results="asis",echo=FALSE,eval=printInfoCorre}
-cat("### Correlation finder")
-```
-
-```{r results="asis",echo=FALSE,eval=printInfoCorre}
-cat("Strong correlations according to a correlation threshold of", input$cor_threshold)
-```
-
-
-```{r, echo=printInfoCorre,eval=printInfoCorre}
-corr_finder <- summs_corr_var()$cor_vars
-print(corr_finder)
-```
-
-
-
-
-```{r results="asis",echo=FALSE,eval=printInfoCorre}
-cat("### Correlation table")
-```
-
-```{r results="asis",echo=printInfoCorre,eval=FALSE}
-corre_mat <- corr_table()
-```
-
-```{r results="asis",echo=FALSE,eval=printInfoCorre}
-if(!is.null(corr_table())){
-  corre_mat <- round(corr_table(),3)
-  print(kable(corre_mat))
-}
-
-```
-
-```{r results="asis",echo=FALSE,eval=printInfoCorre}
-cat("### Correlogram")
-```
-
-
-
-```{r corplot1, results="asis",echo=printInfoCorre,eval=printInfoCorre,cache=T,dev="png"}
-corr_plot()
 ```
 

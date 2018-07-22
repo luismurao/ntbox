@@ -1,5 +1,3 @@
-source("load_install_pkgs.R")
-
 DynamicMap <- div(class="outer",
 
                       tags$head(

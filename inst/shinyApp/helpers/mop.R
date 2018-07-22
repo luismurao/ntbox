@@ -1,7 +1,7 @@
 mop <- function(m_stack,g_stack,percentil_prop=0.10,
                 compute_each=1000){
-  mPoints <- rasterToPoints(m_stack)
-  gPoints <- rasterToPoints(g_stack)
+  mPoints <- raster::rasterToPoints(m_stack)
+  gPoints <- raster::rasterToPoints(g_stack)
   m1 <- mPoints[, -(1:2)]
   m2 <- gPoints[,- (1:2)]
 
@@ -15,7 +15,7 @@ mop <- function(m_stack,g_stack,percentil_prop=0.10,
 
   mop1 <- lapply( 1:(length(kkk)-1), function(x){
     seq_rdist <- kkk[x]:(kkk[x+1]-1)
-    eudist <- rdist(m2[seq_rdist,],m1)
+    eudist <- fields::rdist(m2[seq_rdist,],m1)
     mean_quantile <- parallel::mclapply(1:dim(eudist)[1],function(y){
       di <- eudist[y,]
       qdi <- quantile(di,probs=percentil_prop,na.rm=T)
@@ -32,7 +32,7 @@ mop <- function(m_stack,g_stack,percentil_prop=0.10,
   MOP_ALL[out_index,3] <- mop_max*1.15
   coordinates(MOP_ALL) <- ~x+y
   gridded(MOP_ALL) <- TRUE
-  mop_raster <- raster(MOP_ALL)
+  mop_raster <- raster::raster(MOP_ALL)
 
   #colramp <- colorRampPalette(c("#2cd81c","#385caa",
   #                              "#1825df","black"))(226)

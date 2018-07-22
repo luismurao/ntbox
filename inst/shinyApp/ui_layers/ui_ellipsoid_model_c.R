@@ -1,5 +1,3 @@
-
-source("load_install_pkgs.R")
 ellipsoid_models_c <- sidebarLayout(position = "left",
                             sidebarPanel(
                               titlePanel("NicheToolBox"),

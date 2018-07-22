@@ -29,8 +29,8 @@ observe({
 define_M_raster <- reactive({
 
   if(!is.null(myPolygon()) && !is.null(rasterLayers())){
-    M_raster <- crop(rasterLayers(),myPolygon())
-    M_raster <- mask(M_raster,myPolygon())
+    M_raster <- raster::crop(rasterLayers(),myPolygon())
+    M_raster <- raster::mask(M_raster,myPolygon())
     return(M_raster)
   }
   else
@@ -53,45 +53,37 @@ data_to_extract <- reactive({
     return(NULL)
 })
 
-occ_extract_from_mask <- reactive({
-  input$run_extract
-  isolate({
-    if(input$run_extract){
-      if(!is.null(define_M_raster()) && !is.null(data_to_extract())){
-        data_env <- data.frame(extract(define_M_raster(),
-                                   data_to_extract(),na.rm=FALSE))
-        xy_data_index <- which(!is.na(data_env[,1]))
-        xy_data <- data_to_extract()[xy_data_index,]
-        data_env_xy  <- data.frame(data_env, data_to_extract())
-        data_env_xy <- na.omit(data_env_xy)
-        data_env <- na.omit(data_env)
-        return(list(data=data_env,xy_data=xy_data,xy_data_index=xy_data_index,data_env_xy=data_env_xy))
-      }
-      else
-        return(NULL)
-    }
-  })
-  return(NULL)
+
+occ_extract_from_mask <- eventReactive(input$run_extract,{
+  if(!is.null(define_M_raster()) && !is.null(data_to_extract())){
+
+    data_env <- data.frame(raster::extract(define_M_raster(),
+                                           data_to_extract()))
+
+    xy_data_index <- which(!is.na(data_env[,1]))
+    xy_data <- data_to_extract()[xy_data_index,]
+    data_env_xy  <- data.frame(data_env, data_to_extract())
+    data_env_xy <- na.omit(data_env_xy)
+    data_env <- na.omit(data_env)
+    return(list(data=data_env,xy_data=xy_data,xy_data_index=xy_data_index,data_env_xy=data_env_xy))
+  }
+  else
+    return(NULL)
 })
 
-occ_extract <- reactive({
-  input$run_extract
-  isolate({
-    if(input$run_extract){
-      if(!is.null(data_to_extract()) && !is.null(rasterLayers())){
-        #data <- data.frame(extract(rasterLayers(),
-        #                           data_to_extract(),na.rm=FALSE),
-        #                   data_to_extract())
-        data <- data.frame(extract(rasterLayers(),
-                                   data_to_extract()))
-        #data <- na.omit(data)
-        return(data)
-      }
-      else
-        return(NULL)
+
+occ_extract <- eventReactive(input$run_extract,{
+  if(!is.null(data_to_extract()) && !is.null(rasterLayers())){
+    if(input$datasetM == "updata"){
+      data <- data.frame(raster::extract(rasterLayers(),
+                                 data_to_extract()))
+      return(data)
     }
-  })
-  return(NULL)
+    return(NULL)
+  }
+  else
+    return(NULL)
+
 })
 
 
@@ -109,7 +101,6 @@ data_extraction <- reactive({
 
 
 output$dataM <- renderDataTable({
-
   if(is.null(rasterLayers())) {
     message <- "Load niche layers in AppSettings section"
     data_niche <- data.frame(No_Data = message)

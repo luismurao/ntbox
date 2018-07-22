@@ -19,61 +19,47 @@
 
 confu_mat_optim <- function(sdm_raster,valData,longitude,latitude,pres_aus,optim_by="kappa",th_range=c(0,1),step=0.005){
 
-  if(is.data.frame(valData) || is.matrix(valData)){
+  if (is.data.frame(valData) || is.matrix(valData)) {
     valData <- data.frame(valData)
   }
-  else
-    stop("valData must be of class data.frame or matrix")
-  if(class(sdm_raster) == "raster")
+  else stop("valData must be of class data.frame or matrix")
+  if (class(sdm_raster) == "raster")
     stop("sdm_raster must be of class raster")
-
-  values <- raster::extract(sdm_raster,
-                            valData[,c(longitude,
-                                       latitude)])
-
-  obs <- valData[,pres_aus]
+  values <- raster::extract(sdm_raster, valData[, c(longitude,
+                                                    latitude)])
+  obs <- valData[, pres_aus]
   na <- which(is.na(values))
-
-  if(length(na)>0L){
+  if (length(na) > 0L) {
     values <- values[-na]
     obs <- valData[-na]
-
   }
-
-
-  th_range <- seq(from = th_range[1],to = th_range[2],by=step)
+  th_range <- seq(from = th_range[1], to = th_range[2], by = step)
   df_list <- list(numeric(length(th_range)))
-
-
-  for(k in 1:length(th_range)){
-
-    #reclass <- sapply(values, function(x){
-    #if(x >= th_range[k]) return(1)
-    #else return(0)
-    #})
-
-    reclass <-  (values >= th_range[k])*1
-    comb <- sapply(1:length(reclass), function(x){
-      paste0(reclass[x],pres_aus[x])
+  for (k in 1:length(th_range)) {
+    reclass <- (values >= th_range[k]) * 1
+    comb <- sapply(1:length(reclass), function(x) {
+      paste0(reclass[x], obs[x])
     })
-
     nobs <- length(comb)
     a1 <- numeric(nobs)
     b1 <- numeric(nobs)
     c1 <- numeric(nobs)
     d1 <- numeric(nobs)
-
-    for(i in 1:nobs){
-      if(comb[i] == "11") a1[i] <- 1
-      if(comb[i] == "10") b1[i] <- 1
-      if(comb[i] == "01") c1[i] <- 1
-      if(comb[i] == "00") d1[i] <- 1
+    for (i in 1:nobs) {
+      if (comb[i] == "11")
+        a1[i] <- 1
+      if (comb[i] == "10")
+        b1[i] <- 1
+      if (comb[i] == "01")
+        c1[i] <- 1
+      if (comb[i] == "00")
+        d1[i] <- 1
     }
-
     a <- sum(a1)
     b <- sum(b1)
     c <- sum(c1)
     d <- sum(d1)
+
     kappa1 <- kappa(a = a,b = b,c = c,d = d)
     tss1 <- tss(a = a,b = b,c = c,d = d)
     correct_class_rate1 <- correct_class_rate(a = a,b = b,c = c,d = d)

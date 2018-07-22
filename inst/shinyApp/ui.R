@@ -1,6 +1,5 @@
 ui_files <- list.files(path = "ui_layers",pattern = "*.R$",full.names = TRUE)
 load_ui <- sapply(ui_files,source)
-source("load_install_pkgs.R")
 shinyUI(
   navbarPage(theme = shinytheme("cerulean"),
              HTML('<div title="Saves state to workflow directory">

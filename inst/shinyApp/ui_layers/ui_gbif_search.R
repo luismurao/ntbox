@@ -1,5 +1,4 @@
 datasetGBIF <- list('Search for a species'=c(1))
-source("load_install_pkgs.R")
 # GUI for searching GBIF data
 gbif_data <- sidebarLayout(position = "left",
                            sidebarPanel(

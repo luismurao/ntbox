@@ -27,7 +27,7 @@ niche_plot <- function(data,x,y,z,gtype,ajus,ellip,prop){
 
     }
     else if(gtype=="disp"){
-      plot3d(data,col=rainbow(1000),cex = 3)
+      rgl::plot3d(data,col=rainbow(1000),cex = 3)
 
     }
   }

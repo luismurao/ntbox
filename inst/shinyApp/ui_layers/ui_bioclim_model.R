@@ -1,8 +1,6 @@
 # Bliclim to NicheToolBox Methods
 # ui interface
 
-
-source("load_install_pkgs.R")
 bioclim_ui <- sidebarLayout(position = "left",
                               sidebarPanel(
                                 titlePanel("NicheToolBox"),

@@ -1,5 +1,4 @@
-options(shiny.maxRequestSize=550*1024^2)
-source("load_install_pkgs.R")
+options(shiny.maxRequestSize=1550*1024^2)
 shinyServer(function(input,output,session){
   source("workflow_events/settings_workflow_obs.R",local = TRUE)
   })

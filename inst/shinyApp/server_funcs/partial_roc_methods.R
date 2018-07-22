@@ -164,3 +164,14 @@ output$pStats <- renderPrint({
   else
     return()
 })
+
+
+output$partRocT <- downloadHandler(
+  filename = function() return(paste0("pROC_results.csv")),
+  content = function(file) {
+    if(!is.null(partialRoc())){
+      ## Leyendo los datos de la especie e escriendolos en un .csv
+      write.csv(partialRoc(),file,row.names = FALSE)
+    }
+  }
+)

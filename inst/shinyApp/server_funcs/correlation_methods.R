@@ -6,7 +6,7 @@
 observe({
   cor_dataset <- NULL
   if(!is.null(occ_extract()))
-    cor_dataset <- c(cor_dataset, "All raster extent"="wWorld")
+    cor_dataset <- c(cor_dataset, "All raster extent"="mWorld")
   if(!is.null(occ_extract_from_mask()))
     cor_dataset <- c(cor_dataset,"Your polygon of M"="mLayers")
   updateSelectInput(session, inputId = "cor_data_from",choices = cor_dataset)
@@ -14,7 +14,7 @@ observe({
 
 corr_table <- reactive({
   if(!is.null(data_extraction())){
-    if(!is.null(occ_extract()) && input$cor_data_from == "wWorld"){
+    if(!is.null(occ_extract()) && input$cor_data_from == "mWorld"){
       niche_data <- occ_extract()
       cor_table <- cor(niche_data,
                        use = "pairwise.complete.obs")
@@ -36,7 +36,7 @@ corr_table <- reactive({
 })
 
 
-output$corr_table <- renderDataTable({
+output$corr_table1 <- renderDataTable({
   withProgress(message = 'Doing Computations', value = 0, {
     if(!is.null(corr_table())){
       niche_bivar_corr <- corr_table()
@@ -92,7 +92,7 @@ corr_plot <- reactive({
 })
 
 
-output$corr_plot <- renderPlot({
+output$corr_plot1 <- renderPlot({
   #datos <- data()
   withProgress(message = 'Doing computations', value = 0, {
     if(!is.null(corr_plot()))

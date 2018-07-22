@@ -335,6 +335,10 @@ observeEvent(input$saveState, {
       dir.create(wf_dir_path)
 
 
+  # Save data extraction
+
+  if(!is.null(niche_data())){
+
     #------------------------------------------------------------
     # NicheToolBox niche data report
     #------------------------------------------------------------
@@ -355,14 +359,6 @@ observeEvent(input$saveState, {
                                          highlight="haddock",
                                          toc = TRUE,theme = "readable"),
            output_file = niche_data_report_save)
-
-
-
-
-
-  # Save data extraction
-
-  if(!is.null(niche_data())){
 
     niche_data <- niche_data()
     ifelse(input$datasetM== "gbif_dat",data <- "GBIF_data", data <- "User_data")

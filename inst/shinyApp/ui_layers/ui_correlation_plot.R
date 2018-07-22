@@ -1,4 +1,3 @@
-source("load_install_pkgs.R")
 corre_plot_1 <- sidebarLayout(position = "left",
                             sidebarPanel(
                               titlePanel("NicheToolBox"),
@@ -10,6 +9,6 @@ corre_plot_1 <- sidebarLayout(position = "left",
                               downloadButton(outputId="download_cor_plot",label="Download plot")
                             ),
                             mainPanel(
-                              plotOutput("corr_plot", width = 800,
+                              plotOutput("corr_plot1", width = 800,
                                          height = 800)
                             ))

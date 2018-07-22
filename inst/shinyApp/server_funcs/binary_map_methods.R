@@ -152,10 +152,11 @@ binary_cm_method <- reactive({
     min_range <- min(input$thRange)
     max_range <- cellStats(model,max)
     threshold <-  resTh$threshold[1]
-    reclass_matrix <- matrix(c(min_range,threshold,
-                               0,threshold,max_range,1),
-                             ncol=3,byrow=TRUE)
-    rbin <- reclassify(model,rcl = reclass_matrix)
+    rbin <- model >= threshold
+    #reclass_matrix <- matrix(c(min_range,threshold,
+    #                           0,threshold,max_range,1),
+    #                         ncol=3,byrow=TRUE)
+    #rbin <- reclassify(model,rcl = reclass_matrix)
     return(rbin)
   }
   else

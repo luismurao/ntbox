@@ -9,8 +9,13 @@ run_ntbox <- function(){
   to_install <- system.file("shinyApp/load_install_pkgs.R",
                             package = "ntbox")
 
-  cat("Looking for additional nichetoolbox dependencies")
-  cat("\nNote that the first time can take few time\n")
+  cat("\n\n")
+  cat("|----------------------------------------------------------------|\n")
+  cat("|      **** Welcome to nichetoolbox version", paste0(packageVersion("ntbox")," ****         |\n"))
+  cat("|----------------------------------------------------------------|\n")
+  cat("|           Looking for additional nichetoolbox dependencies     |\n")
+  cat("|           Note that the first time can take few time           |\n")
+  cat("|----------------------------------------------------------------|\n\n\n")
 
   source(to_install)
 
