@@ -16,23 +16,25 @@
 #' @details The MOP is calculated following Owens et al.
 #' (2013; \url{https://doi.org/10.1016/j.ecolmodel.2013.04.011}). This function is a modification
 #' of the \code{\link[ENMGadgets]{MOP}} funcion, available at \url{https://github.com/narayanibarve/ENMGadgets}.The value of the comp_each parameter dependes on the RAM memory aviable for the process; the computation can be faster if the user choose a bigger value for this parameter but you have to becarefull on memory use.
+#' @importFrom future %<-%
 #' @export
 #'
 #' @examples
-#' m_stack <- stack(list.files(system.file("extdata",
-#'                             package = "ntbox"),
-#'                             pattern = ".M_layers.tif$",
-#'                             full.names = TRUE))
-#' g_stack <- stack(list.files(system.file("extdata",
-#'                             package = "ntbox"),
-#'                             pattern = ".G_layers.tif$",
-#'                             full.names = TRUE))
+#' m_stack <- raster::stack(list.files(system.file("extdata",
+#'                                     package = "ntbox"),
+#'                                     pattern = "M_layers.tif$",
+#'                                     full.names = TRUE))
+#' g_stack <- raster::stack(list.files(system.file("extdata",
+#'                                     package = "ntbox"),
+#'                                     pattern = "G_layers.tif$",
+#'                                     full.names = TRUE))
 #'
-#' mop <- mop(M_stack = m_stack,
-#'  G_stack = g_stack, percent = 10,
-#'  com_each=2000)
+#' mop_res <- mop(M_stack = m_stack,
+#'                G_stack = g_stack, percent = 10,
+#'                comp_each=2000)
+#' raster::plot(mop_res)
 
-mop <- function(M_stack, G_stack, percent = 10, comp_each = 2000, parallel = FALSE,normalized) {
+mop <- function(M_stack, G_stack, percent = 10, comp_each = 2000, parallel = FALSE,normalized=TRUE) {
   mPoints <- raster::rasterToPoints(M_stack)
   m_nona <- stats::na.omit(mPoints)
   m_naID <- attr(m_nona,"na.action")
@@ -75,9 +77,7 @@ mop <- function(M_stack, G_stack, percent = 10, comp_each = 2000, parallel = FAL
   }else {
 
 
-    if(.Platform$OS.type == "unix"){
-      future::plan(future::multiprocess)
-    }
+    future::plan(future::multiprocess)
     mop_env <- new.env()
 
     pasos <- 1:(length(kkk) - 1)
@@ -102,7 +102,13 @@ mop <- function(M_stack, G_stack, percent = 10, comp_each = 2000, parallel = FAL
       avance <- (x / long_k) * 100
       cat("Computation progress: ", avance,"%" ,"\n")
     }
+    ClusterRegistry1 <- NULL
+    # ClusterRegistry is taken from the future package, for details visit:
+    # https://github.com/HenrikBengtsson/future
 
+    source(system.file("shinyApp/helpers/ClusterRegistry1.R",package = "ntbox"))
+
+    ClusterRegistry1(action = "stop")
     mop_list <- as.list(mop_env)
     mop_names <- sort(as.numeric(names(mop_list)))
     mop_names <- as.character(mop_names)
@@ -137,7 +143,7 @@ mop <- function(M_stack, G_stack, percent = 10, comp_each = 2000, parallel = FAL
 #' Detection of environmental values ouside the calibration area of a model
 #'
 #' @description plot.out for calculating a mobility-oriented parity layer.
-#' This function is designed to be used specifically in the \code{\link{kuenm_mop}} function.
+#' This function is designed to be used specifically in the \code{\link{mop}} function.
 #'
 #' @param M1 a numeric matrix or raster object containing values of all environmental variables in the calibration area.
 #' @param G1 a numeric matrix or raster object containing values of all environmental variables in the full area of interest.
@@ -159,7 +165,7 @@ plot_out <- function (M1, G1) {
 
   for (i in 3:d1[2]) {
     MRange <- range(M1[, i])
-    l1 <- which(G1[, i] < range(M1[, i])[1] | G1[,4] > range(M1[, 4])[2])
+    l1 <- which(G1[, i] < range(M1[, i])[1] | G1[,i] > range(M1[, i])[2])
     AllVec <- c(l1, AllVec)
   }
 

@@ -23,7 +23,7 @@ searh_gbif_data <- function(genus,species,occlim=10000,writeFile=FALSE){
                               species, occlim,".csv"))
 
   if(file_name %in% list.files())
-    data_gbif <- read.csv(file_name,header=TRUE)
+    data_gbif <- utils::read.csv(file_name,header=TRUE)
 
   # Gbif search
   else{
@@ -43,7 +43,7 @@ searh_gbif_data <- function(genus,species,occlim=10000,writeFile=FALSE){
       data_gbif <- NULL
     }
     else if(writeFile){
-      write.csv(data_gbif,file_name,row.names = FALSE)
+      utils::write.csv(data_gbif,file_name,row.names = FALSE)
     }
   }
   return(data_gbif)

@@ -1,10 +1,11 @@
 #' Function to visualize GIBIF data using googleVis
 #' @description Visualize history of GBIF records
-#' @param data A data.frame with GBIF data
+#' @param gbif_data A data.frame with GBIF data
+#' @importFrom magrittr %>%
 #' @return Returns a list with googleVis motin chart and a data.frame
 #' @export
 
-occs_history <- function(data){
+occs_history_gbif <- function(gbif_data){
 
   # Data atributes
   name <- NULL
@@ -15,7 +16,7 @@ occs_history <- function(data){
   count <- NULL
   namesDB <- c("name","country","year","month","day")
 
-  data <- data[,namesDB]
+  data <- gbif_data[,namesDB]
   s <-data %>% dplyr::group_by(name,country,year) %>%
     dplyr::summarise(count = dplyr::n())
   dat_byY <- dplyr::group_by(dplyr::ungroup(s),name) %>%

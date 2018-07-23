@@ -22,4 +22,3 @@ Read raster layers that that have the same extent and resolution,
 #                   package = "nichetoolbox"),
 #                   pattern = ".asc$",full.names = TRUE))
 }
-

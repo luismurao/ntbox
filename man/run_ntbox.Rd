@@ -13,4 +13,3 @@ This function initiates NicheToolBox GUI
 # Run nichetoolbox package
 # run_nichetoobox()
 }
-

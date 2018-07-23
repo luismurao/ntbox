@@ -32,4 +32,3 @@ Searchs gbif data using the function \code{\link[spocc]{occ}} from the spocc pac
 #                                        writeFile=FALSE)
 # head(ambystoma_tigrinum[,1:5])
 }
-

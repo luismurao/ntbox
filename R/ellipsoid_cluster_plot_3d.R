@@ -44,7 +44,7 @@ ellipsoid_cluster_plot_3d <- function(niche_data,cluster_ids,x,y,z,ellips,alpha,
       dfn <- 3
       dfd <- length(x) - 1
       #ell.radius <- sqrt(dfn * qf(level, dfn, dfd))
-      ellips <- rgl::ellipse3d(cov(cbind(x,y,z)),
+      ellips <- rgl::ellipse3d(stats::cov(cbind(x,y,z)),
                                centre=c(mean(x), mean(y), mean(z)),
                                level = 0.99)
       rgl::shade3d(ellips, col=colores[i], alpha=alpha,lit=FALSE)

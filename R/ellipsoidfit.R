@@ -91,8 +91,8 @@ ellipsoidfit <- function(data,centroid,covar,level=0.95,
     labelmid2d <- trans3dfun(labelmid3d)
     labeltop2d <- trans3dfun(labeltop3d)
     labelang <- 180/pi*atan2(labeltop2d$y-labelbot2d$y,labeltop2d$x-labelbot2d$x)
-    par(xpd=NA,srt=labelang)  ## disable clipping and set string rotation
-    text(labelmid2d[1]$x,labelmid2d$y,zlab1,cex=1.5)
+    graphics::par(xpd=NA,srt=labelang)  ## disable clipping and set string rotation
+    graphics::text(labelmid2d[1]$x,labelmid2d$y,zlab1,cex=1.5)
 
 
   }
