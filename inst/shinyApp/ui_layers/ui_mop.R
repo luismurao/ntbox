@@ -30,8 +30,16 @@ ui_mop <- sidebarLayout(position = 'left',
                                wellPanel(
                                  numericInput(inputId = "ref_percent",
                                               label = "Percent of points sampled from te reference region (G)",
-                                              value = 10,min = 1,max = 100,step = 0.1),
-                                 checkboxInput("normalized_mop",label = "Normalized",value = TRUE),
+                                              value = 10,min = 1,max = 100,step = 1),
+                                 checkboxInput("normalized_mop",label = "Normalized",
+                                               value = TRUE),
+                                 checkboxInput("parallel_comp",label = "Parallel computation",
+                                               value=TRUE),
+                                 #conditionalPanel("input.parallel_comp==true",
+                                                  numericInput(inputId = "comp_each",
+                                                               label = "Compute each",
+                                                               value = 2000,min=100,max=10000),
+                                 #                 ),
                                  bsButton("run_mop","Run MOP")
 
                                ),

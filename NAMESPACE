@@ -10,6 +10,8 @@ export(occs_history)
 export(rlayers_ntb)
 export(run_ntbox)
 export(searh_gbif_data)
+export(mop)
+export(plot_out)
 importFrom("rglwidget","rglwidgetOutput")
 importFrom("rglwidget","rglwidget")
 

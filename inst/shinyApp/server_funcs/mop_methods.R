@@ -107,14 +107,22 @@ mop_comp <- eventReactive(input$run_mop,{
   g_layers <- G_ras_Layers()[[input$glayers_select]]
   mop_names <- all(names(m_layers)==names(g_layers))
 
-  per_prop <- as.numeric(as.character(input$ref_percent))/100
+  percent <- as.numeric(as.character(input$ref_percent))
+  comp_each <- as.numeric(as.character(input$comp_each))
   if(mop_names){
 
-    mop_anlysis <- mop(m_stack =  m_layers,
-                       g_stack = g_layers,
-                       percentil_prop= per_prop
-                       )
-    return(mop_anlysis)
+    mop_anlysis <- ntbox::mop(M_stack =  m_layers,
+                              G_stack = g_layers,
+                              percent= percent,
+                              comp_each = comp_each,
+                              parallel = input$parallel_comp,
+                              normalized=FALSE)
+    mop_max <- cellStats(mop_anlysis,max)*1.05
+    mop_norm <- 1 - (mop_anlysis/mop_max)
+
+
+
+    return(list(mop_anlysis,mop_norm ))
 
   }
   else
@@ -126,7 +134,7 @@ mop_comp <- eventReactive(input$run_mop,{
 
 output$show_m_g_layers <- renderPlot({
 
-  if(!is.null(M_ras_Layers()) & is.null(G_ras_Layers())){
+  if(!is.null(M_ras_Layers())){
     plot(M_ras_Layers()[[1]])
   }
   if(!is.null(M_ras_Layers()) & !is.null(G_ras_Layers())){

@@ -9,13 +9,14 @@
 #' cores of the computer. This will demand more RAM and almost full use of the CPU; hence, its use
 #' is more recommended in high-performance computers. Using this option will speed up the analyses.
 #' Default = FALSE
-#'
+#' @param normalized (logical) if TRUE mop output will be normalized to 1.
 #' @return A mobility-oriented parity RasterLayer where values of 0 represent strict extrapolation,
 #' which means complete dissimilarity of environments between the calibration (M) and projection area (G).
 #'
 #' @details The MOP is calculated following Owens et al.
 #' (2013; \url{https://doi.org/10.1016/j.ecolmodel.2013.04.011}). This function is a modification
 #' of the \code{\link[ENMGadgets]{MOP}} funcion, available at \url{https://github.com/narayanibarve/ENMGadgets}.The value of the comp_each parameter dependes on the RAM memory aviable for the process; the computation can be faster if the user choose a bigger value for this parameter but you have to becarefull on memory use.
+#' @export
 #'
 #' @examples
 #' m_stack <- stack(list.files(system.file("extdata",
@@ -31,7 +32,7 @@
 #'  G_stack = g_stack, percent = 10,
 #'  com_each=2000)
 
-mop <- function(M_stack, G_stack, percent = 10, comp_each = 2000, parallel = FALSE) {
+mop <- function(M_stack, G_stack, percent = 10, comp_each = 2000, parallel = FALSE,normalized) {
   mPoints <- raster::rasterToPoints(M_stack)
   m_nona <- stats::na.omit(mPoints)
   m_naID <- attr(m_nona,"na.action")
@@ -123,8 +124,8 @@ mop <- function(M_stack, G_stack, percent = 10, comp_each = 2000, parallel = FAL
     sp::coordinates(mop_all) <- ~ x + y
     sp::gridded(mop_all) <- TRUE
     mop_raster <- raster::raster(mop_all)
-
-    mop_raster <- 1 - (mop_raster / mop_max)
+    if(normalized)
+      mop_raster <- 1 - (mop_raster / mop_max)
   })
 
 
@@ -140,7 +141,7 @@ mop <- function(M_stack, G_stack, percent = 10, comp_each = 2000, parallel = FAL
 #'
 #' @param M1 a numeric matrix or raster object containing values of all environmental variables in the calibration area.
 #' @param G1 a numeric matrix or raster object containing values of all environmental variables in the full area of interest.
-
+#' @export
 
 plot_out <- function (M1, G1) {
   if(class(M1) == "RasterBrick" | class(M1) == "RasterStack" |class(M1) == "raster"){
