@@ -1,4 +1,4 @@
-#' The function is take from the future package, for details visit:
+#' The function is taken from the future package, for details visit:
 #' https://github.com/HenrikBengtsson/future
 ClusterRegistry1 <- local({
   last <- NULL
@@ -27,7 +27,7 @@ ClusterRegistry1 <- local({
     } else if (action == "start") {
       ## Already setup?
       if (!identical(workers, last)) {
-        ClusterRegistry(action = "stop")
+        ClusterRegistry1(action = "stop")
         cluster <<- .makeCluster(workers, ...)
         last <<- workers
       }
@@ -44,7 +44,7 @@ ClusterRegistry1 <- local({
 
 .makeCluster <- function(workers, ...) {
   if (length(workers) == 0L) return(NULL)
-  makeClusterPSOCK(workers, ...)
+  future::makeClusterPSOCK(workers, ...)
 } ## .makeCluster()
 
 
