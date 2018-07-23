@@ -2,7 +2,7 @@
 % Please edit documentation in R/cov_center.R
 \name{cov_center}
 \alias{cov_center}
-\title{Function to compute the shape (covarince) and center of an ellipsoid model}
+\title{Function to compute the Minimum Volume covariance Matrix of an ellipsoid niche model.}
 \usage{
 cov_center(data, mve = TRUE, level, vars = NULL)
 }
@@ -16,35 +16,14 @@ the function \code{\link[MASS]{cov.mve}} of the \pkg{MASS} package. If False the
 \item{level}{A numerical value specifying the proportion of the data to be
 used to compute the ellipsoid.}
 
-\item{vars}{A numeric vector specifying the columns indexes of the variables of the input data
-which will be used to fit the ellipsoid model. If NULL the user will be asked to enter the indexes
+\item{vars}{A numeric or a string vector specifying the columns indexes/names of the variables of the input data which will be used to fit the ellipsoid model. If NULL the user will be asked to enter the indexes.
 interactively}
 }
 \value{
 Returns a list containing the centroid of the ellipsoid, the covariance matrix based on
-the input data and the input data.
+the input data, ellipsoid volume, semi-axis length and axis coordinates.
 }
 \description{
-Function to compute covariance and the center of an
-ellipsoid model using the values of the niche variables of the ocurrences points
+Function to compute the covariance matrix, the niche centroid and volume of an
+ellipsoid model. It uses the values of the niche variables of the ocurrences points.
 }
-\examples{
-## Load niche data
-# d_cardon <-  read.csv(system.file("extdata", "cardon_virtual.csv", package = "nichetoolbox"))
-## Look the data
-# head(d_cardon)
-## Compute the centroid and shape (covariance matrix) of the ellipsoid model.
-## The user will be asked to enter the variables indexes
-#covar_centroid <- cov_center(d_cardon,mve=TRUE,level=0.99,vars=NULL)
-## Alternatively you can specify the columns indexes of the variables
-# covar_centroid <- cov_center(d_cardon,mve=TRUE,level=0.99,vars=c(3,4,5))
-
-#+++++++++++++++++++++++++++++ Check the output +++++++++++++++++++++++++++++#
-## ellipsoid center
-# covar_centroid$centroid
-## ellipsoid shape
-# covar_centroid$covariance
-## Data input
-# head(covar_centroid$data)
-}
-

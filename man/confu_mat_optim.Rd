@@ -36,4 +36,3 @@ omission error (omission_error).
 The function finds out which is the best cut-off threshold that
 optimizes the confusion matrix based on Kappa or TSS
 }
-

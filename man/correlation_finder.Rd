@@ -33,4 +33,3 @@ and removes the variables that are redundant.
 # cor_mat <- data.frame(as.matrix(mat_cor))
 # correlation_finder(cor_mat = cor_mat ,threshold = 0.7,verbose = TRUE)
 }
-

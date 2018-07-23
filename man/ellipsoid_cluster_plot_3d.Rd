@@ -36,4 +36,3 @@ Returns a data.frame with coordinate data from species
 \description{
 3D plot of clusters
 }
-
