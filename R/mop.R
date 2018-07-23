@@ -106,7 +106,8 @@ mop <- function(M_stack, G_stack, percent = 10, comp_each = 2000, parallel = FAL
     # ClusterRegistry is taken from the future package, for details visit:
     # https://github.com/HenrikBengtsson/future
 
-    source(system.file("shinyApp/helpers/ClusterRegistry1.R",package = "ntbox"))
+    source(system.file("shinyApp/helpers/ClusterRegistry1.R",
+                       package = "ntbox"),local = TRUE)
 
     ClusterRegistry1(action = "stop")
     mop_list <- as.list(mop_env)

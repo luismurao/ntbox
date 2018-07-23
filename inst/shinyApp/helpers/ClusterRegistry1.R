@@ -32,7 +32,7 @@ ClusterRegistry1 <- local({
         last <<- workers
       }
     } else if (action == "stop") {
-      if (length(cluster) > 0L) try(stopCluster(cluster), silent = TRUE)
+      if (length(cluster) > 0L) try(parallel::stopCluster(cluster), silent = TRUE)
       cluster <<- NULL
       last <<- NULL
     }
