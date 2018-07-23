@@ -47,7 +47,7 @@ cov_center <- function (data, mve = TRUE, level, vars = NULL)
       return(n)
     }
     n <- NDquntil(dim(data)[1], level)
-    cent_var <- MASS::cov.mve(data, quantile.used = n)
+    cent_var <- MASS::cov.rob(data, quantile.used = n,method = "mve")
     centroid <- cent_var$center
     vari <- cent_var$cov
   }
