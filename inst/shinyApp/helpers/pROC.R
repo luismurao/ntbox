@@ -41,7 +41,7 @@ PartialROC <- function(PresenceFile=NA, PredictionFile=NA, OmissionVal=NA, Rando
 
   ## Use option cl.cores to choose an appropriate cluster size.
 
-  lapply(X = 1:NoOfIteration,FUN =  function(x){
+  parallel::mclapply(X = 1:NoOfIteration,FUN =  function(x){
     ll = sample(nrow(OccurTbl), round(RandomPercent/100 * nrow(OccurTbl)), replace=TRUE)
     OccurTbl1 = OccurTbl[ll,]
     ## Generate the % points within each class in this table. Write SQL, using sqldf package
