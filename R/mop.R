@@ -75,8 +75,7 @@ mop <- function(M_stack, G_stack, percent = 10, comp_each = 2000, parallel = FAL
     mop_vals <- unlist(mop1)
 
   }else {
-
-
+    suppressPackageStartupMessages(library("future"))
     future::plan(future::multiprocess)
     mop_env <- new.env()
 
@@ -102,14 +101,10 @@ mop <- function(M_stack, G_stack, percent = 10, comp_each = 2000, parallel = FAL
       avance <- (x / long_k) * 100
       cat("Computation progress: ", avance,"%" ,"\n")
     }
-    ClusterRegistry1 <- NULL
-    # ClusterRegistry is taken from the future package, for details visit:
-    # https://github.com/HenrikBengtsson/future
+    future::plan(future::sequential)
 
-    source(system.file("shinyApp/helpers/ClusterRegistry1.R",
-                       package = "ntbox"),local = TRUE)
 
-    ClusterRegistry1(action = "stop")
+
     mop_list <- as.list(mop_env)
     mop_names <- sort(as.numeric(names(mop_list)))
     mop_names <- as.character(mop_names)
@@ -134,7 +129,6 @@ mop <- function(M_stack, G_stack, percent = 10, comp_each = 2000, parallel = FAL
     if(normalized)
       mop_raster <- 1 - (mop_raster / mop_max)
   })
-
 
 
   return(mop_raster)
