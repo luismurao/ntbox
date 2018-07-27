@@ -15,7 +15,7 @@ Description: NicheToolbox is an R package with a friendly Graphical User
     Interface (GUI) developed using shiny framework that aims to facilitate the
     process of building niche models and estimate the species distributions.
 Depends:
- R (>= 3.4.0)
+ R (>= 3.3.0)
 Imports:
     shiny (>= 1.1.0),
     rgeos (>= 0.3-28),
@@ -56,6 +56,7 @@ Imports:
     ade4 (>= 1.7-11),
     V8 (>= 1.5),
     future (>= 1.7.0),
+    future.apply (>= 1.0.0),
     spocc (>= 0.7.0)
 URL: https://luismurao.github.io/
 BugReports: https://github.com/luismurao/ntbox/issues
