@@ -17,6 +17,7 @@
 #' (2013; \url{https://doi.org/10.1016/j.ecolmodel.2013.04.011}). This function is a modification
 #' of the \code{\link[ENMGadgets]{MOP}} funcion, available at \url{https://github.com/narayanibarve/ENMGadgets}.The value of the comp_each parameter dependes on the RAM memory aviable for the process; the computation can be faster if the user choose a bigger value for this parameter but you have to becarefull on memory use.
 #' @importFrom future %<-%
+#' @import future
 #' @export
 #'
 #' @examples
@@ -75,7 +76,7 @@ mop <- function(M_stack, G_stack, percent = 10, comp_each = 2000, parallel = FAL
     mop_vals <- unlist(mop1)
 
   }else {
-    suppressPackageStartupMessages(library("future"))
+    #suppressPackageStartupMessages(library("future"))
     future::plan(future::multiprocess)
     mop_env <- new.env()
 
