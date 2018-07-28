@@ -5,23 +5,17 @@
 #' @return Returns a list with googleVis motin chart and a data.frame
 #' @export
 
-occs_history_gbif <- function(gbif_data){
+occs_history <- function(gbif_data){
 
-  # Data atributes
-  name <- NULL
-  country <- NULL
-  year <- NULL
-  month <- NULL
-  day <- NULL
-  count <- NULL
+
   namesDB <- c("name","country","year","month","day")
 
   data <- gbif_data[,namesDB]
-  s <-data %>% dplyr::group_by(name,country,year) %>%
+  s <-data %>% dplyr::group_by_(~name,~country,~year) %>%
     dplyr::summarise(count = dplyr::n())
-  dat_byY <- dplyr::group_by(dplyr::ungroup(s),name) %>%
-    dplyr::mutate(prop = count/sum(count))
-  dat_byY <- dat_byY %>% dplyr::mutate(year1=year)
+  dat_byY <- dplyr::group_by_(dplyr::ungroup(s),~name) %>%
+    dplyr::mutate_(prop = ~count/sum(count))
+  dat_byY <- dat_byY %>% dplyr::mutate_(year1=~year)
   dat_byY <-  dplyr::ungroup(dat_byY)
 
 
