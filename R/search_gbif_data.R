@@ -27,9 +27,13 @@ searh_gbif_data <- function(genus,species,occlim=10000,writeFile=FALSE){
 
   # Gbif search
   else{
+
+    genus <- stringi::stri_trans_general(genus,
+                                         id = "Title")
+
     df_list <- spocc::occ(query = paste(genus,species),
-                          from = 'gbif',limit = occlim,
-                          gbifopts = list(hasCoordinate = TRUE))
+                          from = 'gbif',limit = occlim)
+
     # GBIF data
     data_gbif <- data.frame(df_list$gbif$data[[1]])
     # Remove NA data from longitude
@@ -37,6 +41,15 @@ searh_gbif_data <- function(genus,species,occlim=10000,writeFile=FALSE){
     # Remove NA data from latitude
     data_gbif <- data_gbif[!is.na(data_gbif$latitude),]
 
+    data_gbif_1 <- lapply(names(data_gbif), function(x) {
+      n_rows <- dim(data_gbif)[1]
+      v_val <- unlist(data_gbif[,x])
+      if(length(v_val) != n_rows)
+        v_val <- rep(NA,n_rows)
+      return(v_val)
+    })
+    names(data_gbif_1) <- names(data_gbif)
+    data_gbif <- as.data.frame(data_gbif_1)
     #  Send a warning menssage if the species is not in GBIF
 
     if(length(data_gbif)==0L){

@@ -11,10 +11,10 @@
 # https://github.com/narayanibarve/ENMGadgets
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-PartialROC <- function(PresenceFile=NA, PredictionFile=NA, OmissionVal=NA, RandomPercent=NA, NoOfIteration=NA)
+PartialROC_1 <- function(PresenceFile=NA, PredictionFile=NA, OmissionVal=NA, RandomPercent=NA, NoOfIteration=NA)
 {
 
-  InRast = raster::raster(PredictionFile)
+  InRast = PredictionFile
   ## Currently fixing the number of classes to 100. But later flexibility should be given in the parameter.
   InRast = round((InRast/raster::cellStats(InRast,max))*1000)
 
@@ -68,7 +68,7 @@ PartialROC <- function(PresenceFile=NA, PredictionFile=NA, OmissionVal=NA, Rando
 AreaPredictedPresence <- function(InRast)
 {
   ### Now calculate proportionate area predicted under each suitability
-  ClassPixels = freq(InRast)
+  ClassPixels = raster::freq(InRast)
   ### Remove the NA pixels from the table.
   if (is.na(ClassPixels[dim(ClassPixels)[1],1])== TRUE)
   {

@@ -6,8 +6,11 @@
 dat_raster <- reactive({
   if (is.null(input$sdm_mod))
     return(NULL)
-  else if(identical(input$format2,'.asc'))
-    return(input$sdm_mod$datapath)
+  else if(identical(input$format2,'.asc')){
+    r1 <- raster::raster(input$sdm_mod$datapath)
+    return(r1)
+  }
+
 })
 # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 # Uploaded validation data
@@ -27,13 +30,19 @@ dat_presence <- reactive({
 partialRoc <- reactive({
   sims <- as.numeric(input$iter)
   error <-as.numeric(input$omission)
+  randper <- as.numeric(input$randper)
+
   if(!is.null(dat_presence()) && !is.null(dat_raster())){
-    pRoc <- PartialROC(PresenceFile = dat_presence(),
-                       PredictionFile = dat_raster(),
-                       OmissionVal = error,RandomPercent = input$randper,
-                       NoOfIteration = sims)
+    pRoc <- PartialROC_1(PresenceFile = dat_presence(),
+                         PredictionFile = dat_raster(),
+                         OmissionVal = error,
+                         RandomPercent = randper,
+                         NoOfIteration = sims)
+
+
     pRoc <- data.frame(t(sapply(pRoc,c)))
     pRoc[,1] <- 1:dim(pRoc)[1]
+
     return(pRoc)
   }
   return()
