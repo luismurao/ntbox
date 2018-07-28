@@ -218,6 +218,7 @@ observeEvent(input$saveState, {
     render(input = report_path,
            output_format = html_document(pandoc_args = c("+RTS", "-K64m","-RTS"),
                                          highlight="haddock",
+                                         self_contained = FALSE,
                                          toc = TRUE,theme = "readable"),
            output_file = report_save)
 
@@ -229,13 +230,17 @@ observeEvent(input$saveState, {
                                          toc = TRUE,theme = "readable"),
            output_file = mchart_save)
 
+
     # Save raw GBIF data (from GBIF data search)
     if(!is.null(data_gbif_search())){
+
+
+
       gbif_file_raw <- paste0(data_dir_path,"/",
                               input$genus,"_",
-                              input$species,"GBIF_raw_data",".csv")
-      write.csv(data_gbif_search(),gbif_file_raw,row.names = FALSE)
+                              input$species,"_GBIF_raw_data",".csv")
 
+      write.csv(data_gbif_search(),file = gbif_file_raw,row.names = FALSE)
 
     }
     # Save cleaned GBIF data (from GBIF data search)
@@ -244,7 +249,7 @@ observeEvent(input$saveState, {
                                 input$genus,"_",
                                 input$species,
                                 "GBIF_cleaned_data",".csv")
-      write.csv(data_gbif(),gbif_file_clean,row.names = FALSE)
+      write.csv(data_gbif(),file = gbif_file_clean,row.names = FALSE)
     }
 
     # Save GBIF data from dynamic map (no polygon)
@@ -253,7 +258,7 @@ observeEvent(input$saveState, {
                                         input$genus,"_",
                                         input$species,
                                         "GBIF_clean_dynamic_data",".csv")
-      write.csv(dataDynamic(),gbif_file_clean_dynamic,row.names = FALSE)
+      write.csv(dataDynamic(),file = gbif_file_clean_dynamic,row.names = FALSE)
     }
     # Save GBIF data from dynamic map (in polygon)
     if(!is.null(data_poly()) && input$dataset_dynMap == "gbif_dataset"){
@@ -262,7 +267,7 @@ observeEvent(input$saveState, {
                                              input$species,
                                              "GBIF_clean_Polygon_dynamic_data",
                                              ".csv")
-      write.csv(data_poly(),gbif_file_clean_dynamic_poly,row.names = FALSE)
+      write.csv(data_poly(),file = gbif_file_clean_dynamic_poly,row.names = FALSE)
     }
 
 
