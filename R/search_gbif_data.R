@@ -6,6 +6,7 @@
 #' @param writeFile Write gibif data into a csv
 #' @return Returns a data.frame with coordinate data from species
 #' @export
+#' @import stringi
 #' @examples
 #' # Species genus
 #' # genus <- "ambystoma"
