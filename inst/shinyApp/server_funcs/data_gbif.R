@@ -1,27 +1,28 @@
 # Global data frame for GBIF data search
-data_gbif_search <- reactive({
-  input$search_gbif_data
-  isolate({
-    if(input$search_gbif_data){
-      # Test if the API is working
-      test <- searh_gbif_data(genus = "Ambystoma",
-                              species = "tigrinum",
-                              occlim = 5,
-                              writeFile = FALSE)
-      if(is.null(test))
-        return(0)
+data_gbif_search <- eventReactive(input$search_gbif_data,{
 
-      data <- searh_gbif_data(genus = input$genus,
-                              species = input$species,
-                              occlim = input$occlim,
-                              writeFile = FALSE)
-      if(is.null(data))
-        return("No occurrences found")
-    }
-    else
-      data <- NULL
-    return(data)
-  })
+  # Test if the API is working
+  #test <- ntbox::searh_gbif_data(genus = "Ambystoma",
+  #                               species = "tigrinum",
+  #                               occlim = 5,
+  #                               writeFile = FALSE)
+
+
+  #if(is.null(test))
+  #  return(0)
+
+
+
+  data <- ntbox::searh_gbif_data(genus = input$genus,
+                                 species = input$species,
+                                 occlim = input$occlim,
+                                 writeFile = FALSE)
+
+
+  if(is.null(data))
+    return("No occurrences found")
+  return(data)
+
 })
 
 
@@ -198,7 +199,6 @@ selectYear <- reactive({
     datos <- d1[with(d1,order(date)),]
     datos <- datos[!is.na(datos$year),]
     years <- unique(datos$year)
-    print(years)
     return(years)
   }
   else
