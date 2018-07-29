@@ -53,6 +53,7 @@ if(osSystem == "Darwin"){
 
   workflowDir <- reactive({
     path <- shinyFiles::parseDirPath(volumes, input$wf_directory)
+    print(path)
     if(length(path)>0L)
       return(path)
     else
@@ -245,150 +246,152 @@ myPolygon <- reactive({
 
 observeEvent(input$saveState, {
 
+  if(length(workflowDir())>0L){
+    if(nchar(workflowDir()) > 0L){
 
-  if(nchar(workflowDir()) > 0L){
+      # Create a directory for OCC data.
+      data_dir_path <- paste0(workflowDir(),"NicheToolBox_OccData")
+      if(!dir.exists(data_dir_path))
+        dir.create(data_dir_path)
+      # Create a directory for workflow report
+      wf_dir_path <- paste0(workflowDir(),"NicheToolBox_workflowReport")
+      if(!dir.exists(wf_dir_path))
+        dir.create(wf_dir_path)
 
-    # Create a directory for OCC data.
-    data_dir_path <- paste0(workflowDir(),"NicheToolBox_OccData")
-    if(!dir.exists(data_dir_path))
-      dir.create(data_dir_path)
-    # Create a directory for workflow report
-    wf_dir_path <- paste0(workflowDir(),"NicheToolBox_workflowReport")
-    if(!dir.exists(wf_dir_path))
-      dir.create(wf_dir_path)
+      # Animated map of GBIF records
 
-    # Animated map of GBIF records
+      anifile <- paste0(tempdir(),"/",temGBIF())
+      anima_save <- paste0(wf_dir_path,"/",input$genus,"_",
+                           input$species,"_animation.gif")
 
-    anifile <- paste0(tempdir(),"/",temGBIF())
-    anima_save <- paste0(wf_dir_path,"/",input$genus,"_",
-                         input$species,"_animation.gif")
+      if(file.exists(anifile)) file.copy(anifile, anima_save)
 
-    if(file.exists(anifile)) file.copy(anifile, anima_save)
+      #------------------------------------------------------------
+      # NicheToolBox data report
+      #------------------------------------------------------------
 
-    #------------------------------------------------------------
-    # NicheToolBox data report
-    #------------------------------------------------------------
+      # Path to report source
 
-    # Path to report source
+      report_path <- system.file("shinyApp/ntb_report/data_report.Rmd",
+                                 package = "ntbox")
 
-    report_path <- system.file("shinyApp/ntb_report/data_report.Rmd",
-                                package = "ntbox")
+      mchart_path <- system.file("shinyApp/ntb_report/MotChartInstructions.Rmd",
+                                 package = "ntbox")
 
-    mchart_path <- system.file("shinyApp/ntb_report/MotChartInstructions.Rmd",
-                               package = "ntbox")
+      # save HTML path
 
-    # save HTML path
+      report_save <- paste0(wf_dir_path,"/","data_report.html")
+      # save MotionChart display instructions
+      mchart_save <- paste0(wf_dir_path,"/","DisplayMotionChartIns.html")
 
-    report_save <- paste0(wf_dir_path,"/","data_report.html")
-    # save MotionChart display instructions
-    mchart_save <- paste0(wf_dir_path,"/","DisplayMotionChartIns.html")
+      # Compile workflow report
 
-    # Compile workflow report
+      render(input = report_path,
+             output_format = html_document(pandoc_args = c("+RTS", "-K64m","-RTS"),
+                                           highlight="haddock",
+                                           self_contained = FALSE,
+                                           toc = TRUE,theme = "readable"),
+             output_file = report_save)
 
-    render(input = report_path,
-           output_format = html_document(pandoc_args = c("+RTS", "-K64m","-RTS"),
-                                         highlight="haddock",
-                                         self_contained = FALSE,
-                                         toc = TRUE,theme = "readable"),
-           output_file = report_save)
+      # Compile Motion Chart instructions
 
-    # Compile Motion Chart instructions
-
-    render(input = mchart_path,
-           output_format = html_document(pandoc_args = c("+RTS", "-K64m","-RTS"),
-                                         highlight="haddock",
-                                         toc = TRUE,theme = "readable"),
-           output_file = mchart_save)
-
-
-    # Save raw GBIF data (from GBIF data search)
-    if(!is.null(data_gbif_search())){
+      render(input = mchart_path,
+             output_format = html_document(pandoc_args = c("+RTS", "-K64m","-RTS"),
+                                           highlight="haddock",
+                                           toc = TRUE,theme = "readable"),
+             output_file = mchart_save)
 
 
+      # Save raw GBIF data (from GBIF data search)
+      if(!is.null(data_gbif_search())){
 
-      gbif_file_raw <- paste0(data_dir_path,"/",
-                              input$genus,"_",
-                              input$species,"_GBIF_raw_data",".csv")
 
-      write.csv(data_gbif_search(),file = gbif_file_raw,row.names = FALSE)
 
-    }
-    # Save cleaned GBIF data (from GBIF data search)
-    if(!is.null(data_gbif_search())){
-      gbif_file_clean <- paste0(data_dir_path,"/",
+        gbif_file_raw <- paste0(data_dir_path,"/",
                                 input$genus,"_",
-                                input$species,
-                                "GBIF_cleaned_data",".csv")
-      write.csv(data_gbif(),file = gbif_file_clean,row.names = FALSE)
+                                input$species,"_GBIF_raw_data",".csv")
+
+        write.csv(data_gbif_search(),file = gbif_file_raw,row.names = FALSE)
+
+      }
+      # Save cleaned GBIF data (from GBIF data search)
+      if(!is.null(data_gbif_search())){
+        gbif_file_clean <- paste0(data_dir_path,"/",
+                                  input$genus,"_",
+                                  input$species,
+                                  "GBIF_cleaned_data",".csv")
+        write.csv(data_gbif(),file = gbif_file_clean,row.names = FALSE)
+      }
+
+      # Save GBIF data from dynamic map (no polygon)
+      if(!is.null(dataDynamic()) && input$dataset_dynMap == "gbif_dataset"){
+        gbif_file_clean_dynamic <- paste0(data_dir_path,"/",
+                                          input$genus,"_",
+                                          input$species,
+                                          "GBIF_clean_dynamic_data",".csv")
+        write.csv(dataDynamic(),file = gbif_file_clean_dynamic,row.names = FALSE)
+      }
+      # Save GBIF data from dynamic map (in polygon)
+      if(!is.null(data_poly()) && input$dataset_dynMap == "gbif_dataset"){
+        gbif_file_clean_dynamic_poly <- paste0(data_dir_path,"/",
+                                               input$genus,"_",
+                                               input$species,
+                                               "GBIF_clean_Polygon_dynamic_data",
+                                               ".csv")
+        write.csv(data_poly(),file = gbif_file_clean_dynamic_poly,row.names = FALSE)
+      }
+
+
+
+
+      # Save raw user data (from user data)
+
+      if(!is.null(data_user())){
+        user_file_raw <- paste0(data_dir_path,"/",
+                                "user_raw_data",".csv")
+        write.csv(data_user(),user_file_raw,row.names = FALSE)
+      }
+
+      # Save cleaned user data (from user data)
+
+      if(!is.null(data_user_clean())){
+        user_file_clean <- paste0(data_dir_path,"/",
+                                  "user_cleaned_data",".csv")
+        write.csv(data_user_clean(),user_file_clean,row.names = FALSE)
+      }
+      # Save user data from dynamic map (no polygon)
+      if(!is.null(dataDynamic()) && input$dataset_dynMap == "user_dataset"){
+        user_file_clean_dynamic <- paste0(data_dir_path,"/",
+                                          "user_clean_dynamic_data",".csv")
+        write.csv(dataDynamic(),user_file_clean_dynamic,row.names = FALSE)
+      }
+      # Save GBIF data from dynamic map (in polygon)
+      if(!is.null(data_poly()) && input$dataset_dynMap == "user_dataset"){
+        user_file_clean_dynamic_poly <- paste0(data_dir_path,"/",
+                                               "user_clean_Polygon_dynamic_data",
+                                               ".csv")
+        write.csv(data_poly(),user_file_clean_dynamic_poly,row.names = FALSE)
+      }
+
+      # Save polygon
+      if(!is.null(myPolygon())){
+        file_dir <- paste0(data_dir_path,"M_Shapefiles_",input$dataset_dynMap)
+        if(!dir.exists(file_dir))
+          dir.create(file_dir)
+        poly_name <- input$polygon_name
+        if(length(poly_name)<1)
+          poly_name <- paste0("dynMpolygon_ntb",sample(1:1000,1))
+        poly_name_ext <- paste0(poly_name,".shp")
+        #if(poly_name_ext %in% list.files(file_dir)){
+        #  poly_name <- paste0(poly_name,"B_RandNUM",sample(1:1000,1))
+        #}
+        writeOGR(myPolygon(), file_dir, poly_name,"_",input$dataset_dynMap, driver="ESRI Shapefile",overwrite_layer = T)
+
+      }
+
     }
-
-    # Save GBIF data from dynamic map (no polygon)
-    if(!is.null(dataDynamic()) && input$dataset_dynMap == "gbif_dataset"){
-      gbif_file_clean_dynamic <- paste0(data_dir_path,"/",
-                                        input$genus,"_",
-                                        input$species,
-                                        "GBIF_clean_dynamic_data",".csv")
-      write.csv(dataDynamic(),file = gbif_file_clean_dynamic,row.names = FALSE)
-    }
-    # Save GBIF data from dynamic map (in polygon)
-    if(!is.null(data_poly()) && input$dataset_dynMap == "gbif_dataset"){
-      gbif_file_clean_dynamic_poly <- paste0(data_dir_path,"/",
-                                             input$genus,"_",
-                                             input$species,
-                                             "GBIF_clean_Polygon_dynamic_data",
-                                             ".csv")
-      write.csv(data_poly(),file = gbif_file_clean_dynamic_poly,row.names = FALSE)
-    }
-
-
-
-
-    # Save raw user data (from user data)
-
-    if(!is.null(data_user())){
-      user_file_raw <- paste0(data_dir_path,"/",
-                              "user_raw_data",".csv")
-      write.csv(data_user(),user_file_raw,row.names = FALSE)
-    }
-
-    # Save cleaned user data (from user data)
-
-    if(!is.null(data_user_clean())){
-      user_file_clean <- paste0(data_dir_path,"/",
-                                "user_cleaned_data",".csv")
-      write.csv(data_user_clean(),user_file_clean,row.names = FALSE)
-    }
-    # Save user data from dynamic map (no polygon)
-    if(!is.null(dataDynamic()) && input$dataset_dynMap == "user_dataset"){
-      user_file_clean_dynamic <- paste0(data_dir_path,"/",
-                                        "user_clean_dynamic_data",".csv")
-      write.csv(dataDynamic(),user_file_clean_dynamic,row.names = FALSE)
-    }
-    # Save GBIF data from dynamic map (in polygon)
-    if(!is.null(data_poly()) && input$dataset_dynMap == "user_dataset"){
-      user_file_clean_dynamic_poly <- paste0(data_dir_path,"/",
-                                             "user_clean_Polygon_dynamic_data",
-                                             ".csv")
-      write.csv(data_poly(),user_file_clean_dynamic_poly,row.names = FALSE)
-    }
-
-    # Save polygon
-    if(!is.null(myPolygon())){
-      file_dir <- paste0(data_dir_path,"M_Shapefiles_",input$dataset_dynMap)
-      if(!dir.exists(file_dir))
-        dir.create(file_dir)
-      poly_name <- input$polygon_name
-      if(length(poly_name)<1)
-        poly_name <- paste0("dynMpolygon_ntb",sample(1:1000,1))
-      poly_name_ext <- paste0(poly_name,".shp")
-      #if(poly_name_ext %in% list.files(file_dir)){
-      #  poly_name <- paste0(poly_name,"B_RandNUM",sample(1:1000,1))
-      #}
-      writeOGR(myPolygon(), file_dir, poly_name,"_",input$dataset_dynMap, driver="ESRI Shapefile",overwrite_layer = T)
-
-    }
-
   }
+
 })
 
 
