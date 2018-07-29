@@ -15,63 +15,173 @@ source("server_funcs/mop_methods.R",local =T)
 
 #volumes <- c(path.expand('~'))
 #names(volumes) <- Sys.info()["user"]
-volumes <- getVolumes()
-# Raster layer directory
+osSystem <- Sys.info()["sysname"]
+
+if(osSystem == "Darwin"){
+  # Raster layer directory
 
 
-shinyFiles::shinyDirChoose(input, "ras_layers_directory",
-                           roots = volumes,
-                           session = session)
-# User raster (niche) layers
+  shinyFiles::shinyDirChoose(input, "ras_layers_directory",
+                             roots = volumes,
+                             session = session)
+  # User raster (niche) layers
 
 
 
-rasterLayers <- reactive({
+  rasterLayers <- reactive({
 
-  layers_dir <- shinyFiles::parseDirPath(volumes, input$ras_layers_directory)
-  ras_formats <- "(*.asc$)|(*.bil$)|(*.sdat$)|(*.rst$)|(*.nc$)|(*.tif$)|(*.envi$)|(*.img$)"
-  layDirs <-list.files(layers_dir,pattern = ras_formats)
+    layers_dir <- shinyFiles::parseDirPath(volumes, input$ras_layers_directory)
+    ras_formats <- "(*.asc$)|(*.bil$)|(*.sdat$)|(*.rst$)|(*.nc$)|(*.tif$)|(*.envi$)|(*.img$)"
+    layDirs <-list.files(layers_dir,pattern = ras_formats)
 
-  input$loadNicheLayers
-  isolate({
+    input$loadNicheLayers
+    isolate({
 
-    if(input$loadNicheLayers > 0 && length(layers_dir) > 0L && length(layDirs)>0L)
-      return(rlayers_ntb(layers_dir))
+      if(input$loadNicheLayers > 0 && length(layers_dir) > 0L && length(layDirs)>0L)
+        return(rlayers_ntb(layers_dir))
+      else
+        return(NULL)
+    })
+  })
+
+
+  # Workflow directory
+
+  shinyFiles::shinyDirChoose(input, "wf_directory",
+                             roots = volumes,
+                             session = session)
+
+  workflowDir <- reactive({
+    path <- shinyFiles::parseDirPath(volumes, input$wf_directory)
+    if(length(path)>0L)
+      return(path)
     else
       return(NULL)
   })
-})
 
 
-# Workflow directory
+  # --------------------------------------------------------
+  # Save polygon to directory
+  shinyFiles::shinyDirChoose(input, "poly_dir",
+                             roots = volumes,
+                             session = session)
 
-shinyFiles::shinyDirChoose(input, "wf_directory",
-                           roots = volumes,
-                           session = session)
-
-workflowDir <- reactive({
-  path <- shinyFiles::parseDirPath(volumes, input$wf_directory)
-  if(length(path)>0L)
-    return(path)
-  else
-    return(NULL)
-})
+  # Polygon directory
+  poly_dir <- reactive({
+    path <- shinyFiles::parseDirPath(volumes, input$ras_layers_directory)
+    if(length(path)>0L)
+      return(path)
+    else
+      return(NULL)
+  })
 
 
-# --------------------------------------------------------
-# Save polygon to directory
-shinyFiles::shinyDirChoose(input, "poly_dir",
-                           roots = volumes,
-                           session = session)
+}
+if(osSystem != "Darwin"){
+  observeEvent(
+    ignoreNULL = TRUE,
+    eventExpr = {
+      input$ras_layers_directory
+    },
+    handlerExpr = {
+      if (input$ras_layers_directory > 0) {
+        # condition prevents handler execution on initial app launch
 
-# Polygon directory
-poly_dir <- reactive({
-  path <- shinyFiles::parseDirPath(volumes, input$ras_layers_directory)
-  if(length(path)>0L)
-    return(path)
-  else
-    return(NULL)
-})
+        # launch the directory selection dialog with initial path read from the widget
+        path = choose.dir(default = readDirectoryInput(session, 'ras_layers_directory'))
+
+        # update the widget value
+        updateDirectoryInput(session, 'ras_layers_directory', value = path)
+
+      }
+    }
+  )
+
+
+
+  observeEvent(
+    ignoreNULL = TRUE,
+    eventExpr = {
+      input$wf_directory
+    },
+    handlerExpr = {
+      if (input$wf_directory > 0) {
+        # condition prevents handler execution on initial app launch
+
+        # launch the directory selection dialog with initial path read from the widget
+        path = choose.dir(default = readDirectoryInput(session, 'wf_directory'))
+
+        # update the widget value
+        updateDirectoryInput(session, 'wf_directory', value = path)
+
+      }
+    }
+  )
+
+  # --------------------------------------------------------
+  # Save polygon to directory
+
+  observeEvent(
+    ignoreNULL = TRUE,
+    eventExpr = {
+      input$poly_dir
+    },
+    handlerExpr = {
+      if (input$poly_dir > 0) {
+        # condition prevents handler execution on initial app launch
+
+        # launch the directory selection dialog with initial path read from the widget
+        path = choose.dir(default = readDirectoryInput(session, 'poly_dir'))
+
+        # update the widget value
+        updateDirectoryInput(session, 'poly_dir', value = path)
+
+      }
+    }
+  )
+
+
+  # Raster layer directory
+  rasterLayersDir <- reactive({
+    path <- readDirectoryInput(session, 'ras_layers_directory')
+    if(length(path)>0L)
+      return(path)
+    else
+      return(NULL)
+  })
+
+  # Workflow directory
+  workflowDir <- reactive({
+    path <- readDirectoryInput(session, 'wf_directory')
+    if(length(path)>0L)
+      return(path)
+    else
+      return(NULL)
+  })
+
+  # User raster (niche) layers
+
+  rasterLayers <- reactive({
+    layers_dir <- rasterLayersDir()
+    input$loadNicheLayers
+    isolate({
+      if(input$loadNicheLayers > 0 && length(layers_dir) > 0L)
+        return(rlayers_ntb(layers_dir))
+      else
+        return(NULL)
+    })
+  })
+
+  # Polygon directory
+  poly_dir <- reactive({
+    path <- readDirectoryInput(session, 'poly_dir')
+    if(length(path)>0L)
+      return(path)
+    else
+      return(NULL)
+  })
+
+}
 
 
 

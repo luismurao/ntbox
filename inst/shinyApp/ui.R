@@ -1,5 +1,15 @@
-ui_files <- list.files(path = "ui_layers",pattern = "*.R$",full.names = TRUE)
-load_ui <- sapply(ui_files,source)
+
+osSystem <- Sys.info()["sysname"]
+
+if(osSystem == "Darwin"){
+  ui_files <- list.files(path = "ui_layers",pattern = "*.R$",full.names = TRUE)
+  load_ui <- sapply(ui_files,source)
+}
+if(osSystem != "Darwin"){
+  ui_files <- list.files(path = "ui_layers_win_lin",pattern = "*.R$",full.names = TRUE)
+  load_ui <- sapply(ui_files,source)
+}
+
 shinyUI(
   navbarPage(theme = shinytheme("cerulean"),
              HTML('<div title="Saves state to workflow directory">
