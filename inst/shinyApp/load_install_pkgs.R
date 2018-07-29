@@ -10,7 +10,7 @@ pkg_check <- c("shiny","rgeos","rgdal",
                "dplyr","cluster","sqldf",
                "fields","devtools","psych",
                "magrittr","shinythemes","grid",
-               "RColorBrewer","ade4","V8","spocc")
+               "RColorBrewer","ade4","V8","shinyFiles","spocc")
 
 packageVersion("dygraphs")
 
