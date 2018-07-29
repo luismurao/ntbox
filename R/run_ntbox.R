@@ -14,8 +14,8 @@ run_ntbox <- function(){
   cat("|      **** Welcome to nichetoolbox version", paste0(utils::packageVersion("ntbox"),
                                                             " ****         |\n"))
   cat("|----------------------------------------------------------------|\n")
-  cat("|           Looking for additional nichetoolbox dependencies     |\n")
-  cat("|           Note that the first time can take few time           |\n")
+  cat("|      Looking for additional nichetoolbox dependencies          |\n")
+  cat("|      Note that the first time it can take few seconds          |\n")
   cat("|----------------------------------------------------------------|\n\n\n")
 
   if(.Platform$OS.type != "unix"){
