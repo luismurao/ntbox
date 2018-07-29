@@ -1,7 +1,8 @@
 
 # MOP M layeres directory
-volumes <- c(path.expand('~'))
-names(volumes) <- Sys.info()["user"]
+#volumes <- c(path.expand('~'))
+volumes <- getVolumes()
+#names(volumes) <- Sys.info()["user"]
 
 
 shinyFiles::shinyDirChoose(input, "m_layers_directory",
