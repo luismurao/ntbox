@@ -14,13 +14,13 @@ source("server_funcs/binary_map_methods.R",local =T)
 source("server_funcs/mop_methods.R",local =T)
 
 #volumes <- c(path.expand('~'))
-#names(volumes) <- Sys.info()["user"]
 osSystem <- Sys.info()["sysname"]
 
 if(osSystem == "Darwin"){
   # Raster layer directory
 
-
+  #names(volumes) <- Sys.info()["user"]
+  volumes <- getVolumes()
   shinyFiles::shinyDirChoose(input, "ras_layers_directory",
                              roots = volumes,
                              session = session)
