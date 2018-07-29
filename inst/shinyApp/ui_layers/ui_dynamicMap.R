@@ -29,7 +29,7 @@ DynamicMap <- div(class="outer",
 
 
                                     h4("Define a polygon of M"),
-                                    checkboxInput("define_M",label = "Define and work with polygon of M",value = FALSE),
+                                    checkboxInput("define_M",label = "Define and work with polygon of M",value = TRUE),
                                     conditionalPanel("input.define_M == 1",
                                                      tags$div(title="Select if you want to trace your polygon of M or uploaded it from directory",
                                                               #checkboxInput("poly_from",
@@ -41,8 +41,20 @@ DynamicMap <- div(class="outer",
                                                                       textInput("polygon_name","Give a name for your polygon",value = NULL)),
                                                                       #shiny::actionButton("save_poly",label = "Save Polygon")),
                                                      conditionalPanel("input.poly_from == 0",
-                                                                      directoryInput('poly_dir', label = 'Select a directory of your shapefile of M',value = NULL),
-                                                                      selectInput("poly_files","Select dicrectory of your shapefile",choices = NULL,multiple = FALSE,selected = "Select directory")
+                                                                      #directoryInput('poly_dir',
+                                                                      #               label = 'Select a directory of your shapefile of M',
+                                                                       #              value = NULL),
+                                                                      shinyFiles::shinyDirButton(id = "poly_dir",
+                                                                                                 label =  "Select a directory of your shapefile of M",
+                                                                                                 title = "Select a directory from the directories panel",
+                                                                                                 icon = icon("folder-open",
+                                                                                                             lib = "glyphicon"),
+                                                                                                 buttonType = "info"),
+                                                                      br(),
+
+                                                                      selectInput("poly_files","Select layer of M",
+                                                                                  choices = NULL,multiple = FALSE,
+                                                                                  selected = "Select directory")
 
                                                      ),
                                                      shiny::actionButton("points_in_poly",label = "Points in polygon")

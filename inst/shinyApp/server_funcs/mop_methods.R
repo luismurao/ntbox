@@ -1,53 +1,16 @@
 
 # MOP M layeres directory
-
-observeEvent(
-  ignoreNULL = TRUE,
-  eventExpr = {
-    input$m_layers_directory
-  },
-  handlerExpr = {
-    if (input$m_layers_directory > 0) {
-      # condition prevents handler execution on initial app launch
-
-      # launch the directory selection dialog with initial path read from the widget
-      path = choose.dir(default = readDirectoryInput(session, 'm_layers_directory'))
-
-      # update the widget value
-      updateDirectoryInput(session, 'm_layers_directory', value = path)
-
-    }
-  }
-)
-
-# MOP G layeres directory
+volumes <- c(path.expand('~'))
+names(volumes) <- Sys.info()["user"]
 
 
-observeEvent(
-  ignoreNULL = TRUE,
-  eventExpr = {
-    input$g_layers_directory
-  },
-  handlerExpr = {
-    if (input$g_layers_directory > 0) {
-      # condition prevents handler execution on initial app launch
-
-      # launch the directory selection dialog with initial path read from the widget
-      path = choose.dir(default = readDirectoryInput(session, 'g_layers_directory'))
-
-      # update the widget value
-      updateDirectoryInput(session, 'g_layers_directory', value = path)
-
-    }
-  }
-)
-
-
-
+shinyFiles::shinyDirChoose(input, "m_layers_directory",
+                           roots = volumes,
+                           session = session)
 
 # M layers directory
 MLayersDir <- reactive({
-  path <- readDirectoryInput(session, 'm_layers_directory')
+  path <- shinyFiles::parseDirPath(volumes, input$m_layers_directory)
   if(length(path)>0L)
     return(path)
   else
@@ -64,15 +27,24 @@ M_ras_Layers <- eventReactive(input$loadMLayers,{
   })
 })
 
+
+
+# MOP G layeres directory
+
+shinyFiles::shinyDirChoose(input, "g_layers_directory",
+                           roots = volumes,
+                           session = session)
+
 # read G layers
 
 GLayersDir <- reactive({
-  path <- readDirectoryInput(session, 'g_layers_directory')
+  path <- shinyFiles::parseDirPath(volumes, input$g_layers_directory)
   if(length(path)>0L)
     return(path)
   else
     return(NULL)
 })
+
 
 G_ras_Layers <- eventReactive(input$loadGLayers,{
   layers_dir <- GLayersDir()

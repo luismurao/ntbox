@@ -20,30 +20,46 @@ materials <- sidebarLayout(position = "left",
                              br(),
                              p("Please select the folder of raster layers and remember that all of them need to be in the same resolution and extension"),
                              br(),
-                             directoryInput('ras_layers_directory', label = 'Select a raster layers directory'),
+                             #directoryInput('ras_layers_directory', label = 'Select a raster layers directory'),
+                             #glyphicon glyphicon-folder-open
+                             shinyFiles::shinyDirButton(id = "ras_layers_directory",
+                                                        label =  "Select raster layers directory",
+                                                        title = "Select a directory from the directories panel",
+                                                        icon = icon("folder-open",
+                                                                    lib = "glyphicon"),
+                                                        buttonType = "info"),
+                             #shiny::selectInput(inputId = )
                              #selectInput(inputId = 'res',label = 'Select a grid resolution for the bioclimatic vars',choices = c('10 Arc-minutes'='tenArcs','5 Arc-minutes'='fiveArcs','2.5 Arc-minutes'='twoArcs'),selected = 'tenArcs'),
                              bsButton("loadNicheLayers","Load niche layers",icon = icon("upload", lib = "glyphicon"),style = "primary"),
                              busyIndicator("Loading...",wait = 0),
                              br(),
+                             br(),
                              h4("Workflow"),
                              HTML('In order to save what you have done in your session it is important that you select a folder to save a workflow of what you have done inside NicheToolBox'),
+                             br(),
                              br(),
                              #fileInput(inputId = "worflowPath","Select a folder for your worflow"),
                              #shinyDirButton('worflowPath', 'Folder select', 'Please select a folder'),
                              #shinyDirButton("workflowPath",title = "Choose Download Directory",
                              #              label = "Browse Download Directory ", class = "btn-block btn-link"),
-                             directoryInput('wf_directory', label = 'Select workflow directory'),
+                            # directoryInput('wf_directory', label = 'Select workflow directory'),
+                            shinyFiles::shinyDirButton(id = "wf_directory",
+                                                       label =  "Select workflow directory",
+                                                       title = "Select a directory from the directories panel",
+                                                       icon = icon("folder-open",
+                                                                   lib = "glyphicon"),
+                                                       buttonType = "info")
 
-                             br(),
+
 
                                #submitButton()
 
 
-                             h4('Tutorials'),
-                             HTML('In this part you can find some tutorials that show how to use the app.'),
-                             selectInput(inputId = 'tutorialsm',label = 'Select one of the turtorials',
-                                         choices =  c('About'='about1','1. Data'='datose'),
-                                         selected = "about1",multiple = FALSE)
+                             #h4('Tutorials'),
+                             #HTML('In this part you can find some tutorials that show how to use the app.'),
+                             #selectInput(inputId = 'tutorialsm',label = 'Select one of the turtorials',
+                             #            choices =  c('About'='about1','1. Data'='datose'),
+                              #           selected = "about1",multiple = FALSE)
 
 
                                ),
