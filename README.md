@@ -3,6 +3,9 @@
 `ntbox`is the stable version of `nichetoolbox` which is an R package with a friendly Graphical User Interface (GUI) developed using shiny framework. The package aims to facilitate the process of building niche models and estimate the species distributions.
 
 ## Installation
+
+**Windows users:** It is important to have installed [Rtoos](https://cran.r-project.org/bin/windows/Rtools/).
+
 ```r
 if (!require('devtools')) install.packages('devtools')
 devtools::install_github('luismurao/ntbox')
