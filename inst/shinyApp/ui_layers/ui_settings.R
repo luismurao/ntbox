@@ -28,6 +28,9 @@ materials <- sidebarLayout(position = "left",
                                                         icon = icon("folder-open",
                                                                     lib = "glyphicon"),
                                                         buttonType = "info"),
+                             br(),
+                             HTML(paste('<div class="alert alert-info" role="alert">',
+                                  verbatimTextOutput("layers_directory"),'</div>')),
                              #shiny::selectInput(inputId = )
                              #selectInput(inputId = 'res',label = 'Select a grid resolution for the bioclimatic vars',choices = c('10 Arc-minutes'='tenArcs','5 Arc-minutes'='fiveArcs','2.5 Arc-minutes'='twoArcs'),selected = 'tenArcs'),
                              bsButton("loadNicheLayers","Load niche layers",icon = icon("upload", lib = "glyphicon"),style = "primary"),
@@ -48,9 +51,10 @@ materials <- sidebarLayout(position = "left",
                                                        title = "Select a directory from the directories panel",
                                                        icon = icon("folder-open",
                                                                    lib = "glyphicon"),
-                                                       buttonType = "info")
-
-
+                                                       buttonType = "info"),
+                            br(),
+                            HTML(paste('<div class="alert alert-info" role="alert">',
+                                       verbatimTextOutput("work_directory"),'</div>'))
 
                                #submitButton()
 

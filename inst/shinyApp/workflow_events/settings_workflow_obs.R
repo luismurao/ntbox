@@ -26,6 +26,13 @@ if(osSystem == "Darwin"){
                              session = session)
   # User raster (niche) layers
 
+  output$layers_directory <- renderPrint({
+    layers_dir <- shinyFiles::parseDirPath(volumes, input$ras_layers_directory)
+    if(length(layers_dir)>0L)
+      return(layers_dir)
+    else
+      return("Press the button and select a dir")
+  })
 
 
   rasterLayers <- reactive({
@@ -51,15 +58,24 @@ if(osSystem == "Darwin"){
                              roots = volumes,
                              session = session)
 
+
   workflowDir <- reactive({
-    path <- shinyFiles::parseDirPath(volumes, input$wf_directory)
-    print(path)
+    path <-shinyFiles::parseDirPath(volumes,
+                                    input$wf_directory)
+    ifelse(nchar(path)>0L, path <- paste0(path,"/"),path)
     if(length(path)>0L)
       return(path)
     else
       return(NULL)
   })
 
+  output$work_directory <- renderPrint({
+    if(is.null(workflowDir()))
+      message1 <- "Press the button and select dir"
+    else
+      message1 <- workflowDir()
+    return(message1)
+  })
 
   # --------------------------------------------------------
   # Save polygon to directory
@@ -154,6 +170,7 @@ if(osSystem != "Darwin"){
   # Workflow directory
   workflowDir <- reactive({
     path <- readDirectoryInput(session, 'wf_directory')
+    ifelse(nchar(path)>0L, path <- paste0(path,"/"),path)
     if(length(path)>0L)
       return(path)
     else
@@ -401,7 +418,7 @@ observeEvent(input$saveState, {
 
 observeEvent(input$saveState, {
   niche_data <- data_extraction()
-  if(nchar(workflowDir()) > 0L && !is.null(niche_data)){
+  if(nchar(workflowDir()) > 0L && !is.null(niche_data) && length(workflowDir())>0L){
     # Create a directory for niche data.
     niche_dir_path <- paste0(workflowDir(),"NicheToolBox_NicheData")
     if(!dir.exists(niche_dir_path))
