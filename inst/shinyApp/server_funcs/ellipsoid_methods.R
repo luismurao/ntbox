@@ -32,10 +32,11 @@ observe({
 mve_obj_all <- reactive({
   if(!is.null(occ_extract()) && !is.null(input$biosEllip) && input$selectShape == "wWorld"){
     prop_points <- as.numeric(input$prop_points)
-    niche_data <- na.omit(occ_extract())
-    cov_centroid <- cov_center(niche_data,
+    niche_data <- na.omit(occ_extract()$data)
+    cov_centroid <- try(cov_center(niche_data,
                                level=prop_points,
-                               vars=input$biosEllip)
+                               vars=input$biosEllip),silent = T)
+    print(class(cov_centroid))
 
     return(cov_centroid)
 
@@ -50,9 +51,9 @@ mve_obj_m <- reactive({
   if(!is.null(occ_extract_from_mask()) && !is.null(input$biosEllip) && input$selectShape == "mLayers"){
     prop_points <- as.numeric(input$prop_points)
     niche_data <- na.omit(occ_extract_from_mask()$data)
-    cov_centroid <- cov_center(niche_data,
+    cov_centroid <- try(cov_center(niche_data,
                                level=prop_points,
-                               vars=input$biosEllip)
+                               vars=input$biosEllip),silent = TRUE)
 
     return(cov_centroid)
 
@@ -65,9 +66,9 @@ mve_obj_m <- reactive({
 # Choose the minimum volume ellipsoid (all or M raster area)
 
 mve_obj <- reactive({
-  if(!is.null(mve_obj_all()) && input$selectShape == "wWorld")
+  if(!is.null(mve_obj_all()) && input$selectShape == "wWorld" && class(mve_obj_all()) != "try-error")
     return(mve_obj_all())
-  if(!is.null(mve_obj_m()) && input$selectShape == "mLayers")
+  if(!is.null(mve_obj_m()) && input$selectShape == "mLayers" && class(mve_obj_all()) != "try-error")
     return(mve_obj_m())
   else
     return()
@@ -78,7 +79,7 @@ mve_obj <- reactive({
 
 ellip_model_all_rast_all_train <- eventReactive(input$selectBios_all_all_train,{
   cov_centroid <- mve_obj_all()
-  if(!is.null(rasterLayers()) && input$selectM == 'wWorld' && !is.null(cov_centroid) && input$selectShape == "wWorld"){
+  if(!is.null(rasterLayers()) && input$selectM == 'wWorld' && !is.null(cov_centroid) && class(mve_obj_all()) != "try-error" && input$selectShape == "wWorld"){
 
     model <- ellipsoidfit(rasterLayers()[[input$biosEllip]],
                           cov_centroid$centroid,
@@ -94,7 +95,7 @@ ellip_model_all_rast_all_train <- eventReactive(input$selectBios_all_all_train,{
 
 ellip_model_all_rast_m_train <- eventReactive(input$selectBios_all_m_train,{
   cov_centroid <- mve_obj_m()
-  if(!is.null(rasterLayers()) && input$selectM == 'wWorld' && !is.null(cov_centroid) && input$selectShape == "mLayers"){
+  if(!is.null(rasterLayers()) && input$selectM == 'wWorld' && !is.null(cov_centroid) && class(mve_obj_all()) != "try-error" && input$selectShape == "mLayers"){
 
     model <- ellipsoidfit(rasterLayers()[[input$biosEllip]],
                           cov_centroid$centroid,
@@ -177,7 +178,7 @@ output$Ellip2D_all_m_train <- renderPlot({
 response_ell_all_all_train <- eventReactive(input$selectBios_all_all_train,{
   if(!is.null(ellip_model_all_rast_all_train())){
     if(input$selectM=="wWorld" && input$selectShape == "wWorld"){
-      multi.hist(occ_extract()[,input$biosEllip],
+      multi.hist(occ_extract()$data[,input$biosEllip],
                  dcol= c("blue","red"),dlty=c("dotted", "solid"))
     }
     else
@@ -328,7 +329,7 @@ output$Ellip2D_m_m_train <- renderPlot({
 response_ell_m_all_train <- eventReactive(input$selectBios_m_all_train,{
   if(!is.null(ellip_model_all_rast_all_train())){
     if(input$selectM=="mLayers" && input$selectShape == "wWorld"){
-      multi.hist(occ_extract()[,input$biosEllip],
+      multi.hist(occ_extract()$data[,input$biosEllip],
                  dcol= c("blue","red"),dlty=c("dotted", "solid"))
     }
     else
