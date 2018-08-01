@@ -15,7 +15,7 @@ observe({
 corr_table <- reactive({
   if(!is.null(data_extraction())){
     if(!is.null(occ_extract()) && input$cor_data_from == "mWorld"){
-      niche_data <- occ_extract()
+      niche_data <- occ_extract()$data
       cor_table <- cor(niche_data,
                        use = "pairwise.complete.obs")
       return(cor_table)
