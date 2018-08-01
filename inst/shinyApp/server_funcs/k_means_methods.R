@@ -13,7 +13,8 @@ observe({
     else
       var_suggest <- NULL
     updateSelectInput(session,"cluster_vars",
-                      choices = names(data_extraction()),selected = var_suggest)
+                      choices = names(data_extraction()),
+                      selected = var_suggest)
   }
 })
 
@@ -62,20 +63,27 @@ kmeans_df <- reactive({
     level <- input$kmeans_level
     nclus <- as.numeric(input$nclust)
     if(length(na_index)!=0L) niche_data <- niche_data[na_index,]
+
     km <- kmeans(niche_data,centers=nclus,iter.max=100,trace=F)
     cluster <- km$cluster
     if(input$kmeans_data_from == "mLayers"){
-      if(length(na_index)!=0L)
+      if(length(na_index)>0L)
         geo_dat <- occ_extract_from_mask()$xy_data[-na_index,]
       else
         geo_dat <- occ_extract_from_mask()$xy_data
     }
-    else{
-      if(length(na_index)!=0L)
-        geo_dat <- data_to_extract()[-na_index,]
+    if(input$kmeans_data_from == "wWorld"){
+      if(length(na_index)>0L)
+        geo_dat <- occ_extract()$xy_data[-na_index,]
       else
-        geo_dat <- data_to_extract()
+        geo_dat <-occ_extract()$xy_data
+
+      print(dim(niche_data))
+      print(dim(geo_dat))
+
     }
+
+
 
     kmeans_data <- data.frame(geo_dat,cluster = cluster,niche_data)
     return(kmeans_data)

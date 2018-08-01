@@ -59,13 +59,25 @@ occ_extract_from_mask <- eventReactive(input$run_extract,{
 
     data_env <- data.frame(raster::extract(define_M_raster(),
                                            data_to_extract()))
-
-    xy_data_index <- which(!is.na(data_env[,1]))
-    xy_data <- data_to_extract()[xy_data_index,]
-    data_env_xy  <- data.frame(data_env, data_to_extract())
-    data_env_xy <- na.omit(data_env_xy)
     data_env <- na.omit(data_env)
-    return(list(data=data_env,xy_data=xy_data,xy_data_index=xy_data_index,data_env_xy=data_env_xy))
+
+    xy_data_index <- attr(data_env,"na.action")
+    if(length(xy_data_index)>0L){
+      xy_data <- data_to_extract()[-xy_data_index,]
+      data_env_xy  <- data.frame(data_env, xy_data)
+
+    }
+    else{
+      data_env_xy  <- data.frame(data_to_extract(),data_env)
+      data_env_xy <- na.omit(data_env_xy)
+      data_env <- data_env_xy[,-c(1,2)]
+    }
+
+
+    return(list(data=data_env,
+                xy_data=xy_data,
+                xy_data_index=xy_data_index,
+                data_env_xy=data_env_xy))
   }
   else
     return(NULL)
@@ -74,12 +86,26 @@ occ_extract_from_mask <- eventReactive(input$run_extract,{
 
 occ_extract <- eventReactive(input$run_extract,{
   if(!is.null(data_to_extract()) && !is.null(rasterLayers())){
-    if(input$datasetM == "updata"){
-      data <- data.frame(raster::extract(rasterLayers(),
-                                 data_to_extract()))
-      return(data)
+    data_env <- data.frame(raster::extract(rasterLayers(),
+                                             data_to_extract()))
+    data_env <- na.omit(data_env)
+    xy_data_index <- attr(data_env,"na.action")
+
+    if(length(xy_data_index)>0L){
+      xy_data <- data_to_extract()[-xy_data_index,]
+      data_env_xy  <- data.frame(data_env, xy_data)
+
     }
-    return(NULL)
+    else{
+      data_env_xy  <- data.frame(data_to_extract(),data_env)
+      data_env_xy <- na.omit(data_env_xy)
+      data_env <- data_env_xy[,-c(1,2)]
+      xy_data <- data_env_xy[,c(1,2)]
+    }
+
+    return(list(data=data_env,xy_data=xy_data,
+                xy_data_index=xy_data_index))
+
   }
   else
     return(NULL)
@@ -91,7 +117,7 @@ occ_extract <- eventReactive(input$run_extract,{
 
 data_extraction <- reactive({
   if(input$extracted_area == "all_area" && !is.null(occ_extract()))
-    return(occ_extract())
+    return(occ_extract()$data)
   if(input$extracted_area == "polygon_of_M" && !is.null(occ_extract_from_mask()))
     return(occ_extract_from_mask()$data)
   else
