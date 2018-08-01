@@ -381,8 +381,8 @@ dat_val_mtp <- reactive({
 mtp_threshold <- reactive({
   if(!is.null(dat_val_mtp()) && !is.null(sdm_raster())){
     coorde <- dat_val_mtp()[,2:3]
-    threshold <- extract(sdm_raster(),coorde)
-    return(min(threshold))
+    threshold <- raster::extract(sdm_raster(),coorde)
+    return(min(threshold,na.rm = TRUE))
   }
   else
     return()
