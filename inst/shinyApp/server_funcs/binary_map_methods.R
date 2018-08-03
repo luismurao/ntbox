@@ -3,10 +3,19 @@
 sdm_raster <- reactive({
   if (is.null(input$fileBin))
     return(NULL)
-  else if(identical(input$formatBin,'.asc')){
-    rasPredic <- raster(input$fileBin$datapath)
-    return(rasPredic)
-  }
+  else if(identical(input$formatBin,'.asc'))
+    path_ras <- input$fileBin$datapath
+  else if(identical(input$formatBin,'.tif'))
+    path_ras <- input$fileBin$datapath
+  else if(identical(input$formatBin,'.bil'))
+    path_ras <- input$fileBin$datapath
+  else if(identical(input$formatBin,'.nc'))
+    path_ras <- input$fileBin$datapath
+  else if(identical(input$formatBin,'.sdat'))
+    path_ras <- input$fileBin$datapath
+  else if(identical(input$formatBin,'.img'))
+    path_ras <- input$fileBin$datapath
+  return(raster(path_ras))
 })
 
 
@@ -48,26 +57,46 @@ observe({
 threshold_search <- reactive({
   sdm_raster <- sdm_raster()
   dat_Val <- dat_Validation()
-  if(!is.null(sdm_raster) && !is.null(dat_Val)){
-    input$searchTh
-    isolate({
-      if(input$searchTh){
-        longitude <- 1
-        latitude <- 2
-        pres_aus <- 3
-        optim_by <- input$optim_by1
-        bestTH <- confu_mat_optim(sdm_raster = sdm_raster,
-                                  valData = dat_Val,
-                                  longitude = longitude,
-                                  latitude = latitude,
-                                  pres_aus = pres_aus,
-                                  optim_by = optim_by,
-                                  th_range = as.numeric(input$thRange),
-                                  step = as.numeric(input$partStep))
-        return(bestTH)
-      }
-    })
+  if(!is.null(sdm_raster) && input$valdata_type == 'pres_abs_data'){
+    if(!is.null(dat_Val)){
+      input$searchTh
+      isolate({
+        if(input$searchTh){
+          longitude <- 1
+          latitude <- 2
+          pres_aus <- 3
+          optim_by <- input$optim_by1
+          bestTH <- confu_mat_optim(sdm_raster = sdm_raster,
+                                    valData = dat_Val,
+                                    longitude = longitude,
+                                    latitude = latitude,
+                                    pres_aus = pres_aus,
+                                    optim_by = optim_by,
+                                    th_range = as.numeric(input$thRange),
+                                    step = as.numeric(input$partStep))
+          return(bestTH)
+        }
+      })
+    }
+  }
+  if(!is.null(dat_val_mtp()) && input$valdata_type != 'pres_abs_data'){
+    dat_Val <- data.frame(dat_val_mtp()[,-1])
+    values <- raster::extract(sdm_raster, dat_Val[, c(1,  2)])
 
+    if(input$valdata_type=='user_threshold'){
+
+      threshold <- as.numeric(input$thresholdBin)
+    }
+    if(input$valdata_type=='min_traing_pres' | input$valdata_type=='percentil_bin'){
+      threshold <- mtp_threshold()
+    }
+    reclass <- values >= threshold
+    a <- length(which(reclass))
+    b <- NA
+    c <- length(which(!reclass))
+    d <- NA
+    conf <- data.frame(a,b,c,d)
+    return(conf)
   }
   else
     return(NULL)
@@ -75,10 +104,13 @@ threshold_search <- reactive({
 })
 
 threshold_search2 <- reactive({
-  if(!is.null(threshold_search())){
+  if(!is.null(threshold_search()) && input$valdata_type=='pres_abs_data'){
     df_threshold <- threshold_search()
     df_threshold <- df_threshold[order(-df_threshold[,input$optim_by1]),]
     return(df_threshold)
+  }
+  if(!is.null(threshold_search()) && input$valdata_type !='pres_abs_data'){
+    return(threshold_search())
   }
   else
     return()
@@ -266,6 +298,7 @@ kappa <- function(a,b,c,d){
 
 
 all_result <- function(a,b,c,d){
+
   cat("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
   cat("                           Symbols                                       \n")
   cat("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
@@ -298,6 +331,47 @@ all_result <- function(a,b,c,d){
   cat("Commission error (fraction):", f_error_com(b = b, d = d), "\n")
   cat("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
 }
+
+
+all_result_down <- function(a,b,c,d){
+
+  message1 <- capture.output({
+    cat("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
+    cat("                           Symbols                                       \n")
+    cat("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
+    cat("a = Correctly predicted presences\n")
+    cat("b = Predicted present but actually absent\n")
+    cat("c = Predicted absent but actually present\n")
+    cat("d = Correctly predicted absences\n\n\n\n")
+
+    cat("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
+    cat("                     Confusion Matrix                                    \n")
+    cat("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
+
+    print(confu_matrix(a,b,c,d))
+    cat("\n\n\n\n")
+    cat("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
+    cat("                     Evaluation metrics for SDMs                         \n")
+    cat("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
+    cat("Kappa: ", kappa(a=a,b=b,c=c,d=d),   "\n")
+    cat("TSS: ", tss(a=a,b=b,c=c,d=d),       "\n")
+    cat("Prevalence: ", prevalencia(a=a,b=b,c=c,d=d),"\n")
+    cat("Correct classification rate: ", correct_class_rate(a=a,b=b,c=c,d=d),"\n")
+    cat("Misclassification rate: ", miss_cla_rate(a=a,b=b,c=c,d=d),"\n")
+    cat("Negative predictive power: ", nega_pre_pow(c = c, d=d),   "\n")
+    cat("Positive predictive power: ", posit_pre_pow(a = a,b = b),   "\n")
+    cat("False negative rate: ", tas_fals_neg(a = a,c = c),   "\n")
+    cat("False positive rate: ",tas_fals_pos(b = b, d = d),   "\n")
+    cat("Specificity: ", especificidad(b = b,d = d),   "\n")
+    cat("Sensitivity: ", sensibilidad(a = a,c = c),   "\n")
+    cat("Omission error (fraction):", f_error_om(a= a, c = c), "\n")
+    cat("Commission error (fraction):", f_error_com(b = b, d = d), "\n")
+    cat("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
+  })
+  return(message1)
+}
+
+
 
 
 cm_metrics <- reactive({
@@ -359,9 +433,24 @@ cm_metrics <- reactive({
 
 })
 
+
+output$todoCM <- downloadHandler(
+  filename <- function() paste0("conf_matrix_results",
+                                ".txt"),
+  content <- function(file){
+    capture.output(all_result_down(a = input$a,
+                                   input$b,input$c,
+                                   input$d),file = file)
+  }
+)
+
 output$cm_method_metrics <- renderPrint({
   cm_metrics()
 })
+
+
+
+
 
 # ----------------------------------------------------------------------------------
 # Minimum training presence threshold
@@ -382,11 +471,26 @@ mtp_threshold <- reactive({
   if(!is.null(dat_val_mtp()) && !is.null(sdm_raster())){
     coorde <- dat_val_mtp()[,2:3]
     threshold <- raster::extract(sdm_raster(),coorde)
-    return(min(threshold,na.rm = TRUE))
+    if(input$valdata_type=="min_traing_pres")
+      return(min(threshold,na.rm = TRUE))
+    if(input$valdata_type=="percentil_bin"){
+      percentil <- as.numeric(input$percentil_th)
+      thr <- quantile(threshold,  probs =  percentil/100)
+      return(thr)
+    }
   }
   else
     return()
 })
+
+#percentil_threshold <- reactive({
+#    if(!is.null(dat_val_mtp()) && !is.null(sdm_raster()) && input$valdata_type == ""){
+#      coorde <- dat_val_mtp()[,2:3]
+#      threshold <- raster::extract(sdm_raster(),coorde)
+#      thr <- quantile(threshold,  probs = 0.5)
+#      return(thr)
+#    }
+#})
 
 
 binary_mtp_method <- reactive({
@@ -394,16 +498,28 @@ binary_mtp_method <- reactive({
   model <- sdm_raster()
 
   if(!is.null(threshold) && !is.null(model)){
-    min_range <- cellStats(model,min)
-    max_range <- cellStats(model,max)
-    reclass_matrix <- matrix(c(min_range,threshold,
-                               0,threshold,max_range,1),
-                             ncol=3,byrow=TRUE)
-    rbin <- reclassify(model,rcl = reclass_matrix)
+    #min_range <- cellStats(model,min)
+    #max_range <- cellStats(model,max)
+    #reclass_matrix <- matrix(c(min_range,threshold,
+    #                           0,threshold,max_range,1),
+    #                         ncol=3,byrow=TRUE)
+    #rbin <- reclassify(model,rcl = reclass_matrix)
+    rbin <- model > threshold
     return(rbin)
   }
   else
     return()
+
+})
+
+#output$binarymap_mtp <- renderPlot({
+#  if(!is.null(binary_mtp_method()))
+#    plot(binary_mtp_method())
+#})
+
+output$binary_mtp <- renderPlot({
+  if(!is.null(binary_mtp_method()))
+    return(plot(binary_mtp_method()))
 
 })
 
@@ -461,11 +577,7 @@ output$downloadBinary_metadata_mtp <- downloadHandler(
 )
 
 
-output$binary_mtp <- renderPlot({
-  if(!is.null(binary_mtp_method()))
-    return(plot(binary_mtp_method()))
 
-})
 
 
 output$downloadBinary_mtp <- downloadHandler(
