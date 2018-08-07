@@ -7,8 +7,11 @@ partial_roc <- sidebarLayout(position = 'left',
                                br(),
                                wellPanel(
                                  h5("Model prediction data"),
-                                 p("Upload model prediction in ASCII format"),
-                                 radioButtons('format2', 'Format', c('.asc')),
+                                 p("Upload model prediction"),
+
+                                 radioButtons('format2', 'Format', c('.asc','.bil',
+                                                                       '.tif','.nc',
+                                                                       '.sdat','.img')),
                                  uiOutput("radio2"),
                                  fileInput('sdm_mod', 'Data file'),
                                  h5("Presence data"),
@@ -39,7 +42,8 @@ partial_roc <- sidebarLayout(position = 'left',
                                  numericInput('randper','Random points percentage%',
                                               value = 50,min = 1,max = 100,step = 1),
                                  selectInput('iter','Number of iterations for the bootstrap',selected = '500',
-                                             choices =c('100'=100,'500'=500,'1000'=1000,'2000'=2000))
+                                             choices =c('100'=100,'500'=500,'1000'=1000,'2000'=2000,
+                                                        '5000'=5000,"10000"=10000))
                                ),
                                downloadButton(outputId="partRocT",label="Download table")
                                ),
