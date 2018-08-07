@@ -62,7 +62,7 @@ Imports:
     future.apply (>= 1.0.0),
     purrr (>= 0.2.5),
     spocc (>= 0.7.0),
-    Rcpp
+    Rcpp (>= 0.12.18)
 URL: https://luismurao.github.io/
 BugReports: https://github.com/luismurao/ntbox/issues
 License: GPL-3
