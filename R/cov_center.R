@@ -4,7 +4,7 @@
 #' @param data A data.frame or a matrix with the numeric values of the variables
 #' that will be used to model the niche.
 #' @param mve A logical value. If TRUE a minimum volume ellipsoid will be computed using
-#' the function \code{\link[MASS]{cov.mve}} of the \pkg{MASS} package. If False the covariance matrix of the input data will be used.
+#' the function \code{\link[MASS]{cov.rob}} of the \pkg{MASS} package. If False the covariance matrix of the input data will be used.
 #' @param level A numerical value specifying the proportion of the data to be
 #' used to compute the ellipsoid.
 #' @param vars A numeric or a string vector specifying the columns indexes/names of the variables of the input data which will be used to fit the ellipsoid model. If NULL the user will be asked to enter the indexes.

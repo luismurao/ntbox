@@ -11,7 +11,7 @@ cov_center(data, mve = TRUE, level, vars = NULL)
 that will be used to model the niche.}
 
 \item{mve}{A logical value. If TRUE a minimum volume ellipsoid will be computed using
-the function \code{\link[MASS]{cov.mve}} of the \pkg{MASS} package. If False the covariance matrix of the input data will be used.}
+the function \code{\link[MASS]{cov.rob}} of the \pkg{MASS} package. If False the covariance matrix of the input data will be used.}
 
 \item{level}{A numerical value specifying the proportion of the data to be
 used to compute the ellipsoid.}
