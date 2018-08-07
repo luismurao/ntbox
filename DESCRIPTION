@@ -2,14 +2,14 @@ Package: ntbox
 Type: Package
 Title: From getting biodiversity data to evaluating species
     distribution models in a friendly GUI environment
-Version: 0.2.5.4
+Version: 0.3.0.0
 Date: 2018-07-22
 Authors@R: as.person(c(
                         "Luis Osorio-Olvera <luimurao@gmail.com> [aut, cre]",
                         "Vijay Barve <vijay.barve@gmail.com> [aut]",
                         "Narayani Barve <narayani.ku@gmail.com> [aut]",
                         "Jorge Soberón <jsoberon@ku.edu> [aut]",
-                        "Manuel Falconi <mjfalconi@gmail.com [aut]"
+                        "Manuel Falconi <mjfalconi@gmail.com> [aut]"
                         ))
 Maintainer: Luis Osorio-Olvera <luimurao@gmail.com>
 Description: NicheToolbox is an R package with a friendly Graphical User
@@ -60,10 +60,13 @@ Imports:
     future (>= 1.7.0),
     stringi (>= 1.1),
     future.apply (>= 1.0.0),
-    spocc (>= 0.7.0)
+    purrr (>= 0.2.5),
+    spocc (>= 0.7.0),
+    Rcpp
 URL: https://luismurao.github.io/
 BugReports: https://github.com/luismurao/ntbox/issues
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 6.0.1
+RoxygenNote: 6.1.0
+LinkingTo: Rcpp
