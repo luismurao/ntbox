@@ -42,18 +42,18 @@ pROC <- function(continuos_mod,test_data,n_iter=1000,E_percent=5,boost_percent=5
   n_data <- length(test_value)
   n_samp <- ceiling((boost_percent/100)*(n_data))
 
-  big_classpixles <- matrix(rep(models_thresholds,each=n_samp),
+  big_classpixels <- matrix(rep(models_thresholds,each=n_samp),
                             ncol=length(models_thresholds))
 
 
-  calc_aucDF <- function(big_classpixles,fractional_area,
+  calc_aucDF <- function(big_classpixels,fractional_area,
                          test_value,n_data,n_samp,error_sens){
 
     rowsID <- sample(x = n_data,
                      size = n_samp,
                      replace=TRUE)
     test_value1 <- test_value[rowsID]
-    omssion_matrix <-   big_classpixles >  test_value1
+    omssion_matrix <-   big_classpixels >  test_value1
     sensibility <- 1 - colSums(omssion_matrix)/n_samp
     xyTable <- data.frame(fractional_area,sensibility)
     less_ID <- which(xyTable$sensibility<=error_sens)
@@ -92,7 +92,7 @@ pROC <- function(continuos_mod,test_data,n_iter=1000,E_percent=5,boost_percent=5
       roc_env[[x]] %<-% {
         x1 <- 1:n_runs[i]
         auc_matrix1 <- x1 %>%
-          purrr::map_df(~calc_aucDF(big_classpixles,
+          purrr::map_df(~calc_aucDF(big_classpixels,
                                     fractional_area,
                                     test_value,n_data,n_samp,
                                     error_sens))
@@ -108,7 +108,7 @@ pROC <- function(continuos_mod,test_data,n_iter=1000,E_percent=5,boost_percent=5
   else{
 
     partial_AUC <- 1:n_iter %>%
-      purrr::map_df(~calc_aucDF(big_classpixles,
+      purrr::map_df(~calc_aucDF(big_classpixels,
                                 fractional_area,
                                 test_value,n_data,n_samp,
                                 error_sens))
