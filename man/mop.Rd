@@ -4,8 +4,8 @@
 \alias{mop}
 \title{MOP: Extrapolation risk analysis for model transfer}
 \usage{
-mop(M_stack, G_stack, percent = 10, comp_each = 2000, parallel = FALSE,
-  normalized = TRUE)
+mop(M_stack, G_stack, percent = 10, comp_each = 2000,
+  parallel = FALSE, normalized = TRUE)
 }
 \arguments{
 \item{M_stack}{a RasterStack of variables representing the calibration area (M area in ENM context).}
