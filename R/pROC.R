@@ -22,6 +22,11 @@
 #' @export
 
 pROC <- function(continuos_mod,test_data,n_iter=1000,E_percent=5,boost_percent=50,parallel=TRUE){
+
+  if(continuos_mod@data@min == continuos_mod@data@max){
+    stop("\nModel with no variability.\n")
+  }
+
   continuos_mod <-round((continuos_mod/raster::cellStats(continuos_mod,
                                                          max)) * 1000)
   test_value <- raster::extract(continuos_mod,test_data)
