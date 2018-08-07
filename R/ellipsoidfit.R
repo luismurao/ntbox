@@ -2,8 +2,8 @@
 #' @description Function fit an ellipsoid model using the shape matrix (covariance matrix)
 #' of the niche variables.
 #' @param data A RasterStack or RasterBrick objet of the niche varibles.
-#' @param centroid A vector with the values of the centers of the ellipsoid (see \code{\link[hdm]{cov_center}}).
-#' @param covar The shape matrix (covariance) of the ellipoid (see \code{\link[hdm]{cov_center}}).
+#' @param centroid A vector with the values of the centers of the ellipsoid (see \code{\link[ntbox]{cov_center}}).
+#' @param covar The shape matrix (covariance) of the ellipoid (see \code{\link[ntbox]{cov_center}}).
 #' @param level The proportion of points  to be included inside the ellipsoid
 #' @param threshold Threshold value for the suitabilities to be cosidered as 0,
 #' by default all suiabilities <0.05 are cosidered as zeros
