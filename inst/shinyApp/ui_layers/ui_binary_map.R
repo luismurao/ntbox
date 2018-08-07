@@ -18,7 +18,7 @@ ui_binary  <- sidebarLayout(position = "left",
                               ),
                                 #p("In this section contains a set of functions that will
                                 #  help you to find the best threshold cut-off."),
-                                p("Upload the model prediction raster in ASCII format"),
+                                p("Upload the model prediction raster"),
                                 radioButtons('formatBin', 'Format', c('.asc','.bil',
                                                                       '.tif','.nc',
                                                                       '.sdat','.img')),
