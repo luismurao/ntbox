@@ -1,19 +1,33 @@
 #---------------------------------------------------------------------------------
 # MOP
+osSystem <- Sys.info()["sysname"]
 
 ui_mop <- sidebarLayout(position = 'left',
                              sidebarPanel(
                                titlePanel("NicheToolBox"),
+                               wellPanel(
+                                 h4("Mobility-Oriented Parity analysis (MOP)"),
+                                 p("MOP is an extrapolation risk analysis for model transfer see:"),
+                                 p("Owens et al. (2013; https://doi.org/10.1016/j.ecolmodel.2013.04.011)."),
+                                 p("Load the layers that will be compared; the supported raster formats are: ",".asc",
+                                   ".bil",",",".tif",",",".nc.",
+                                   ",",".sdat",",",".img")
+                               ),
                                br(),
                                wellPanel(
                                  h5("M layers data"),
-
-                                 shinyFiles::shinyDirButton(id = "m_layers_directory",
-                                                            label =  "Select M layers directory",
-                                                            title = "Select a directory from the directories panel",
-                                                            icon = icon("folder-open",
-                                                                        lib = "glyphicon"),
-                                                            buttonType = "info"),
+                                 conditionalPanel(paste0("'",osSystem,"' != 'Darwin'"),
+                                                  directoryInput('m_layers_directory',
+                                                                 label = 'Select M layers directory')
+                                 ),
+                                 conditionalPanel(paste0("'",osSystem,"' == 'Darwin'"),
+                                                 shinyFiles::shinyDirButton(id = "m_layers_directory",
+                                                                            label =  "Select M layers directory",
+                                                                            title = "Select a directory from the directories panel",
+                                                                            icon = icon("folder-open",
+                                                                                        lib = "glyphicon"),
+                                                                            buttonType = "info")
+                                 ),
 
                                  bsButton(inputId = "loadMLayers","Load M layers",
                                           icon = icon("upload", lib = "glyphicon"),style = "primary"),
@@ -24,12 +38,19 @@ ui_mop <- sidebarLayout(position = 'left',
                                  ),
                                wellPanel(
                                  h5("G layers data"),
-                                 shinyFiles::shinyDirButton(id = "g_layers_directory",
-                                                            label =  "Select G layers directory",
-                                                            title = "Select a directory from the directories panel",
-                                                            icon = icon("folder-open",
-                                                                        lib = "glyphicon"),
-                                                            buttonType = "info"),
+
+                                 conditionalPanel(paste0("'",osSystem,"' != 'Darwin'"),
+                                                  directoryInput('g_layers_directory',
+                                                                 label = 'Select G layers directory')
+                                                  ),
+                                 conditionalPanel(paste0("'",osSystem,"' == 'Darwin'"),
+                                                  shinyFiles::shinyDirButton(id = "g_layers_directory",
+                                                                             label =  "Select G layers directory",
+                                                                             title = "Select a directory from the directories panel",
+                                                                             icon = icon("folder-open",
+                                                                                         lib = "glyphicon"),
+                                                                             buttonType = "info")
+                                                  ),
                                  bsButton("loadGLayers","Load G layers",
                                           icon = icon("upload", lib = "glyphicon"),style = "primary"),
                                  busyIndicator("Computation In progress",wait = 0),
