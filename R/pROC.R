@@ -119,6 +119,13 @@ pROC <- function(continuos_mod,test_data,n_iter=1000,E_percent=5,boost_percent=5
                                 error_sens))
 
   }
-  return(partial_AUC)
+  #return(partial_AUC)
+  mauc <- mean(partial_AUC$auc_ratio,na.rm = TRUE)
+  proc <- sum(partial_AUC$auc_ratio <= 1) / length(partial_AUC$auc_ratio)
+  p_roc <- c(mauc, proc)
+  names(p_roc) <- c(paste("Mean_AUC_ratio_at_", E_percent, "%", sep = ""), "Partial_ROC")
+
+  p_roc_res <- list(pROC_summary=p_roc, pROC_results=partial_AUC)
+  return(p_roc_res)
 
 }

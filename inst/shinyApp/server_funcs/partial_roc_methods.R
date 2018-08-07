@@ -50,8 +50,7 @@ partialRoc <- reactive({
                         E_percent = error,
                         boost_percent = randper,
                         parallel = TRUE)
-
-
+    pRoc <- pRoc[[2]]
     pRoc <- data.frame(Iteration=1:dim(pRoc)[1],pRoc )
     names(pRoc) <- c("Iteration","AUC_partial","AUC_prandom","AUC_ratio")
 
