@@ -6,10 +6,19 @@
 dat_raster <- reactive({
   if (is.null(input$sdm_mod))
     return(NULL)
-  else if(identical(input$format2,'.asc')){
-    r1 <- raster::raster(input$sdm_mod$datapath)
-    return(r1)
-  }
+  else if(identical(input$format2,'.asc'))
+    path_ras <- input$sdm_mod$datapath
+  else if(identical(input$format2,'.tif'))
+    path_ras <- input$fileBin$datapath
+  else if(identical(input$format2,'.bil'))
+    path_ras <- input$fileBin$datapath
+  else if(identical(input$format2,'.nc'))
+    path_ras <- input$fileBin$datapath
+  else if(identical(input$format2,'.sdat'))
+    path_ras <- input$fileBin$datapath
+  else if(identical(input$format2,'.img'))
+    path_ras <- input$fileBin$datapath
+  return(raster::raster(path_ras))
 
 })
 # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -29,19 +38,22 @@ dat_presence <- reactive({
 
 partialRoc <- reactive({
   sims <- as.numeric(input$iter)
-  error <-as.numeric(input$omission)
+  error <-as.numeric(input$omission)*100
   randper <- as.numeric(input$randper)
 
   if(!is.null(dat_presence()) && !is.null(dat_raster())){
-    pRoc <- PartialROC_1(PresenceFile = dat_presence(),
-                         PredictionFile = dat_raster(),
-                         OmissionVal = error,
-                         RandomPercent = randper,
-                         NoOfIteration = sims)
+
+    test_data <- read.csv(dat_presence())
+    pRoc <- ntbox::pROC(continuos_mod = dat_raster(),
+                        test_data = test_data[,-1],
+                        n_iter = sims,
+                        E_percent = error,
+                        boost_percent = randper,
+                        parallel = TRUE)
 
 
-    pRoc <- data.frame(t(sapply(pRoc,c)))
-    pRoc[,1] <- 1:dim(pRoc)[1]
+    pRoc <- data.frame(Iteration=1:dim(pRoc)[1],pRoc )
+    names(pRoc) <- c("Iteration","AUC_partial","AUC_prandom","AUC_ratio")
 
     return(pRoc)
   }
@@ -130,9 +142,9 @@ pRocStats <- reactive({
     cat('                          after',input$iter, 'simulations                          \n')
     cat('++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n\n')
 
-    cat('The mean value for AUC ratio at, ',input$omission,' is:',mean(dataP[,4]),'\n\n')
-    cat('The mean value for partial AUC at, ',input$omission,' is:',mean(dataP[,2]),'\n\n')
-    cat('The mean value for partial AUC at 0.5 is:',mean(dataP[,3]),'\n\n')
+    cat('The mean value for AUC ratio at, ',1 - input$omission,' is:',mean(dataP[,4]),'\n\n')
+    cat('The mean value for partial AUC at, ',1 - input$omission,' is:',mean(dataP[,2]),'\n\n')
+    cat('The mean value for partial AUC at random is:',mean(dataP[,3]),'\n\n')
 
 
     cat('++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n')
