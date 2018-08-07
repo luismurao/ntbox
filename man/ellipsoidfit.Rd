@@ -11,9 +11,9 @@ ellipsoidfit(data, centroid, covar, level = 0.95, threshold = 0.05,
 \arguments{
 \item{data}{A RasterStack or RasterBrick objet of the niche varibles.}
 
-\item{centroid}{A vector with the values of the centers of the ellipsoid (see \code{\link[hdm]{cov_center}}).}
+\item{centroid}{A vector with the values of the centers of the ellipsoid (see \code{\link[ntbox]{cov_center}}).}
 
-\item{covar}{The shape matrix (covariance) of the ellipoid (see \code{\link[hdm]{cov_center}}).}
+\item{covar}{The shape matrix (covariance) of the ellipoid (see \code{\link[ntbox]{cov_center}}).}
 
 \item{level}{The proportion of points  to be included inside the ellipsoid}
 
