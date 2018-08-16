@@ -312,11 +312,11 @@ observeEvent(input$saveState, {
 
       # Compile Motion Chart instructions
 
-      render(input = mchart_path,
-             output_format = html_document(pandoc_args = c("+RTS", "-K64m","-RTS"),
-                                           highlight="haddock",
-                                           toc = TRUE,theme = "readable"),
-             output_file = mchart_save)
+      #render(input = mchart_path,
+      #       output_format = html_document(pandoc_args = c("+RTS", "-K64m","-RTS"),
+      #                                     highlight="haddock",
+      #                                     toc = TRUE,theme = "readable"),
+      #       output_file = mchart_save)
 
 
       # Save raw GBIF data (from GBIF data search)
