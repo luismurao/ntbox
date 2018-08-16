@@ -41,6 +41,7 @@ partial_roc <- sidebarLayout(position = 'left',
                                               value = 0.05,min = 0,max=1,step = 0.05),
                                  numericInput('randper','Random points percentage%',
                                               value = 50,min = 1,max = 100,step = 1),
+                                 checkboxInput("parallel_roc",label = "Parallel computation (optimized for big rasters)",value = FALSE),
                                  selectInput('iter','Number of iterations for the bootstrap',selected = '500',
                                              choices =c('100'=100,'500'=500,'1000'=1000,'2000'=2000,
                                                         '5000'=5000,"10000"=10000))

@@ -40,7 +40,7 @@ partialRoc <- reactive({
   sims <- as.numeric(input$iter)
   error <-as.numeric(input$omission)*100
   randper <- as.numeric(input$randper)
-
+  parallel <- input$parallel_roc
   if(!is.null(dat_presence()) && !is.null(dat_raster())){
 
     test_data <- read.csv(dat_presence())
@@ -49,7 +49,7 @@ partialRoc <- reactive({
                         n_iter = sims,
                         E_percent = error,
                         boost_percent = randper,
-                        parallel = TRUE)
+                        parallel = parallel)
     pRoc <- pRoc[[2]]
     pRoc <- data.frame(Iteration=1:dim(pRoc)[1],pRoc )
     names(pRoc) <- c("Iteration","AUC_partial","AUC_prandom","AUC_ratio")
