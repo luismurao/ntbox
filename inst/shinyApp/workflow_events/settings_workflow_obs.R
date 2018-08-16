@@ -170,6 +170,7 @@ if(osSystem != "Darwin"){
   # Workflow directory
   workflowDir <- reactive({
     path <- readDirectoryInput(session, 'wf_directory')
+
     ifelse(nchar(path)>0L, path <- paste0(path,"/"),path)
     if(length(path)>0L)
       return(path)
@@ -392,7 +393,8 @@ observeEvent(input$saveState, {
 
       # Save polygon
       if(!is.null(myPolygon())){
-        file_dir <- paste0(data_dir_path,"M_Shapefiles_",input$dataset_dynMap)
+        file_dir <- paste0(data_dir_path,"/",
+                           "M_Shapefiles_",input$dataset_dynMap)
         if(!dir.exists(file_dir))
           dir.create(file_dir)
         poly_name <- input$polygon_name
