@@ -296,6 +296,23 @@ observeEvent(input$saveState, {
       mchart_path <- system.file("shinyApp/ntb_report/MotChartInstructions.Rmd",
                                  package = "ntbox")
 
+      # Save polygon
+      if(!is.null(myPolygon())){
+        file_dir <- paste0(data_dir_path,"/",
+                           "M_Shapefiles_",input$dataset_dynMap)
+        if(!dir.exists(file_dir))
+          dir.create(file_dir)
+        poly_name <- input$polygon_name
+        if(length(poly_name)<1)
+          poly_name <- paste0("dynMpolygon_ntb",sample(1:1000,1))
+        poly_name_ext <- paste0(poly_name,".shp")
+        #if(poly_name_ext %in% list.files(file_dir)){
+        #  poly_name <- paste0(poly_name,"B_RandNUM",sample(1:1000,1))
+        #}
+        writeOGR(myPolygon(), file_dir, poly_name,"_",input$dataset_dynMap, driver="ESRI Shapefile",overwrite_layer = T)
+
+      }
+
       # save HTML path
 
       report_save <- paste0(wf_dir_path,"/","data_report.html")
@@ -391,22 +408,6 @@ observeEvent(input$saveState, {
         write.csv(data_poly(),user_file_clean_dynamic_poly,row.names = FALSE)
       }
 
-      # Save polygon
-      if(!is.null(myPolygon())){
-        file_dir <- paste0(data_dir_path,"/",
-                           "M_Shapefiles_",input$dataset_dynMap)
-        if(!dir.exists(file_dir))
-          dir.create(file_dir)
-        poly_name <- input$polygon_name
-        if(length(poly_name)<1)
-          poly_name <- paste0("dynMpolygon_ntb",sample(1:1000,1))
-        poly_name_ext <- paste0(poly_name,".shp")
-        #if(poly_name_ext %in% list.files(file_dir)){
-        #  poly_name <- paste0(poly_name,"B_RandNUM",sample(1:1000,1))
-        #}
-        writeOGR(myPolygon(), file_dir, poly_name,"_",input$dataset_dynMap, driver="ESRI Shapefile",overwrite_layer = T)
-
-      }
 
     }
   }
