@@ -1,3 +1,5 @@
+osSystem <- Sys.info()["sysname"]
+
 DynamicMap <- div(class="outer",
 
                       tags$head(
@@ -41,15 +43,21 @@ DynamicMap <- div(class="outer",
                                                                       textInput("polygon_name","Give a name for your polygon",value = NULL)),
                                                                       #shiny::actionButton("save_poly",label = "Save Polygon")),
                                                      conditionalPanel("input.poly_from == 0",
-                                                                      #directoryInput('poly_dir',
-                                                                      #               label = 'Select a directory of your shapefile of M',
-                                                                       #              value = NULL),
-                                                                      shinyFiles::shinyDirButton(id = "poly_dir",
-                                                                                                 label =  "Select a directory of your shapefile of M",
-                                                                                                 title = "Select a directory from the directories panel",
-                                                                                                 icon = icon("folder-open",
-                                                                                                             lib = "glyphicon"),
-                                                                                                 buttonType = "info"),
+
+                                                                      conditionalPanel(paste0("'",osSystem,"' != 'Darwin'"),
+                                                                                       directoryInput('poly_dir',
+                                                                                                      label = 'Select a directory of your shapefile of M',
+                                                                                                     value = NULL)
+                                                                      ),
+                                                                      conditionalPanel(paste0("'",osSystem,"' == 'Darwin'"),
+                                                                                       shinyFiles::shinyDirButton(id = "poly_dir",
+                                                                                                                  label =  "Select a directory of your shapefile of M",
+                                                                                                                  title = "Select a directory from the directories panel",
+                                                                                                                  icon = icon("folder-open",
+                                                                                                                              lib = "glyphicon"),
+                                                                                                                  buttonType = "info")
+                                                                                       ),
+
                                                                       br(),
 
                                                                       selectInput("poly_files","Select layer of M",

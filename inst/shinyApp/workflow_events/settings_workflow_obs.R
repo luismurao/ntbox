@@ -85,7 +85,7 @@ if(osSystem == "Darwin"){
 
   # Polygon directory
   poly_dir <- reactive({
-    path <- shinyFiles::parseDirPath(volumes, input$ras_layers_directory)
+    path <- shinyFiles::parseDirPath(volumes, input$poly_dir)
     if(length(path)>0L)
       return(path)
     else
@@ -160,7 +160,7 @@ if(osSystem != "Darwin"){
 
   # Raster layer directory
   rasterLayersDir <- reactive({
-    path <- readDirectoryInput(session, 'ras_layers_directory')
+    path <- readDirectoryInput(session, 'poly_dir')
     if(length(path)>0L)
       return(path)
     else
