@@ -2,7 +2,8 @@ source("server_funcs/data_gbif.R",local = TRUE)
 source("server_funcs/data_user.R",local=TRUE)
 
 observe({
-  if(!is.null(data_user_clean()) && is.null(data_gbif())){
+  if(!is.null(data_user_clean())){
+
     updateSelectInput(session,"datasetM","Select the data set you want to work with",
                       choices = c("User data"="updata",
                                   #"M data from dynamic map" = "M_data",
@@ -41,6 +42,7 @@ define_M_raster <- reactive({
 # Select a geograpghic dataset
 
 data_to_extract <- reactive({
+
   if(input$datasetM == "gbif_dat" && !is.null(data_gbif()))
     return(data_gbif()[,c(input$xLongitudeGBIF,input$yLatitudeGBIF)])
   if(input$datasetM == "gbif_dat" && !is.null(data_gbif()) && input$extracted_area == "polygon_of_M")
