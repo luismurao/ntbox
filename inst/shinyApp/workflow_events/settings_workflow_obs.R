@@ -160,7 +160,7 @@ if(osSystem != "Darwin"){
 
   # Raster layer directory
   rasterLayersDir <- reactive({
-    path <- readDirectoryInput(session, 'poly_dir')
+    path <- readDirectoryInput(session, 'ras_layers_directory')
     if(length(path)>0L)
       return(path)
     else
