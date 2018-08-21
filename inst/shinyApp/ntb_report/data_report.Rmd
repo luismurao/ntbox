@@ -8,18 +8,20 @@ This is **NicheToolBox data report** here you can find a quick view of the think
 
 ```{r results="asis",echo=FALSE}
 library(knitr)
-occ_data <- data_gbif()
-if(!is.null(occ_data)){
-  cat("## GBIF data")
-  cat("\n")
-  cat(paste0("The total number of occurrences points were: **", dim(data_gbif())[1],"**"))
-  cat("\n")
-
-  printInfoGBIF <- TRUE
+if(exists("data_gbif()")){
+  occ_data <- data_gbif()
+  if(!is.null(occ_data)){
+    cat("## GBIF data")
+    cat("\n")
+    cat(paste0("The total number of occurrences points were: **", dim(data_gbif())[1],"**"))
+    cat("\n")
+    printInfoGBIF <- TRUE
+  } 
   
 } else{
   printInfoGBIF <- FALSE
 }
+
 
 ```
 
