@@ -209,11 +209,14 @@ if(osSystem != "Darwin"){
 layers_shp <- reactive({
   if(!is.null(poly_dir())){
     layersDir <- list.files(poly_dir(),pattern = "*.shp$",full.names = F)
-    layers <- lapply(layersDir,
-                     function(x)
-                       str_extract_all(string = x,
-                                       pattern = "([A-z]|[:digit:])+[^.\\shp]")[[1]])
-    layers <- unlist(layers)
+    #layers <- lapply(layersDir,
+    #                 function(x)
+    #                   str_extract_all(string = x,
+    #                                   pattern = "([A-z]|[:digit:])+[^.\\shp]")[[1]])
+    #layers <- unlist(layers)
+    layers <- layersDir[grep(".shp",x = layersDir)]
+    layers <- gsub(pattern = ".shp",x = layers,"")
+
     layers <- c("Select a layer",layers)
     return(layers)
   }
@@ -240,6 +243,7 @@ myPolygon <- reactive({
   }
   # Read polygon from user file
   if(input$define_M == 1 && input$poly_from ==0 && !is.null(poly_dir()) &&  input$poly_files != "Select a layer"){
+    print(poly_dir())
     map <- readOGR(dsn = poly_dir(),layer = input$poly_files)
     return(map)
   }
