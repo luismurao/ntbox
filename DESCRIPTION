@@ -2,8 +2,8 @@ Package: ntbox
 Type: Package
 Title: From getting biodiversity data to evaluating species
     distribution models in a friendly GUI environment
-Version: 0.3.0.1
-Date: 2018-07-22
+Version: 0.3.3.0
+Date: 2018-07-24
 Authors@R: as.person(c(
                         "Luis Osorio-Olvera <luimurao@gmail.com> [aut, cre]",
                         "Vijay Barve <vijay.barve@gmail.com> [aut]",
@@ -30,6 +30,7 @@ Imports:
     rgl (>= 0.99.16),
     dygraphs (>= 1.1.1.4),
     png (>= 0.1-7),
+    ggplot2 (>= 3.0.0),
     XML (>= 3.98-1.11),
     rmarkdown (>= 1.10),
     knitr (>= 1.20),
