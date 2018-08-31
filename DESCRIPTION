@@ -57,6 +57,7 @@ Imports:
     shinythemes (>= 1.1.1),
     grid (>= 3.4.1),
     RColorBrewer (>= 1.1-2),
+    scales (>= 1.0.0),
     ade4 (>= 1.7-11),
     V8 (>= 1.5),
     future (>= 1.7.0),
