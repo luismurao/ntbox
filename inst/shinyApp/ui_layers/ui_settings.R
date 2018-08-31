@@ -17,7 +17,7 @@ materials <- sidebarLayout(position = "left",
                              #h3('Settings'),
                              br(),
                              h4("Niche layers"),
-                             p("One ne of the most important things for your data analysis in NTB is to select the folder with the raster layer that you will use as niche variables."),
+                             p("One ne of the most important things for your data analysis in NTB is to select the folder with the raster layers that you will use as niche variables."),
                              br(),
                              p("Please select the folder of raster layers; notice that all of them need to be in the same resolution and extension"),
                              p("The supported raster formats are: ",".asc",
@@ -27,7 +27,14 @@ materials <- sidebarLayout(position = "left",
                              #directoryInput('ras_layers_directory', label = 'Select a raster layers directory'),
                              #glyphicon glyphicon-folder-open
                              conditionalPanel(paste0("'",osSystem,"' != 'Darwin'"),
-                                              directoryInput('ras_layers_directory', label = 'Select a raster layers directory')
+                                              directoryInput('ras_layers_directory', label = 'Select a raster layers directory'),
+                                              br(),
+                                              checkboxInput("load_projLayers_win",label = "Select projection layers",value = FALSE),
+                                              conditionalPanel("input.load_projLayers_win == true",
+                                                               h4("Projection layers"),
+                                                               p("This are the layers of environmental change scenario. Please make sure that their names are the same as the niche layers."),
+                                                               directoryInput('proj_layers_directory', label = 'Select projection layers directory')                 )
+
                                               ),
                              conditionalPanel(paste0("'",osSystem,"' == 'Darwin'"),
                                               shinyFiles::shinyDirButton(id = "ras_layers_directory",
@@ -38,7 +45,26 @@ materials <- sidebarLayout(position = "left",
                                                                          buttonType = "info"),
                                               br(),
                                               HTML(paste('<div class="alert alert-info" role="alert">',
-                                                         verbatimTextOutput("layers_directory"),'</div>'))
+                                                         verbatimTextOutput("layers_directory"),'</div>')),
+                                              br(),
+                                              checkboxInput("load_projLayers",label = "Select projection layers",value = FALSE),
+                                              conditionalPanel("input.load_projLayers == true",
+                                                               h4("Projection layers"),
+                                                               p("This are the layers of environmental change scenario."),
+                                                               p("NicheToolBox uses them either to project the niche models or the PCAs"),
+                                                               p("computed for your niche layers."),
+                                                               p("Please make sure that their names are the same as the niche layers."),
+                                                               shinyFiles::shinyDirButton(id = "proj_layers_directory",
+                                                                                          label =  "Select projection layers directory",
+                                                                                          title = "Select a directory from the directories panel",
+                                                                                          icon = icon("folder-open",
+                                                                                                      lib = "glyphicon"),
+                                                                                          buttonType = "info"),
+                                                               HTML(paste('<div class="alert alert-info" role="alert">',
+                                                                          verbatimTextOutput("proj_directory"),'</div>'))
+
+                                                               )
+
                                               ),
 
 
@@ -69,6 +95,7 @@ materials <- sidebarLayout(position = "left",
                                               br(),
                                               HTML(paste('<div class="alert alert-info" role="alert">',
                                                          verbatimTextOutput("work_directory"),'</div>'))
+
                              )
 
                              #submitButton()
@@ -81,7 +108,9 @@ materials <- sidebarLayout(position = "left",
                                ),
                            mainPanel(
                              #htmlOutput("page"),
-                             plotOutput("niche_layers")
-
-                           )
+                             plotOutput("niche_layers"),
+                             conditionalPanel("input.load_projLayers == true || input.load_projLayers_win == true",
+                                              plotOutput("niche_layers_proj")
+                                              )
+                             )
                            )
