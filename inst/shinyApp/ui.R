@@ -12,6 +12,7 @@ shinyUI(
 
              id = "nb",
              tabPanel("AppSettings",materials),
+             tabPanel("GIS Tools",gistools),
              navbarMenu("Data",
                         tabPanel("GBIF data",
                                  tabsetPanel(
