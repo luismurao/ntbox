@@ -1,3 +1,4 @@
+source("server_funcs/niche_layers.R",local = T)
 source("server_funcs/data_gbif.R",local = T)
 source("server_funcs/dynamicMapMethods.R",local = T)
 source("server_funcs/niche_layers_extract.R",local = T)
@@ -12,14 +13,15 @@ source("server_funcs/model_proj_methods.R",local = T)
 source("server_funcs/partial_roc_methods.R",local = T)
 source("server_funcs/binary_map_methods.R",local =T)
 source("server_funcs/mop_methods.R",local =T)
-
+source("server_funcs/gistools_methods.R",local =T)
 #volumes <- c(path.expand('~'))
 osSystem <- Sys.info()["sysname"]
 
 if(osSystem == "Darwin"){
+
+  #------------------------------------------------------------------------------
   # Raster layer directory
 
-  #names(volumes) <- Sys.info()["user"]
   volumes <- getVolumes()
   shinyFiles::shinyDirChoose(input, "ras_layers_directory",
                              roots = volumes,
@@ -33,6 +35,7 @@ if(osSystem == "Darwin"){
     else
       return("Press the button and select a dir")
   })
+
 
 
   rasterLayers <- reactive({
@@ -51,7 +54,42 @@ if(osSystem == "Darwin"){
     })
   })
 
+  #------------------------------------------------------------------------------
+  # Porjection Raster layer directory
 
+
+  shinyFiles::shinyDirChoose(input, "proj_layers_directory",
+                             roots = volumes,
+                             session = session)
+
+
+  output$proj_directory <- renderPrint({
+    layers_dir <- shinyFiles::parseDirPath(volumes, input$proj_layers_directory)
+    if(length(layers_dir)>0L)
+      return(layers_dir)
+    else
+      return("Press the button and select a dir")
+  })
+
+
+  proj_rasterLayers <- reactive({
+
+    layers_dir <- shinyFiles::parseDirPath(volumes, input$proj_layers_directory)
+    ras_formats <- "(*.asc$)|(*.bil$)|(*.sdat$)|(*.rst$)|(*.nc$)|(*.tif$)|(*.envi$)|(*.img$)"
+    layDirs <-list.files(layers_dir,pattern = ras_formats)
+
+    input$loadNicheLayers
+    isolate({
+
+      if(input$loadNicheLayers > 0 && length(layers_dir) > 0L && length(layDirs)>0L)
+        return(rlayers_ntb(layers_dir))
+      else
+        return(NULL)
+    })
+  })
+
+
+  #------------------------------------------------------------------------------
   # Workflow directory
 
   shinyFiles::shinyDirChoose(input, "wf_directory",
@@ -94,6 +132,8 @@ if(osSystem == "Darwin"){
 
 
 }
+
+
 if(osSystem != "Darwin"){
   observeEvent(
     ignoreNULL = TRUE,
@@ -113,6 +153,27 @@ if(osSystem != "Darwin"){
       }
     }
   )
+
+
+  observeEvent(
+    ignoreNULL = TRUE,
+    eventExpr = {
+      input$proj_layers_directory
+    },
+    handlerExpr = {
+      if (input$proj_layers_directory > 0) {
+        # condition prevents handler execution on initial app launch
+
+        # launch the directory selection dialog with initial path read from the widget
+        path = choose.dir(default = readDirectoryInput(session, 'proj_layers_directory'))
+
+        # update the widget value
+        updateDirectoryInput(session, 'proj_layers_directory', value = path)
+
+      }
+    }
+  )
+
 
 
 
@@ -167,6 +228,17 @@ if(osSystem != "Darwin"){
       return(NULL)
   })
 
+
+  # Raster layer directory
+  proj_rasterLayersDir <- reactive({
+    path <- readDirectoryInput(session, 'proj_layers_directory')
+    if(length(path)>0L)
+      return(path)
+    else
+      return(NULL)
+  })
+
+
   # Workflow directory
   workflowDir <- reactive({
     path <- readDirectoryInput(session, 'wf_directory')
@@ -182,6 +254,20 @@ if(osSystem != "Darwin"){
 
   rasterLayers <- reactive({
     layers_dir <- rasterLayersDir()
+    input$loadNicheLayers
+    isolate({
+      if(input$loadNicheLayers > 0 && length(layers_dir) > 0L)
+        return(rlayers_ntb(layers_dir))
+      else
+        return(NULL)
+    })
+  })
+
+
+  # User projection raster (niche) layers
+
+  proj_rasterLayers <- reactive({
+    layers_dir <-  proj_rasterLayersDir()
     input$loadNicheLayers
     isolate({
       if(input$loadNicheLayers > 0 && length(layers_dir) > 0L)
