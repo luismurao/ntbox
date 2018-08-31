@@ -180,20 +180,6 @@ options = list(aLengthMenu = c(5, 10, 25,
                iDisplayLength = 10))
 
 
-output$niche_layers <- renderPlot({
-
-  if(!is.null(rasterLayers())){
-    plot(rasterLayers()[[1]])
-  }
-  else{
-    messages <- "Load niche layers"
-    x <- -10:10
-    y <- x
-    plot(x,y,type="n", xlab="No Data", ylab="No data",cex=2)
-    text(0,0,messages,cex=3 )
-  }
-
-})
 
 
 #output$raster_sample <- renderPlot({
