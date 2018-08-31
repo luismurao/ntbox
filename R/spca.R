@@ -9,9 +9,10 @@
 #' has done the PCa for `layers_stack`
 #' and just wants to project the PCA on the `layers_to_proj` object.
 #' @param sv_dir A directory where the PCs will be saved. If NULL the PCs will not be written.
+#' @param sv_proj_dir  A directory where the PCs projection will be saved. If NULL the PCs will be written inside sv_dir.
 #' @param layers_format A raster format for writing PCA results (see \code{\link[raster]{writeFormats}}). Default = ".asc"
 #' @return A list containing either the raster stack with Pricipal Components of `layers_stack` or `layers_to_proj`,
-#' a barplot of the cumulative and explained varice of each compoent of `layers_stack` and a \code{\link[stats]{prcomp}} object(`pca_obj`).
+#' a barplot of the cumulative and explained variance of each compoent of `layers_stack` and a \code{\link[stats]{prcomp}} object(`pca_obj`).
 #' @details spca uses the function \code{\link[stats]{prcomp}} of the `stats` package. If `sv_dir` is provided  the PCs
 #' and `pca_obj` will be stored on it. The names of the layers in `layers_to_proj` need to be named
 #' with exactly the same names of those either in`layers_stack` or the `pca_obj`.
@@ -70,7 +71,7 @@
 #' raster::plot(pcs_with_proj_sv$pcs_layers_projection)
 #' }
 
-spca <- function(layers_stack,layers_to_proj=NULL,pca_obj=NULL,sv_dir=NULL,layers_format=".asc"){
+spca <- function(layers_stack,layers_to_proj=NULL,pca_obj=NULL,sv_dir=NULL,layers_format=".asc",sv_proj_dir=NULL){
 
   results <- list()
 
@@ -134,6 +135,11 @@ spca <- function(layers_stack,layers_to_proj=NULL,pca_obj=NULL,sv_dir=NULL,layer
 
   if(class(layers_to_proj)=="RasterStack" && class(pca_obj) == "prcomp"){
 
+    if(!all(names(layers_to_proj) == names(layers_pca)))
+      cat("Assuming that the layers that have the same position in the stack represent the same kind of variables\n\n")
+
+    layers_to_proj <- layers_to_proj[[1:length(names(pca_obj$center))]]
+
     names(layers_to_proj) <- names(pca_obj$center)
     proj_data <- raster::getValues(layers_to_proj)
     id_vals <- which(stats::complete.cases(proj_data))
@@ -154,15 +160,19 @@ spca <- function(layers_stack,layers_to_proj=NULL,pca_obj=NULL,sv_dir=NULL,layer
     names(layers_to_proj) <- colnames(pc_projDF)
     results$pcs_layers_projection <- layers_to_proj
 
+    if((!is.null(sv_dir) && dir.exists(sv_dir)) && is.null(sv_proj_dir))
+      sv_proj_dir <- sv_dir
 
-    if(!is.null(results$pcs_layers_projection) && !is.null(sv_dir) && dir.exists(sv_dir)){
+    if(!dir.exists(sv_proj_dir)) dir.create(sv_proj_dir)
 
-      sv_dir_proj <- file.path(sv_dir,"pca_proj")
+    if(!is.null(results$pcs_layers_projection) && dir.exists(sv_proj_dir)){
 
-      if(!dir.exists(sv_dir_proj))
-        dir.create( sv_dir_proj)
+      if(sv_proj_dir == sv_dir){
+        sv_proj_dir <- file.path(sv_dir,"pca_projection")
+        dir.create(sv_proj_dir)
+      }
 
-      layers_path_proj <- file.path(sv_dir_proj,
+      layers_path_proj <- file.path(sv_proj_dir,
                                     paste0(names(layers_to_proj),
                                            layers_format))
 
