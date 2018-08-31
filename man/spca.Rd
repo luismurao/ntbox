@@ -5,7 +5,7 @@
 \title{spca: Principal Component Analysis for Spatial Data}
 \usage{
 spca(layers_stack, layers_to_proj = NULL, pca_obj = NULL,
-  sv_dir = NULL, layers_format = ".asc")
+  sv_dir = NULL, layers_format = ".asc", sv_proj_dir = NULL)
 }
 \arguments{
 \item{layers_stack}{A RasterStack of envrionmental variables}
@@ -21,10 +21,12 @@ and just wants to project the PCA on the `layers_to_proj` object.}
 \item{sv_dir}{A directory where the PCs will be saved. If NULL the PCs will not be written.}
 
 \item{layers_format}{A raster format for writing PCA results (see \code{\link[raster]{writeFormats}}). Default = ".asc"}
+
+\item{sv_proj_dir}{A directory where the PCs projection will be saved. If NULL the PCs will be written inside sv_dir.}
 }
 \value{
 A list containing either the raster stack with Pricipal Components of `layers_stack` or `layers_to_proj`,
-a barplot of the cumulative and explained varice of each compoent of `layers_stack` and a \code{\link[stats]{prcomp}} object(`pca_obj`).
+a barplot of the cumulative and explained variance of each compoent of `layers_stack` and a \code{\link[stats]{prcomp}} object(`pca_obj`).
 }
 \description{
 Performs PCA for a stack of raster layers.
