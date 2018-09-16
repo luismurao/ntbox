@@ -8,7 +8,7 @@ DynamicMap <- div(class="outer",
                         includeScript("ui_layers/style/gomap.js")
                       ),
 
-                      leafletOutput(outputId = "dyMap",width="100%", height="100%"),
+                      leafletOutput(outputId = "dyMap_cas",width="100%", height="100%"),
 
                       # Shiny versions prior to 0.11 should use class="modal" instead.
                       absolutePanel(id = "controls", class = "panel panel-default", fixed = TRUE,
@@ -30,8 +30,8 @@ DynamicMap <- div(class="outer",
                                     downloadButton(outputId = "downDatDyn",label = "Download data"),
 
 
-                                    h4("Define a polygon of M"),
-                                    checkboxInput("define_M",label = "Define and work with polygon of M",value = TRUE),
+                                    h4("Polygon of M"),
+                                    checkboxInput("define_M",label = "Use the polygon of M to filter data",value = FALSE),
                                     conditionalPanel("input.define_M == 1",
                                                      tags$div(title="Select if you want to trace your polygon of M or uploaded it from directory",
                                                               #checkboxInput("poly_from",
@@ -40,7 +40,8 @@ DynamicMap <- div(class="outer",
                                                      ),
                                                      conditionalPanel("input.poly_from == 1",
                                                                       p("You can use dynamic map to deffine the polygon of your study area. Trace a polygon using the tools of the dynamic map and then give it a name sucha as 'polygon1'"),
-                                                                      textInput("polygon_name","Give a name for your polygon",value = NULL)),
+                                                                      textInput("polygon_name","Give a name for your polygon",value = NULL),
+                                                                      verbatimTextOutput("polyfeatures")),
                                                                       #shiny::actionButton("save_poly",label = "Save Polygon")),
                                                      conditionalPanel("input.poly_from == 0",
 
@@ -65,7 +66,8 @@ DynamicMap <- div(class="outer",
                                                                                   selected = "Select directory")
 
                                                      ),
-                                                     shiny::actionButton("points_in_poly",label = "Points in polygon")
+                                                     shiny::actionButton("points_in_poly",label = "Points in polygon")#,
+                                                     #checkboxInput("hold_polygon",label = "Hold polygon",value = FALSE)
                                                      ),
 
 

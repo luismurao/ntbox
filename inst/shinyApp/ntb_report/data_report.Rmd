@@ -8,15 +8,14 @@ This is **NicheToolBox data report** here you can find a quick view of the think
 
 ```{r results="asis",echo=FALSE}
 library(knitr)
-if(exists("data_gbif()")){
+if(is.data.frame(data_gbif())){
   occ_data <- data_gbif()
-  if(!is.null(occ_data)){
-    cat("## GBIF data")
-    cat("\n")
-    cat(paste0("The total number of occurrences points were: **", dim(data_gbif())[1],"**"))
-    cat("\n")
-    printInfoGBIF <- TRUE
-  } 
+
+  cat("## GBIF data")
+  cat("\n")
+  cat(paste0("The total number of occurrences points were: **", dim(data_gbif())[1],"**"))
+  cat("\n")
+  printInfoGBIF <- TRUE
   
 } else{
   printInfoGBIF <- FALSE
@@ -122,7 +121,7 @@ if(!is.null(data_map)){
 ```
 
 
-```{r, echo=printInfoDynamicM,eval=printInfoDynamicM}
+```{r, echo=TRUE,eval=FALSE}
 leafMapDynamic() %>%  addTiles(
     urlTemplate = "http://{s}.tiles.mapbox.com/v3/jcheng.map-5ebohr46/{z}/{x}/{y}.png",
     attribution = 'Maps by <a href="http://www.mapbox.com/">Mapbox</a>'
@@ -130,3 +129,8 @@ leafMapDynamic() %>%  addTiles(
 
 ```
 
+
+```{r, echo=printInfoDynamicM,eval=printInfoDynamicM}
+leafMapDynamic()
+
+```

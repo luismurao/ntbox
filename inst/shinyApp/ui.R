@@ -12,7 +12,6 @@ shinyUI(
 
              id = "nb",
              tabPanel("AppSettings",materials),
-             tabPanel("GIS Tools",gistools),
              navbarMenu("Data",
                         tabPanel("GBIF data",
                                  tabsetPanel(
@@ -45,8 +44,9 @@ shinyUI(
              navbarMenu("SDM performance",
                         tabPanel("Partial ROC",partial_roc),
                         tabPanel("Binarization methods",ui_binary)),
-             navbarMenu("Model transferability",
+             navbarMenu("Extrapolation Risk",
                         tabPanel("MOP",ui_mop)
-                        )
+                        ),
+             tabPanel("GIS Tools",gistools)
   )
 )

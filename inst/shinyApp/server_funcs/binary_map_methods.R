@@ -215,7 +215,7 @@ binary_area_cm_method <- reactive({
 output$area_cm_method <- renderUI({
   resTh <- threshold_search2()
   if(!is.null(binary_area_cm_method())){
-    threshold <-  resTh$threshold[1]
+    threshold <-  round(resTh$threshold[1],4)
     area <- round(binary_area_cm_method(),4)
     h3(paste("Species Distribution Area",area,"in km^2", "(at",threshold,", threshold)"))
   }
@@ -255,7 +255,7 @@ output$downloadBinary_metadata_mc_opt <- downloadHandler(
 
 output$binary_CM_optim <- renderPlot({
   if(!is.null(binary_cm_method()))
-    return(plot(binary_cm_method()))
+    return(plot(binary_cm_method(),col=c("#d8dae5","#0d8dd7")))
 
 })
 
@@ -475,7 +475,7 @@ mtp_threshold <- reactive({
       return(min(threshold,na.rm = TRUE))
     if(input$valdata_type=="percentil_bin"){
       percentil <- as.numeric(input$percentil_th)
-      thr <- quantile(threshold,  probs =  percentil/100)
+      thr <- quantile(threshold,  probs =  percentil/100,na.rm=TRUE)
       return(thr)
     }
   }
@@ -519,7 +519,7 @@ binary_mtp_method <- reactive({
 
 output$binary_mtp <- renderPlot({
   if(!is.null(binary_mtp_method()))
-    return(plot(binary_mtp_method()))
+    return(plot(binary_mtp_method(),col=c("#d8dae5","#0d8dd7")))
 
 })
 
@@ -536,7 +536,7 @@ binary_area_mtp_method <- reactive({
 output$area_mtp_method <- renderUI({
   area <- binary_area_mtp_method()
   if(!is.null(area)){
-    threshold <-  mtp_threshold()
+    threshold <-  round(mtp_threshold(),4)
     area <- round(area,4)
     h3(paste("Species Distribution Area",area,"in km^2",
              "(at",threshold,", threshold)"))
@@ -627,7 +627,7 @@ binary_area_user_method <- reactive({
 output$area_user_method <- renderUI({
   area <- binary_area_user_method()
   if(!is.null(area)){
-    threshold <- input$thresholdBin
+    threshold <- round(input$thresholdBin,4)
     area <- round(area,4)
     h3(paste("Species Distribution Area",area,"in km^2",
              "(at",threshold,", threshold)"))
@@ -671,7 +671,7 @@ output$downloadBinary_metadata_user <- downloadHandler(
 
 output$binary_user <- renderPlot({
   if(!is.null(binary_user_method()))
-    return(plot(binary_user_method()))
+    return(plot(binary_user_method(),col=c("#d8dae5","#0d8dd7")))
 
 })
 

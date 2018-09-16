@@ -2,9 +2,131 @@ source("server_funcs/data_gbif.R",local = TRUE)
 source("server_funcs/data_user.R",local=TRUE)
 # Reactive function (returns a dataset selected by the user)
 
+leafMapDynamic_base <- reactive({
+  # Draw map leaflet map
+
+  map <- leaflet::leaflet() %>%
+    leaflet::addTiles(
+      urlTemplate = "//{s}.tiles.mapbox.com/v3/jcheng.map-5ebohr46/{z}/{x}/{y}.png",
+      attribution = 'Maps by <a href="http://www.mapbox.com/">Mapbox</a>'
+    ) %>% setView(lng = 0, lat = 0, zoom = 3) %>%
+    leaflet.extras::addDrawToolbar(
+      targetGroup='draw0',
+      #position = T,
+      polygonOptions = T,
+      circleOptions =FALSE,
+      rectangleOptions =TRUE,
+      markerOptions =FALSE,
+      singleFeature =FALSE,
+      circleMarkerOptions	= FALSE,
+      #editOptions =FALSE
+      editOptions = leaflet.extras::editToolbarOptions(selectedPathOptions = leaflet.extras::selectedPathOptions())
+      )
+
+  #if(input$dataset_dynMap=="gbif_dataset" && input$search_gbif_data==0) return(map)
+
+  #if(!is.null(myPolygon_gbif()))
+
+  #  map <- map %>% addPolygons(data=myPolygon_user(),color = "red")
+
+  return(map)
+})
+
+
+
+leafMapDynamic <- reactive({
+
+
+  map <- leafMapDynamic_base()
+
+  if(input$dataset_dynMap == "gbif_dataset" && input$search_gbif_data == 0)
+    return(map)
+  if(is.null(data_set()))
+    return(map)
+
+  map <- leaflet::leaflet() %>%
+    leaflet::addTiles(
+      urlTemplate = "//{s}.tiles.mapbox.com/v3/jcheng.map-5ebohr46/{z}/{x}/{y}.png",
+      attribution = 'Maps by <a href="http://www.mapbox.com/">Mapbox</a>'
+    )  %>%
+    leaflet.extras::addDrawToolbar(
+      targetGroup='draw0',
+      #position = T,
+      polygonOptions = T,
+      circleOptions =FALSE,
+      rectangleOptions =TRUE,
+      markerOptions =FALSE,
+      singleFeature =FALSE,
+      circleMarkerOptions	= FALSE,
+      #editOptions =FALSE
+      editOptions = leaflet.extras::editToolbarOptions(selectedPathOptions = leaflet.extras::selectedPathOptions())
+    )
+
+
+  if(input$define_M == 0 && is.data.frame(dataDynamic())){
+
+
+    map <- map %>%
+      addMarkers(lng = dataDynamic()[,data_set()$longitude],
+                 lat = dataDynamic()[,data_set()$latitude],
+                 popup = dataDynamic()$dataID)
+
+    if(class(myPolygon()) == "SpatialPolygonsDataFrame" && input$define_M){
+      map <- map %>% addPolygons(data=myPolygon(),col="darkgreen")
+    }
+
+    return(map)
+
+  }
+  if(input$define_M == 1 && input$points_in_poly > 0L && is.data.frame(data_poly())){
+
+    if(dim(data_poly())[1] > 0L){
+      map <- leafMapDynamic_base() %>%
+        addMarkers(lng = data_poly()[,data_set()$longitude],
+                   lat = data_poly()[,data_set()$latitude],
+                   popup = data_poly()$dataID)
+      if(class(myPolygon()) == "SpatialPolygonsDataFrame" && input$define_M){
+        map <- map %>% addPolygons(data=myPolygon(),col="darkgreen")
+      }
+
+    }
+    return(map)
+  }
+  if(input$define_M == 1 && is.data.frame(dataDynamic()) && input$points_in_poly==0){
+    map <- map %>%
+      addMarkers(lng = dataDynamic()[,data_set()$longitude],
+                 lat = dataDynamic()[,data_set()$latitude],
+                 popup = dataDynamic()$dataID)
+    if(class(myPolygon()) == "SpatialPolygonsDataFrame" && input$define_M){
+      map <- map %>% addPolygons(data=myPolygon(),col="darkgreen")
+    }
+    return(map)
+  }
+  else
+    map <- leafMapDynamic_base()
+
+
+  return(map)
+
+})
+
+# Dynamic map to select polygon
+
+output$dyMap_cas <- renderLeaflet({
+  map <- leafMapDynamic()
+  return(map)
+})
+
+
+output$polyfeatures <- renderPrint({
+  print(myPolygon())
+})
+
+
+
 data_set <- reactive({
 
-  if(input$dataset_dynMap == "gbif_dataset" && !is.null(data_gbif())){
+  if(input$dataset_dynMap == "gbif_dataset" && input$search_gbif_data > 0){
     data <- data_gbif()
     data$ID_ntb <- 1:dim(data)[1]
     return(list(data=data,
@@ -26,6 +148,7 @@ data_set <- reactive({
 # Reactive to clean data from dynamic Map
 
 trashDynamic <- reactive({
+  if(is.null(data_set())) return(NULL)
   data <- data_set()$data
   if(!is.null(data)){
     data$ID_ntb <- 1:dim(data)[1]
@@ -46,6 +169,7 @@ trashDynamic <- reactive({
 
 
 dataDynamic <- reactive({
+  if(is.null(data_set())) return(NULL)
 
   dataDM <- data_set()$data
 
@@ -81,98 +205,48 @@ dataDynamic <- reactive({
     return(NULL)
 })
 
-data_poly <- reactive({
-  dataDM <- dataDynamic()
-  if(!is.null(dataDM)){
-    if(!is.null(myPolygon()) && data_set()$longitude %in% names(dataDM)){
-      input$points_in_poly
-      isolate({
-        if(input$points_in_poly > 0 ){
-          sp_data_frame <- SpatialPointsDataFrame(dataDM[,c(data_set()$longitude,
-                                                            data_set()$latitude)],dataDM)
-          proj4string(sp_data_frame) <- CRS("+proj=longlat +ellps=WGS84 +datum=WGS84")
-          poly_user <- spTransform(myPolygon(), CRS("+proj=longlat +ellps=WGS84 +datum=WGS84"))
-          data_poly <- over( sp_data_frame , poly_user , fn = NULL)
-          ids_poly <- which(!is.na(data_poly[,1]))
-          dataDM <- dataDM[ids_poly,]
+#data_poly <- reactive({
+#  dataDM <- dataDynamic()
+#  if(!is.null(dataDM)){
+#    if(!is.null(myPolygon()) && data_set()$longitude %in% names(dataDM)){
+#      input$points_in_poly
+#      isolate({
+#        if(input$points_in_poly > 0 ){
+#          sp_data_frame <- SpatialPointsDataFrame(dataDM[,c(data_set()$longitude,
+#                                                            data_set()$latitude)],dataDM)
+#          proj4string(sp_data_frame) <- CRS("+proj=longlat +ellps=WGS84 +datum=WGS84")
+#          poly_user <- spTransform(myPolygon(), CRS("+proj=longlat +ellps=WGS84 +datum=WGS84"))
+#          data_poly <- over( sp_data_frame , poly_user , fn = NULL)
+#          ids_poly <- which(!is.na(data_poly[,1]))
+#          dataDM <- dataDM[ids_poly,]
+#
+#        }
+#      })
+#    }
+#  }
+#  return(dataDM)
+#})
 
-        }
-      })
+
+data_poly <- eventReactive(input$points_in_poly,{
+
+  dataDM <- dataDynamic()
+  #if(!is.null(dataDM)){
+    if(!is.null(myPolygon()) && data_set()$longitude %in% names(dataDM)){
+      sp_data_frame <- SpatialPointsDataFrame(dataDM[,c(data_set()$longitude,
+                                                        data_set()$latitude)],dataDM)
+
+      proj4string(sp_data_frame) <- CRS("+proj=longlat +ellps=WGS84 +datum=WGS84")
+      poly_user <- spTransform(myPolygon(), CRS("+proj=longlat +ellps=WGS84 +datum=WGS84"))
+      data_poly <- over( sp_data_frame , poly_user , fn = NULL)
+      ids_poly <- which(!is.na(data_poly[,1]))
+      dataDM <- dataDM[ids_poly,]
+
+      return(dataDM)
     }
-  }
+  #}
   return(dataDM)
 })
-
-
-
-leafMapDynamic <- reactive({
-  # Draw map leaflet map
-
-  map <- leaflet() %>%
-    addTiles(
-      urlTemplate = "//{s}.tiles.mapbox.com/v3/jcheng.map-5ebohr46/{z}/{x}/{y}.png",
-      attribution = 'Maps by <a href="http://www.mapbox.com/">Mapbox</a>'
-    )
-  # Draw polygon tools
-  map <- map %>% addDrawToolbar(polyline = FALSE,
-                                edit = FALSE,
-                                remove = FALSE,
-                                polygon = TRUE,
-                                rectangle = TRUE,
-                                circle = FALSE,
-                                marker = FALSE)
-  if(is.null(dataDynamic()) && is.null(myPolygon()))
-    map <- map %>%  setView(lng = 0, lat = 0, zoom = 3)
-  if(!is.null(myPolygon()) && input$dataset_dynMap=="gbif_dataset")
-    map <- map %>% addPolygons(data=myPolygon(),col="blue")
-  if(!is.null(myPolygon()) && input$dataset_dynMap=="user_dataset")
-    map <- map %>% addPolygons(data=myPolygon(),col="darkgreen")
-  #if(!is.null(myPolygon_gbif()))
-  #  map <- map %>% addPolygons(data=myPolygon_gbif())
-  #if(!is.null(myPolygon_user()))
-  #  map <- map %>% addPolygons(data=myPolygon_user(),color = "red")
-
-  if(!is.null(dataDynamic()) && input$define_M == 0){
-    map <- map %>%
-      addMarkers(lng = dataDynamic()[,data_set()$longitude],
-                 lat = dataDynamic()[,data_set()$latitude],
-                 popup = dataDynamic()$dataID)
-
-  }
-  else if(!is.null(data_poly()) && input$define_M == 1){
-    map <- map %>%
-      addMarkers(lng = data_poly()[,data_set()$longitude],
-                 lat = data_poly()[,data_set()$latitude],
-                 popup = data_poly()$dataID)
-
-  }
-  return(map)
-})
-
-
-
-# Dynamic map to clean data
-
-output$dyMap <- renderLeaflet({
-  return(leafMapDynamic())
-})
-
-# Download method for cleaned data dynamic map
-
-download_method_dynamic <- reactive({
-  file <- NULL
-  data <- NULL
-  if(!is.null(dataDynamic()) && input$define_M == 0){
-    file <- paste0("data_dynamic_map_",input$dataset_dynMap,".csv")
-    data <- dataDynamic()
-  }
-  if(!is.null(data_poly()) && input$define_M == 1){
-    file <- paste0("data_dynamic_map_M_polygon_",input$dataset_dynMap,".csv")
-    data <- data_poly()
-  }
-  return(list(file=file,data=data))
-})
-
 
 output$downDatDyn <- downloadHandler(
   filename = function() download_method_dynamic()$file,
@@ -245,6 +319,16 @@ observe({
                       selected="year")
   }
 
+})
+
+
+
+
+observeEvent(input$define_M,{
+  if(class(myPolygon()) == "SpatialPolygonsDataFrame" && input$define_M){
+    print_poly <- FALSE
+    print(print_poly)
+  }
 })
 
 # Observer (saves polygon when user click action button)

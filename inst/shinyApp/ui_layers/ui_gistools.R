@@ -18,6 +18,8 @@ gistools <- div(class="outer",
                                 h3('GIS Tools'),
                                 br(),
                                 p("In this section you can perform some basic GIS operations on your Niche layers."),
+                                busyIndicator("Computation In progress",wait = 0),
+
                                 #HTML('
                                 #     <ul style="list-style-type:square">
                                 #     <li>PCA</>
@@ -28,9 +30,30 @@ gistools <- div(class="outer",
 
                                 shiny::radioButtons("gis_options",label = "Select a tool:",
                                                     choices = c("Write my niche layers in other raster format"="reformatLayers",
-                                                                #"Crop my niche layers"="cropLayers",
+                                                                "Crop / Mask my niche layers"="CropMaskLayers",
                                                                 #"Mask my niche layers"= "maskLayers",
                                                                 "PCA tranform my niche layers"="pca_transform")),
+                                conditionalPanel("input.gis_options == 'CropMaskLayers'",
+                                                 shiny::radioButtons("CropMask",label = "Select an operation:",
+                                                                    choices = c("Crop"="gis_crop",
+                                                                                "Mask"="gis_mask"),
+                                                                    selected = "gis_mask"),
+                                                 selectInput("layers2CropMask","Select layers to be processed:",
+                                                             choices = "Upload your niche layers and Set a workflow direcotry on the AppSettings section",
+                                                             selected = "Upload your niche layers and Set a workflow direcotry on the AppSettings section",
+                                                             multiple = FALSE),
+                                                 uiOutput("go_MaskCrop"),
+                                                # uiOutput("save_cuts"),
+                                                actionButton(inputId = "save_gtoolspoly",label = "Save Polygon",styleclass="primary"),
+
+                                                 verbatimTextOutput("coords_gis_polygon"),
+                                                radioButtons('raster_format2', 'Select a format to write your layers:',
+                                                             c('.asc','.bil',
+                                                               '.tif','.nc',
+                                                               '.sdat','.img'))
+
+                                                 ),
+
                                 conditionalPanel("input.gis_options=='reformatLayers'",
                                                  selectInput("layers2reformat","Select layers to be reformated:",
                                                              choices = "Upload your niche layers and Set a workflow direcotry on the AppSettings section",
