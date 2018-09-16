@@ -2,14 +2,14 @@
 data_gbif_search <- eventReactive(input$search_gbif_data,{
 
   # Test if the API is working
-  #test <- ntbox::searh_gbif_data(genus = "Ambystoma",
-  #                               species = "tigrinum",
-  #                               occlim = 5,
-  #                               writeFile = FALSE)
+  test <- ntbox::searh_gbif_data(genus = "Ambystoma",
+                                 species = "tigrinum",
+                                 occlim = 1,
+                                 writeFile = FALSE)
 
 
-  #if(is.null(test))
-  #  return(0)
+  if(is.null(test))
+    return(0)
 
 
 
@@ -30,6 +30,7 @@ data_gbif_search <- eventReactive(input$search_gbif_data,{
 
 data_gbif <- reactive({
   data <- data_gbif_search()
+
   if(is.data.frame(data)){
     input$clean_dup_gbif
 
