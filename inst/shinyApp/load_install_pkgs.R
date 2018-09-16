@@ -10,7 +10,8 @@ pkg_check <- c("shiny","rgeos","rgdal",
                "dplyr","cluster","sqldf",
                "fields","devtools","psych",
                "magrittr","shinythemes","grid",
-               "RColorBrewer","ade4","V8","shinyFiles","spocc")
+               "RColorBrewer","ade4","V8","shinyFiles",
+               "spocc","leaflet.extras")
 
 packageVersion("dygraphs")
 
@@ -26,7 +27,8 @@ suppressPackageStartupMessages({
 
 
 # Github dependencies
-devtools::install_github("luismurao/leaflet")
+#if(!require("leaflet.ntbox"))
+#  devtools::install_github("luismurao/leaflet.ntbox")
 
 pkgs_ntb <- c("ENMGadgets","shinysky")
 
