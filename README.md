@@ -4,7 +4,7 @@
 
 ## Installation
 
-**Windows users:** Before installation it is important to have installed [Rtoos](https://cran.r-project.org/bin/windows/Rtools/).
+**Windows users:** Before installation it is important to have installed [Rtools](https://cran.r-project.org/bin/windows/Rtools/).
 
 ```r
 if (!require('devtools')) install.packages('devtools')
