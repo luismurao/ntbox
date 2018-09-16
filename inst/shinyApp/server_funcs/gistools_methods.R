@@ -10,7 +10,7 @@ leafMapDynamic_gis <- reactive({
       targetGroup='draw',
       editOptions = leaflet.extras::editToolbarOptions(selectedPathOptions = leaflet.extras::selectedPathOptions()))
   return(map)
-  })
+})
 
 
 observe({
@@ -247,8 +247,8 @@ output$pca_plot <- renderPlot({
 
 
 #observeEvent(input$dyMap_gis_draw_all_features, {
-  #print("All Features")
-  #print(input$leafmap_draw_all_features)
+#print("All Features")
+#print(input$leafmap_draw_all_features)
 #  saveRDS(input$dyMap_gis_draw_all_features,"~/Dropbox/leafletDraw/leafletDrae_all.rds")
 
 #})
@@ -269,7 +269,7 @@ gtoolsPolygon <- reactive( {
 # Read polygons
 
 #gtoolsPolygon <- reactive({
-  # Create polygon using leaflet maps
+# Create polygon using leaflet maps
 #  if(!is.null(input$geojson_coords)){
 #    map <- readOGR(input$geojson_coords,"OGRGeoJSON")
 #    return(map)
@@ -440,6 +440,7 @@ observeEvent(input$go_crop_mask,{
 
   }
 })
+
 
 
 
