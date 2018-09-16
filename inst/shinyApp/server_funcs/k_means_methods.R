@@ -24,18 +24,29 @@ observe({
 
 # K-means niche data input
 
-niche_data_k_means <- reactive({
-  input$load_kmeas_vars
-  if(input$load_kmeas_vars){
-    if(!is.null(data_extraction()) && length(input$cluster_vars)>2){
-      if(input$kmeans_data_from == "wWorld")
-        return(data_extraction())
-      if(input$kmeans_data_from == "mLayers")
-        return(occ_extract_from_mask()$data)
-    }
-    else
-      return(NULL)
+#niche_data_k_means <- reactive({
+#  input$load_kmeas_vars
+#  if(input$load_kmeas_vars){
+#    if(!is.null(data_extraction()) && length(input$cluster_vars)>2){
+#      if(input$kmeans_data_from == "wWorld")
+#        return(data_extraction())
+#      if(input$kmeans_data_from == "mLayers")
+#        return(occ_extract_from_mask()$data)
+#    }
+#    else
+#      return(NULL)
+#  }
+#})
+
+niche_data_k_means <- eventReactive(input$load_kmeas_vars,{
+  if(!is.null(data_extraction()) && length(input$cluster_vars)>2){
+    if(input$kmeans_data_from == "wWorld")
+      return(data_extraction())
+    if(input$kmeans_data_from == "mLayers")
+      return(occ_extract_from_mask()$data)
   }
+  else
+    return(NULL)
 })
 
 
@@ -58,35 +69,50 @@ geographic_data <- reactive({
 
 kmeans_df <- reactive({
   if(!is.null(niche_data_k_means())){
-    niche_data <- niche_data_k_means()
-    na_index <- which(is.na(niche_data))
-    level <- input$kmeans_level
-    nclus <- as.numeric(input$nclust)
-    if(length(na_index)!=0L) niche_data <- niche_data[na_index,]
-
-    km <- kmeans(niche_data,centers=nclus,iter.max=100,trace=F)
-    cluster <- km$cluster
     if(input$kmeans_data_from == "mLayers"){
-      if(length(na_index)>0L)
-        geo_dat <- occ_extract_from_mask()$xy_data[-na_index,]
-      else
-        geo_dat <- occ_extract_from_mask()$xy_data
+
+      niche_data_xy <- occ_extract_from_mask()$data_env_xy
+      niche_data_xy <- na.omit(niche_data_xy)
+
+      niche_data <- niche_data_xy[,-(1:2)]
+      na_index <- attr( niche_data_xy,"na.action")
+      level <- input$kmeans_level
+      nclus <- as.numeric(input$nclust)
+      #if(length(na_index) > 0L) niche_data <- niche_data[-na_index,]
+
+      km <- kmeans(niche_data,centers=nclus,iter.max=100,trace=F)
+      cluster <- km$cluster
+
+      #if(length(na_index)>0L)
+      #  geo_dat <- niche_data_xy[-na_index,1:2]
+      #else
+      geo_dat <- niche_data_xy[,(1:2)]
+
+      kmeans_data <- data.frame(geo_dat,cluster = cluster,niche_data)
+      return(kmeans_data)
     }
     if(input$kmeans_data_from == "wWorld"){
+
+      niche_data <- niche_data_k_means()
+      na_index <- which(is.na(niche_data))
+      level <- input$kmeans_level
+      nclus <- as.numeric(input$nclust)
+      if(length(na_index) > 0L) niche_data <- niche_data[na_index,]
+
+      km <- kmeans(na.omit(niche_data),centers=nclus,iter.max=100,trace=F)
+      cluster <- km$cluster
+
       if(length(na_index)>0L)
         geo_dat <- occ_extract()$xy_data[-na_index,]
       else
         geo_dat <-occ_extract()$xy_data
 
-      print(dim(niche_data))
-      print(dim(geo_dat))
+      kmeans_data <- data.frame(geo_dat,cluster = cluster,niche_data)
+      return(kmeans_data)
 
     }
 
 
-
-    kmeans_data <- data.frame(geo_dat,cluster = cluster,niche_data)
-    return(kmeans_data)
   }
   else
     return(NULL)
@@ -97,7 +123,7 @@ kmeans_df <- reactive({
 
 kmeans_3d_plot_data <- reactive({
   if(!is.null(kmeans_df())){
-    print(kmeans_df())
+
     withProgress(message = 'Doing computations', value = 0, {
       niche_data <- niche_data_k_means()
       not_dup_niche_space <- which(!duplicated(niche_data))
@@ -171,9 +197,9 @@ output$kmeans_geo <- renderPlot({
 leaflet_cluster_map <- reactive({
   if(!is.null(kmeans_3d_plot_data())){
     spatial_df <- sp::SpatialPointsDataFrame(
-      kmeans_3d_plot_data()$lat_long,
+      kmeans_df()[,1:2],
       data.frame(cluster_ids=factor(
-        kmeans_3d_plot_data()$cluster_ids))
+        kmeans_df()$cluster))
     )
     colores <- c("black","brown4","blue","cyan",
                  "darkgoldenrod","darkmagenta",
