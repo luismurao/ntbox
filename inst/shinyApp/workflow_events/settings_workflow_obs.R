@@ -14,6 +14,8 @@ source("server_funcs/partial_roc_methods.R",local = T)
 source("server_funcs/binary_map_methods.R",local =T)
 source("server_funcs/mop_methods.R",local =T)
 source("server_funcs/gistools_methods.R",local =T)
+source("helpers/ldraw2sp.R",local = TRUE)
+
 #volumes <- c(path.expand('~'))
 osSystem <- Sys.info()["sysname"]
 
@@ -319,25 +321,34 @@ observe({
 
 # Read polygons
 
+
+
 myPolygon <- reactive({
-  # Create polygon using leaflet maps
-  if(!is.null(input$geojson_coords)){
-    if(input$define_M == 1 && input$poly_from ==1){
-      map <- readOGR(input$geojson_coords,"OGRGeoJSON")
-      return(map)
-    }
+  l_featuers <- input$dyMap_cas_draw_all_features
+  if(!is.null(l_featuers) && input$poly_from == 1){
+    ntb_polygons <- ldraw2sp(leaflet_draw = l_featuers)
+    if(!is.character(ntb_polygons))
+      ntb_polygons$area_sqkm <- raster::area(ntb_polygons) / 1000000
+    return(ntb_polygons)
   }
-  # Read polygon from user file
-  if(input$define_M == 1 && input$poly_from ==0 && !is.null(poly_dir()) &&  input$poly_files != "Select a layer"){
+  if(input$define_M == 1 && input$poly_from == 0 && !is.null(poly_dir()) &&  input$poly_files != "Select a layer"){
     print(poly_dir())
     map <- readOGR(dsn = poly_dir(),layer = input$poly_files)
     return(map)
   }
-  else
-    return(NULL)
-
 })
 
+
+#myPolygon <- reactive( {
+#  l_featuers <- input$dyMap_gis_draw_all_features
+#  if(!is.null(l_featuers)){
+#    ntb_polygons <- ldraw2sp(leaflet_draw = l_featuers)
+#    if(!is.character(ntb_polygons))
+#      ntb_polygons$area_sqkm <- raster::area(ntb_polygons) / 1000000
+#    return(ntb_polygons)
+#  }
+
+#})
 
 
 

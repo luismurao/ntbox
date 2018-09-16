@@ -29,6 +29,8 @@ Imports:
     dismo (>= 1.1-4),
     rgl (>= 0.99.16),
     dygraphs (>= 1.1.1.4),
+    leaflet (>= 2.0.0),
+    leaflet.extras (>= 1.0.0),
     png (>= 0.1-7),
     ggplot2 (>= 3.0.0),
     XML (>= 3.98-1.11),
