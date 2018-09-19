@@ -99,14 +99,22 @@ output$bio_response_m_m_train <- renderPlot({
 
 
 output$downBiclimRas <- downloadHandler(
-  filename <- function() paste0("BioclimModelNTB_trainArea_",input$trainBio,"projected_area_",input$selectMBio,".asc"),
-  content <- function(file){
-    if(!is.null(bioclim_model_all_all_train()) && input$selectMBio == "wWorld"){
-      writeRaster(bioclim_model_all_all_train()$prediction,file)
-    }
-    else if(!is.null(bioclim_model_m()) && input$selectMBio == "mLayers"){
-      writeRaster(bioclim_model_m_all_train()$prediction,file)
-    }
+  filename <- function() return(paste0("BioclimModelNTB_trainArea_",
+                                as.character(input$trainBio),"projected_area_",
+                                as.character(input$selectMBio),".asc")),
+    content <- function(file){
+      if(!is.null(bioclim_model_all_all_train()) && input$selectMBio == "wWorld" && input$trainBio == "wWorld"){
+        return(writeRaster(bioclim_model_all_all_train()$prediction,file))
+      }
+      if(!is.null(bioclim_model_m_all_train()) && input$selectMBio == "mLayers" && input$trainBio == "wWorld"){
+        return(writeRaster(bioclim_model_m_all_train()$prediction,file))
 
+      }
+      if(!is.null(bioclim_model_all_m_train()) && input$selectMBio == "wWorld" && input$trainBio == "mLayers"){
+        return(writeRaster(bioclim_model_all_m_train()$prediction,file))
+      }
+      if(!is.null(bioclim_model_m_m_train()) && input$selectMBio == "mLayers" && input$trainBio == "mLayers"){
+        return(writeRaster(bioclim_model_m_m_train()$prediction,file))
+      }
   }
 )
