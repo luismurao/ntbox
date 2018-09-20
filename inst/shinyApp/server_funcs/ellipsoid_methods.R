@@ -36,7 +36,6 @@ mve_obj_all <- reactive({
     cov_centroid <- try(cov_center(niche_data,
                                level=prop_points,
                                vars=input$biosEllip),silent = T)
-    print(class(cov_centroid))
 
     return(cov_centroid)
 
@@ -219,13 +218,16 @@ output$reponse_curves_all_m_train <- renderPlot({
 
 ellip_model_m_rast_all_train <- eventReactive(input$selectBios_m_all_train,{
   cov_centroid <- mve_obj_all()
-  if(!is.null(cov_centroid) && !is.null(define_M_raster()) && input$selectM == 'mLayers' && input$selectShape == 'wWorld'){
-
-    model <- ellipsoidfit(define_M_raster()[[input$biosEllip]],
-                          cov_centroid$centroid,
-                          cov_centroid$covariance,level = 0.95,
-                          threshold = 0.001,plot = FALSE)
-    return(model)
+  print(cov_centroid)
+  if(!is.null(cov_centroid) && class(define_M_raster())=="RasterStack" && input$selectM == 'mLayers' && input$selectShape == 'wWorld'){
+    if(class(cov_centroid) != "try-error"){
+      model <- ellipsoidfit(define_M_raster()[[input$biosEllip]],
+                            cov_centroid$centroid,
+                            cov_centroid$covariance,level = 0.95,
+                            threshold = 0.000001,plot = FALSE)
+      return(model)
+    }
+    return()
   }
   else
     return()
