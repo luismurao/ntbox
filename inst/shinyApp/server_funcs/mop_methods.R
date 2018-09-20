@@ -1,135 +1,94 @@
+observe({
+  wf_directory <- workflowDir()
 
-osSystem <- Sys.info()["sysname"]
+  m_layers <- NULL
+  g_layers <- NULL
 
-if(osSystem == "Darwin"){
-  volumes <- getVolumes()
-  #names(volumes) <- Sys.info()["user"]
+  # Para salvar el workflow
+  # length(nchar(wf_directory))>0L
 
-  shinyFiles::shinyDirChoose(input, "m_layers_directory",
-                             roots = volumes,
-                             session = session)
+  if(!is.null(rasterLayers())){
+    m_layers <- c(m_layers,"Niche Layers from AppSettings" = "niche_layers")
+    updateSelectInput(session,"mlayers_mop",
+                      choices = m_layers)
 
-  # M layers directory
-  MLayersDir <- reactive({
-    path <- shinyFiles::parseDirPath(volumes, input$m_layers_directory)
-    if(length(path)>0L)
-      return(path)
-    else
-      return(NULL)
-  })
+  }
 
-  # MOP G layeres directory
+  if(!is.null(proj_rasterLayers())){
+    g_layers <- c(g_layers,"Projection Layers from AppSettings" = "proj_layers")
 
-  shinyFiles::shinyDirChoose(input, "g_layers_directory",
-                             roots = volumes,
-                             session = session)
-
-  # read G layers
-
-  GLayersDir <- reactive({
-    path <- shinyFiles::parseDirPath(volumes, input$g_layers_directory)
-    if(length(path)>0L)
-      return(path)
-    else
-      return(NULL)
-  })
-
-}
-
-if(osSystem != "Darwin"){
-
-  # MOP M layeres directory
-
-  observeEvent(
-    ignoreNULL = TRUE,
-    eventExpr = {
-      input$m_layers_directory
-    },
-    handlerExpr = {
-      if (input$m_layers_directory > 0) {
-        # condition prevents handler execution on initial app launch
-
-        # launch the directory selection dialog with initial path read from the widget
-        path = choose.dir(default = readDirectoryInput(session, 'm_layers_directory'))
-
-        # update the widget value
-        updateDirectoryInput(session, 'm_layers_directory', value = path)
-
-      }
-    }
-  )
-
-  # MOP G layeres directory
+    updateSelectInput(session,"glayers_mop",
+                      choices =g_layers)
 
 
-  observeEvent(
-    ignoreNULL = TRUE,
-    eventExpr = {
-      input$g_layers_directory
-    },
-    handlerExpr = {
-      if (input$g_layers_directory > 0) {
-        # condition prevents handler execution on initial app launch
+  }
+  if(!is.null(define_M_raster())){
+    g_layers <- c(g_layers,"M Layers defined on dynamic map" = "m_layers")
+    updateSelectInput(session, "glayers_mop",
+                      choices = g_layers)
+    m_layers <- c(m_layers,"M Layers defined on dynamic map" = "m_layers")
+    updateSelectInput(session, "mlayers_mop",
+                      choices = m_layers)
 
-        # launch the directory selection dialog with initial path read from the widget
-        path = choose.dir(default = readDirectoryInput(session, 'g_layers_directory'))
+  }
+  if(!is.null(mask_layers())){
+    g_layers <- c(g_layers,"Masked layers from GIS Tools" = "masked_layers")
+    updateSelectInput(session, "glayers_mop",
+                      choices = g_layers)
+    m_layers <- c(m_layers,"Masked layers from GIS Tools" = "masked_layers")
+    updateSelectInput(session, "mlayers_mop",
+                      choices = m_layers)
+  }
+  if(!is.null(crop_layers())){
+    g_layers <- c(g_layers,"Cropped layers from GIS Tools" = "cropped_layers")
+    updateSelectInput(session, "glayers_mop",
+                      choices = g_layers)
+    m_layers <- c(m_layers,"Cropped layers from GIS Tools" = "cropped_layers")
+    updateSelectInput(session, "mlayers_mop",
+                      choices = m_layers)
+  }
+  if(!is.null(crop_layers_proj())){
+    g_layers <- c(g_layers,"Cropped projection layers from GIS Tools" = "cropped_proj_layers")
+    updateSelectInput(session, "glayers_mop",
+                      choices = g_layers)
+  }
+  if(!is.null(mask_layers_proj())){
+    g_layers <- c(g_layers,"Masked projection layers from GIS Tools" = "masked_proj_layers")
+    updateSelectInput(session, "glayers_mop",
+                      choices = g_layers)
+  }
 
-        # update the widget value
-        updateDirectoryInput(session, 'g_layers_directory', value = path)
-
-      }
-    }
-  )
-
-
-
-
-  # M layers directory
-  MLayersDir <- reactive({
-    path <- readDirectoryInput(session, 'm_layers_directory')
-    if(length(path)>0L)
-      return(path)
-    else
-      return(NULL)
-  })
-
-  # read G layers
-
-  GLayersDir <- reactive({
-    path <- readDirectoryInput(session, 'g_layers_directory')
-    if(length(path)>0L)
-      return(path)
-    else
-      return(NULL)
-  })
-
-}
-
-
-
-M_ras_Layers <- eventReactive(input$loadMLayers,{
-  layers_dir <- MLayersDir()
-  isolate({
-    if(length(layers_dir) > 0L)
-      return(rlayers_ntb(layers_dir))
-    else
-      return(NULL)
-  })
 })
 
 
+M_ras_Layers <- reactive({
+  if(input$mlayers_mop=="niche_layers")
+    return(rasterLayers())
+  if(input$mlayers_mop=="m_layers")
+    return(define_M_raster())
+  if(input$mlayers_mop == "masked_layers")
+    return(mask_layers())
+  if(input$mlayers_mop == "cropped_layers")
+    return(crop_layers())
 
-
-
-G_ras_Layers <- eventReactive(input$loadGLayers,{
-  layers_dir <- GLayersDir()
-  isolate({
-    if(length(layers_dir) > 0L)
-      return(rlayers_ntb(layers_dir))
-    else
-      return(NULL)
-  })
 })
+
+G_ras_Layers <- reactive({
+  if(input$glayers_mop=="proj_layers")
+    return(proj_rasterLayers())
+  if(input$glayers_mop=="m_layers")
+    return(define_M_raster())
+  if(input$glayers_mop == "masked_layers")
+    return(mask_layers())
+  if(input$glayers_mop == "cropped_layers")
+    return(crop_layers())
+  if(input$glayers_mop == "cropped_proj_layers")
+    return(crop_layers_proj())
+  if(input$glayers_mop == "masked_proj_layers")
+    return(mask_layers_proj())
+
+})
+
 
 observe({
   if(!is.null(M_ras_Layers())){
@@ -152,7 +111,7 @@ observe({
 mop_comp <- eventReactive(input$run_mop,{
   m_layers <- M_ras_Layers()[[input$mlayers_select]]
   g_layers <- G_ras_Layers()[[input$glayers_select]]
-  mop_names <- all(names(m_layers)==names(g_layers))
+  mop_names <- all(length(names(m_layers))==length(names(g_layers)))
 
   percent <- as.numeric(as.character(input$ref_percent))
   comp_each <- as.numeric(as.character(input$comp_each))
