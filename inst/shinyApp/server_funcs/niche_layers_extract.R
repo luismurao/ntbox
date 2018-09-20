@@ -30,9 +30,11 @@ observe({
 define_M_raster <- reactive({
 
   if(!is.null(myPolygon()) && !is.null(rasterLayers())){
-    M_raster <- raster::crop(rasterLayers(),myPolygon())
-    M_raster <- raster::mask(M_raster,myPolygon())
-    return(M_raster)
+    if(class(myPolygon()) != "try-error"){
+      M_raster <- stack(raster::crop(rasterLayers(),myPolygon()))
+      M_raster <- stack(raster::mask(M_raster,myPolygon()))
+      return(M_raster)
+    }
   }
   else
     return(NULL)
