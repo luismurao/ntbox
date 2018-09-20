@@ -39,6 +39,10 @@ leafMapDynamic <- reactive({
 
   map <- leafMapDynamic_base()
 
+  if(!is.null(myPolygon()) && !is.null(poly_dir()) &&  !is.null(input$poly_files)){
+    map <- map %>% addPolygons(data=myPolygon(),col="darkgreen")
+  }
+
   if(input$dataset_dynMap == "gbif_dataset" && input$search_gbif_data == 0)
     return(map)
   if(is.null(data_set()))
@@ -327,7 +331,7 @@ observe({
 observeEvent(input$define_M,{
   if(class(myPolygon()) == "SpatialPolygonsDataFrame" && input$define_M){
     print_poly <- FALSE
-    print(print_poly)
+    #print(print_poly)
   }
 })
 
@@ -345,7 +349,6 @@ observeEvent(input$save_poly,{
     poly_name <- input$polygon_name
     poly_name_ext <- ".shp"
     poly <- paste0(poly_name,poly_name_ext)
-    print(file_dir)
     #if(poly %in% list.files(file_dir)){
     #  poly_name <- paste0(poly_name,"B_RandNUM",sample(1:1000,1))
     #}
