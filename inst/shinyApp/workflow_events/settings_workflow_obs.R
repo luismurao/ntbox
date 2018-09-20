@@ -315,7 +315,8 @@ layers_shp <- reactive({
 observe({
   if(!is.null(layers_shp())){
     updateSelectInput(session,inputId = "poly_files",
-                      choices =layers_shp() , selected = "Select a layer")
+                      choices =c("Select a layer"=NULL,layers_shp()) ,
+                      selected = NULL)
   }
 })
 
@@ -331,10 +332,12 @@ myPolygon <- reactive({
       ntb_polygons$area_sqkm <- raster::area(ntb_polygons) / 1000000
     return(ntb_polygons)
   }
-  if(input$define_M == 1 && input$poly_from == 0 && !is.null(poly_dir()) &&  input$poly_files != "Select a layer"){
-    print(poly_dir())
-    map <- readOGR(dsn = poly_dir(),layer = input$poly_files)
-    return(map)
+  if(input$define_M == 1 && input$poly_from == 0 && !is.null(poly_dir()) &&  !is.null(input$poly_files)){
+    map <- try(readOGR(dsn = poly_dir(),layer = input$poly_files),silent = TRUE)
+    if(class(map) != "try-error")
+      return(map)
+    else
+      return()
   }
 })
 
