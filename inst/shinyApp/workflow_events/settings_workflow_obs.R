@@ -42,9 +42,11 @@ if(osSystem == "Darwin"){
 
   rasterLayers <- reactive({
 
+    if(!is.null(getEnvData()) && input$getEnvData) return(getEnvData())
     layers_dir <- shinyFiles::parseDirPath(volumes, input$ras_layers_directory)
     ras_formats <- "(*.asc$)|(*.bil$)|(*.sdat$)|(*.rst$)|(*.nc$)|(*.tif$)|(*.envi$)|(*.img$)"
     layDirs <-list.files(layers_dir,pattern = ras_formats)
+
 
     input$loadNicheLayers
     isolate({
@@ -54,6 +56,7 @@ if(osSystem == "Darwin"){
       else
         return(NULL)
     })
+
   })
 
   #------------------------------------------------------------------------------
@@ -76,6 +79,7 @@ if(osSystem == "Darwin"){
 
   proj_rasterLayers <- reactive({
 
+    if(!is.null(getEnvData_future()) && input$getEnvData) return(getEnvData_future())
     layers_dir <- shinyFiles::parseDirPath(volumes, input$proj_layers_directory)
     ras_formats <- "(*.asc$)|(*.bil$)|(*.sdat$)|(*.rst$)|(*.nc$)|(*.tif$)|(*.envi$)|(*.img$)"
     layDirs <-list.files(layers_dir,pattern = ras_formats)
@@ -255,6 +259,7 @@ if(osSystem != "Darwin"){
   # User raster (niche) layers
 
   rasterLayers <- reactive({
+    if(!is.null(getEnvData()) && input$getEnvData) return(getEnvData())
     layers_dir <- rasterLayersDir()
     input$loadNicheLayers
     isolate({
@@ -269,6 +274,7 @@ if(osSystem != "Darwin"){
   # User projection raster (niche) layers
 
   proj_rasterLayers <- reactive({
+    if(!is.null(getEnvData_future()) && input$getEnvData) return(getEnvData_future())
     layers_dir <-  proj_rasterLayersDir()
     input$loadNicheLayers
     isolate({
@@ -291,6 +297,95 @@ if(osSystem != "Darwin"){
 }
 
 
+getEnvData <- eventReactive(input$get_now,{
+
+  variable <- input$wc_var
+  resol <- as.numeric(input$wc_resol)
+
+  if(length(workflowDir())>0L && nchar(workflowDir())>2){
+    dirtosv <- workflowDir()
+  }
+  else
+    dirtosv <- getwd()
+  layers_dir <-  file.path(dirtosv,"ntbox_envLayers")
+  if(!dir.exists(layers_dir))
+    dir.create(layers_dir)
+
+  if(input$env_data=="wc" && input$getEnvData){
+    wc <- raster::getData(name= 'worldclim',var=variable,res=resol)
+    layers_dir2 <- file.path(layers_dir,
+                             paste0("wc_",input$wc_var,
+                                    "_",input$wc_resol))
+
+    if(!dir.exists(layers_dir2))
+      dir.create(layers_dir2)
+
+    archpaths <- file.path(layers_dir2,
+                           paste0(names(wc),
+                                  input$env_format))
+
+    1:length(archpaths) %>%
+      purrr::map(~raster::writeRaster(wc[[.x]],archpaths[.x],overwrite=TRUE))
+
+    return(wc)
+  }
+  return()
+})
+
+getEnvData_future <- eventReactive(input$get_now_future,{
+
+  variable <- input$wc_var
+  resol <- as.numeric(input$wc_resol)
+
+  if(length(workflowDir())>0L && nchar(workflowDir())>2){
+    dirtosv <- workflowDir()
+  }
+  else
+    dirtosv <- getwd()
+  layers_dir <-  file.path(dirtosv,"ntbox_envLayers")
+  if(!dir.exists(layers_dir))
+    dir.create(layers_dir)
+
+  if(input$env_data=="wc_future" && input$getEnvData){
+    rcp <- as.numeric(as.character(input$rcp))
+    wc_model <- input$CMIP5_mod
+    year <- as.numeric(as.character(input$year_sc))
+    wc <- raster::getData(name= 'CMIP5',var=variable,res=resol,
+                          rcp=rcp, model= wc_model,year=year)
+    if(is.null(wc)) return(NULL)
+    layers_dir2 <- file.path(layers_dir,
+                             paste0("CMIP5_","rcp",rcp,"_y",year,
+                                    "_",names(input$CMIP5_mod),
+                                    "_",input$wc_var,
+                                    "_",input$wc_resol))
+
+    if(!dir.exists(layers_dir2))
+      dir.create(layers_dir2)
+
+    archpaths <- file.path(layers_dir2,paste0(names(wc),input$env_format))
+
+    1:length(archpaths) %>%
+      purrr::map(~raster::writeRaster(wc[[.x]],archpaths[.x],overwrite=TRUE))
+
+    return(wc)
+
+  }
+  return()
+
+
+})
+
+
+observe({
+  if(!is.null(getEnvData()) || !is.null(getEnvData_future())){
+    cat("Climate data downloaded from:\n")
+    cat("http://worldclim.org/\n")
+    cat("Please cite as:\n")
+    cat("   Hijmans RJ, Cameron SE., Parra JL, Jones Peter G., Jarvis Andy. (2005)\n
+        Very high resolution interpolated climate surfaces for global land areas.\n
+        Int J Climatol 25:1965–1978 . doi: 10.1002/joc.1276\n")
+  }
+})
 
 # Shape layers in directory
 
