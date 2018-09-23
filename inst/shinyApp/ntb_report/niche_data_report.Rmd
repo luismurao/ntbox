@@ -191,10 +191,14 @@ corrplot(corre_mat,
 
 
 ```{r results="asis",echo=FALSE,eval=TRUE}
-k_means_df <- kmeans_df()
-if(!is.null(k_means_df)){
-  printInfoKmeans <- 1 
+loaded_km <- input$load_kmeas_vars
+if(loaded_km >0L){
+  if(!is.null(kmeans_df()))
+    printInfoKmeans <- 1 
+  else 
+    printInfoKmeans <- 0
 } else printInfoKmeans <- 0
+    
 ```
 
 
@@ -206,10 +210,11 @@ cat(paste0("Total number of clusters ", "**",nclusters,"**"))
 ```
 
 ```{r echo=printInfoKmeans,eval=FALSE}
-kmeans_df()
+k_means_df <- kmeans_df()
 ```
 
 ```{r results='asis',eval=printInfoKmeans,echo=FALSE}
+k_means_df <- kmeans_df()
 if(!is.null(k_means_df)){
   cont <- 1 
 nvars <- dim(kmeans_df())[2]
@@ -228,9 +233,7 @@ print(kable(head(kmeans_df())))
 
 ```{r results="asis",echo=FALSE,eval=TRUE}
 k_means_plot <- kmeans_3d_plot_data()
-if(!is.null(k_means_plot)){
-  printKmeansPlot <- 1 
-} else printKmeansPlot <- 0
+ifelse(!is.null(k_means_plot), printKmeansPlot <- 1 ,printKmeansPlot <- 0)
 ```
 
 
