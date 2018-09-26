@@ -42,23 +42,31 @@ if(osSystem == "Darwin"){
 
   rasterLayers <- reactive({
 
-    if(!is.null(getEnvData()) && input$getEnvData) return(getEnvData())
-    layers_dir <- shinyFiles::parseDirPath(volumes, input$ras_layers_directory)
-    ras_formats <- "(*.asc$)|(*.bil$)|(*.sdat$)|(*.rst$)|(*.nc$)|(*.tif$)|(*.envi$)|(*.img$)"
-    layDirs <-list.files(layers_dir,pattern = ras_formats)
+    if( input$getEnvData && !is.null(getEnvData()))
+      return(getEnvData())
+    else{
 
+      layers_dir <- shinyFiles::parseDirPath(volumes, input$ras_layers_directory)
+      ras_formats <- "(*.asc$)|(*.bil$)|(*.sdat$)|(*.rst$)|(*.nc$)|(*.tif$)|(*.envi$)|(*.img$)"
+      layDirs <-list.files(layers_dir,pattern = ras_formats)
+      #print(layDirs)
 
-    input$loadNicheLayers
-    isolate({
+      input$loadNicheLayers
+      isolate({
 
-      if(input$loadNicheLayers > 0 && length(layers_dir) > 0L && length(layDirs)>0L)
-        return(rlayers_ntb(layers_dir))
-      else
-        return(NULL)
-    })
+        if(input$loadNicheLayers > 0 && length(layers_dir) > 0L && length(layDirs)>0L)
+          return(rlayers_ntb(layers_dir))
+        else
+          return(NULL)
+      })
+    }
+
 
   })
 
+  #observe({
+  #  print(rasterLayers())
+  #})
   #------------------------------------------------------------------------------
   # Porjection Raster layer directory
 
@@ -79,7 +87,7 @@ if(osSystem == "Darwin"){
 
   proj_rasterLayers <- reactive({
 
-    if(!is.null(getEnvData_future()) && input$getEnvData) return(getEnvData_future())
+    if(input$getEnvData && !is.null(getEnvData_future())) return(getEnvData_future())
     layers_dir <- shinyFiles::parseDirPath(volumes, input$proj_layers_directory)
     ras_formats <- "(*.asc$)|(*.bil$)|(*.sdat$)|(*.rst$)|(*.nc$)|(*.tif$)|(*.envi$)|(*.img$)"
     layDirs <-list.files(layers_dir,pattern = ras_formats)
@@ -259,7 +267,7 @@ if(osSystem != "Darwin"){
   # User raster (niche) layers
 
   rasterLayers <- reactive({
-    if(!is.null(getEnvData()) && input$getEnvData) return(getEnvData())
+    if(input$getEnvData && !is.null(getEnvData())) return(getEnvData())
     layers_dir <- rasterLayersDir()
     input$loadNicheLayers
     isolate({
@@ -274,7 +282,7 @@ if(osSystem != "Darwin"){
   # User projection raster (niche) layers
 
   proj_rasterLayers <- reactive({
-    if(!is.null(getEnvData_future()) && input$getEnvData) return(getEnvData_future())
+    if(input$getEnvData && !is.null(getEnvData_future())) return(getEnvData_future())
     layers_dir <-  proj_rasterLayersDir()
     input$loadNicheLayers
     isolate({
