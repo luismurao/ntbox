@@ -28,7 +28,7 @@ if(osSystem == "Darwin"){
   shinyFiles::shinyDirChoose(input, "ras_layers_directory",
                              roots=  c('wd' = '.', 'home'="/Volumes/", '/home')
                              #roots= list.files("/Volumes/", full.names = T)[1]
-                             )
+  )
 
   #shinyFiles::shinyDirChoose(id = "ras_layers_directory",input = input,
   #                           session =session,defaultPath = getwd())
@@ -398,7 +398,7 @@ observe({
         Very high resolution interpolated climate surfaces for global land areas.\n
         Int J Climatol 25:1965–1978 . doi: 10.1002/joc.1276\n")
   }
-})
+  })
 
 # Shape layers in directory
 
@@ -644,59 +644,57 @@ observeEvent(input$saveState, {
       dir.create(wf_dir_path)
 
 
-  # Save data extraction
+    # Save data extraction
 
-  if(!is.null(niche_data())){
+    if(!is.null(niche_data())){
 
-    #------------------------------------------------------------
-    # NicheToolBox niche data report
-    #------------------------------------------------------------
+      #------------------------------------------------------------
+      # NicheToolBox niche data report
+      #------------------------------------------------------------
 
-    # Path to report source
+      # Path to report source
 
-    niche_data_report_path <- system.file("shinyApp/ntb_report/niche_data_report.Rmd",
-                                          package = "ntbox")
+      niche_data_report_path <- system.file("shinyApp/ntb_report/niche_data_report.Rmd",
+                                            package = "ntbox")
 
-    # save HTML path
+      # save HTML path
 
-    niche_data_report_save <- paste0(wf_dir_path,"/","niche_data_report.html")
+      niche_data_report_save <- paste0(wf_dir_path,"/","niche_data_report.html")
 
 
 
-    render(input = niche_data_report_path,
-           output_format = html_document(pandoc_args = c("+RTS", "-K64m","-RTS"),
-                                         highlight="haddock",
-                                         toc = TRUE,theme = "readable"),
-           output_file = niche_data_report_save)
+      render(input = niche_data_report_path,
+             output_format = html_document(pandoc_args = c("+RTS", "-K64m","-RTS"),
+                                           highlight="haddock",
+                                           toc = TRUE,theme = "readable"),
+             output_file = niche_data_report_save)
 
-    niche_data <- niche_data()
-    ifelse(input$datasetM== "gbif_dat",data <- "GBIF_data", data <- "User_data")
-    ifelse(input$extracted_area== "all_area",
-           raster_data <- "All_raster_area",raster_data <- "M_polygon_area")
+      niche_data <- niche_data()
+      ifelse(input$datasetM== "gbif_dat",data <- "GBIF_data", data <- "User_data")
+      ifelse(input$extracted_area== "all_area",
+             raster_data <- "All_raster_area",raster_data <- "M_polygon_area")
 
-    write.csv(niche_data, paste0(niche_dir_path,
+      write.csv(niche_data, paste0(niche_dir_path,
                                    "/niche_",data,"_",raster_data,".csv"),
-              row.names = FALSE)
-    if(!is.null(kmeans_df()))
-      write.csv(kmeans_df(), paste0(niche_dir_path,
-                                   "/niche_",data,"_kmeansCluster.csv"),
                 row.names = FALSE)
+      if(!is.null(kmeans_df()))
+        write.csv(kmeans_df(), paste0(niche_dir_path,
+                                      "/niche_",data,"_kmeansCluster.csv"),
+                  row.names = FALSE)
 
-    if(!is.null(corr_table())){
-      write.csv(corr_table(), paste0(niche_dir_path,
-                                    "/niche_",data,"_corretable.csv"),
-                row.names = FALSE)
+      if(!is.null(corr_table())){
+        write.csv(corr_table(), paste0(niche_dir_path,
+                                       "/niche_",data,"_corretable.csv"),
+                  row.names = FALSE)
 
-      niche_dir_path <- paste0(workflowDir(),"NicheToolBox_NicheData")
-      save_corfind <- paste0(niche_dir_path,"/niche_correlationfinder.txt")
-      corr_finder <- summs_corr_var()$cor_vars_summary
-      capture.output(print(corr_finder),file=save_corfind)
+        niche_dir_path <- paste0(workflowDir(),"NicheToolBox_NicheData")
+        save_corfind <- paste0(niche_dir_path,"/niche_correlationfinder.txt")
+        corr_finder <- summs_corr_var()$cor_vars_summary
+        capture.output(print(corr_finder),file=save_corfind)
+
+      }
 
     }
 
   }
-
-}
 })
-
-
