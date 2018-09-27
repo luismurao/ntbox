@@ -26,7 +26,7 @@ if(osSystem == "Darwin"){
 
   volumes <- getVolumes()
   shinyFiles::shinyDirChoose(input, "ras_layers_directory",
-                             roots = volumes,
+                             roots = volumes,defaultPath = getwd(),
                              session = session)
   # User raster (niche) layers
 
@@ -72,7 +72,7 @@ if(osSystem == "Darwin"){
 
 
   shinyFiles::shinyDirChoose(input, "proj_layers_directory",
-                             roots = volumes,
+                             roots = volumes,defaultPath = getwd(),
                              session = session)
 
 
