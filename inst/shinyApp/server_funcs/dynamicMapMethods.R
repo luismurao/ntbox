@@ -253,11 +253,11 @@ data_poly <- eventReactive(input$points_in_poly,{
 })
 
 output$downDatDyn <- downloadHandler(
-  filename = function() download_method_dynamic()$file,
+  filename = function() "data_dynamicMap.csv",
   content = function(file) {
-    if(!is.null(download_method_dynamic()$data)){
+    if(!is.null(dataDynamic())){
       ## Leyendo los datos de la especie e escriendolos en un .csv
-      write.csv(download_method_dynamic()$data,file=file,row.names=FALSE)
+      write.csv(dataDynamic(),file=file,row.names=FALSE)
     }
   }
 )
