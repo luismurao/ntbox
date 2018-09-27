@@ -26,7 +26,7 @@ if(osSystem == "Darwin"){
 
   volumes <- getVolumes()
   shinyFiles::shinyDirChoose(input, "ras_layers_directory",
-                             roots=  c('wd' = '.', 'home'="/Volumes/", '/home')
+                             roots=  c('home'="/Users/",'Volumes'="/")
                              #roots= list.files("/Volumes/", full.names = T)[1]
   )
 
@@ -77,8 +77,7 @@ if(osSystem == "Darwin"){
 
 
   shinyFiles::shinyDirChoose(input, "proj_layers_directory",
-                             roots=c(wd='.'),defaultPath = getwd(),
-                             session = session)
+                             roots=  c('home'="/Users/",'Volumes'="/"))
 
 
   output$proj_directory <- renderPrint({
@@ -112,8 +111,7 @@ if(osSystem == "Darwin"){
   # Workflow directory
 
   shinyFiles::shinyDirChoose(input, "wf_directory",
-                             roots = volumes,
-                             session = session)
+                             roots=  c('home'="/Users/",'Volumes'="/"))
 
 
   workflowDir <- reactive({
@@ -137,8 +135,7 @@ if(osSystem == "Darwin"){
   # --------------------------------------------------------
   # Save polygon to directory
   shinyFiles::shinyDirChoose(input, "poly_dir",
-                             roots = volumes,
-                             session = session)
+                             roots=  c('home'="/Users/",'Volumes'="/"))
 
   # Polygon directory
   poly_dir <- reactive({
