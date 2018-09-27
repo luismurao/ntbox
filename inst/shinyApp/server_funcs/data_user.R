@@ -107,7 +107,7 @@ output$dataUClean <- downloadHandler(
   content = function(file) {
     if(!is.null(data_user())){
       ## Leyendo los datos de la especie e escriendolos en un .csv
-      write.csv(data_user(),file=file,row.names=FALSE)
+      write.csv(data_user_clean(),file=file,row.names=FALSE)
     }
   }
 )
