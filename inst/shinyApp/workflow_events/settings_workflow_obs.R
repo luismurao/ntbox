@@ -24,7 +24,8 @@ if(osSystem == "Darwin"){
   #------------------------------------------------------------------------------
   # Raster layer directory
 
-  volumes <- getVolumes()
+  #volumes <- getVolumes()
+  volumes <- c('home'="/Users/",'Volumes'="/")
   shinyFiles::shinyDirChoose(input, "ras_layers_directory",
                              roots=  c('home'="/Users/",'Volumes'="/"),
                              session = session
