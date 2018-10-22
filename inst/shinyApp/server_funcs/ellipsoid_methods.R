@@ -372,17 +372,17 @@ output$downEllipRas <- downloadHandler(
                                  input$selectShape,".asc")},
   content <- function(file){
     if(!is.null(ellip_model_all_rast_all_train()) && input$selectM == "wWorld" && input$selectShape== "wWorld"){
-      writeRaster(ellip_model_all_rast_all_train()$suitRaster,file)
+      return(writeRaster(ellip_model_all_rast_all_train()$suitRaster,file))
     }
 
     else if(!is.null(ellip_model_all_rast_m_train()) && input$selectM == "wWorld" && input$selectShape== "mLayers"){
-      writeRaster(ellip_model_all_rast_m_train()$suitRaster,file)
+      return(writeRaster(ellip_model_all_rast_m_train()$suitRaster,file))
     }
     else if(!is.null(ellip_model_m_rast_all_train()) && input$selectM == "mLayers" && input$selectShape== "wWorld"){
-      writeRaster(ellip_model_m_rast_all_train()$suitRaster,file)
+      return(writeRaster(ellip_model_m_rast_all_train()$suitRaster,file))
     }
     else if(!is.null(ellip_model_m_rast_m_train()) && input$selectM == "mLayers" && input$selectShape== "mLayers"){
-      writeRaster(ellip_model_m_rast_m_train()$suitRaster,file)
+      return(writeRaster(ellip_model_m_rast_m_train()$suitRaster,file))
     }
   }
 )
@@ -398,22 +398,22 @@ output$downEllipDistance <- downloadHandler(
     if(!is.null(ellip_model_all_rast_all_train()) && input$selectM == "wWorld" && input$selectShape =="wWorld"){
       ndistTable <- data.frame(ellip_model_all_rast_all_train()$suits,
                                ellip_model_all_rast_all_train()$ncentedist)
-      write.csv(ndistTable,file,row.names = FALSE)
+      return(write.csv(ndistTable,file,row.names = FALSE))
     }
     else if(!is.null(ellip_model_all_rast_m_train()) && input$selectM == "wWorld" && input$selectShape =="mLayers"){
       ndistTable <- data.frame(ellip_model_all_rast_m_train()$suits,
                                ellip_model_all_rast_m_train()$ncentedist)
-      write.csv(ndistTable,file,row.names = FALSE)
+      return(write.csv(ndistTable,file,row.names = FALSE))
     }
     else if(!is.null(ellip_model_m_rast_all_train()) && input$selectM == "mLayers" && input$selectShape =="wWorld"){
       ndistTable <- data.frame(ellip_model_m_rast_all_train()$suits,
                                ellip_model_m_rast_all_train()$ncentedist)
-      write.csv(ndistTable,file,row.names = FALSE)
+      return(write.csv(ndistTable,file,row.names = FALSE))
     }
     else if(!is.null(ellip_model_m_rast_m_train()) && input$selectM == "mLayers" && input$selectShape =="mLayers"){
       ndistTable <- data.frame(ellip_model_m_rast_m_train()$suits,
                                ellip_model_m_rast_m_train()$ncentedist)
-      write.csv(ndistTable,file,row.names = FALSE)
+      return(write.csv(ndistTable,file,row.names = FALSE))
     }
 
   }
