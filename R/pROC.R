@@ -67,10 +67,10 @@ pROC <- function(continuos_mod,test_data,n_iter=1000,E_percent=5,boost_percent=5
     xyTable <- xyTable[order(xyTable$fractional_area,
                              decreasing = F),]
 
-    auc_pmodel <- trap_roc(xyTable$fractional_area,
+    auc_pmodel <- trapozoid_roc(xyTable$fractional_area,
                            xyTable$sensibility)
 
-    auc_prand <- trap_roc(xyTable$fractional_area,
+    auc_prand <- trapozoid_roc(xyTable$fractional_area,
                           xyTable$fractional_area)
     auc_ratio <- auc_pmodel/auc_prand
 
