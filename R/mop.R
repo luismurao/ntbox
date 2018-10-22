@@ -36,23 +36,27 @@
 #' raster::plot(mop_res)
 
 mop <- function(M_stack, G_stack, percent = 10, comp_each = 2000, parallel = FALSE,normalized=TRUE) {
-  mPoints <- raster::rasterToPoints(M_stack)
-  m_nona <- stats::na.omit(mPoints)
-  m_naID <- attr(m_nona,"na.action")
-  gPoints <- raster::rasterToPoints(G_stack)
-  g_nona <- stats::na.omit(gPoints)
-  g_naID <- attr(g_nona,"na.action")
+  mop_raster <- G_stack[[1]]
+  mValues <- raster::getValues(M_stack)
+  m_noNA <- stats::na.omit(mValues)
+  m_naIDs <- attr(m_noNA,"na.action")
+  gValues <- raster::getValues(G_stack)
+  g_noNA <- stats::na.omit(gValues)
+  g_naIDs <- attr(g_noNA,"na.action")
 
-  m1 <- m_nona[, -(1:2)]
-  m2 <- g_nona[, -(1:2)]
+  ids_raster <- 1:dim(gValues)[1]
+  if(length(g_naIDs)>0L)
+    ids_raster <- ids_raster[- g_naIDs]
+  m1 <- m_noNA
+  m2 <- g_noNA
+
 
   if(dim(m1)[2] != dim(m2)[2]) {
     stop("Stacks must have the same dimensions.")
   }
-
+  out_index <- plot_out(mValues,gValues)
   steps <- seq(1, dim(m2)[1], comp_each)
   kkk <- c(steps,  dim(m2)[1] + 1)
-  out_index <- plot_out(m1, m2)
   long_k <- length(kkk)
 
   if (!parallel) {
@@ -76,7 +80,6 @@ mop <- function(M_stack, G_stack, percent = 10, comp_each = 2000, parallel = FAL
     mop_vals <- unlist(mop1)
 
   }else {
-    #suppressPackageStartupMessages(library("future"))
     future::plan(future::multiprocess)
     mop_env <- new.env()
 
@@ -91,7 +94,7 @@ mop <- function(M_stack, G_stack, percent = 10, comp_each = 2000, parallel = FAL
         mop_dist <- lapply(1:dim(eudist)[1], function(y){
           di <- eudist[y, ]
           qdi <- stats::quantile(di, probs = percent / 100,
-                          na.rm = TRUE)
+                                 na.rm = TRUE)
           ii <-  which(di <= qdi)
           pond_mean <- mean(di,na.rm = TRUE)
           return(pond_mean)
@@ -102,36 +105,20 @@ mop <- function(M_stack, G_stack, percent = 10, comp_each = 2000, parallel = FAL
       avance <- (x / long_k) * 100
       cat("Computation progress: ", avance,"%" ,"\n")
     }
-    future::plan(future::sequential)
-
-
 
     mop_list <- as.list(mop_env)
-    mop_names <- sort(as.numeric(names(mop_list)))
+    mop_names <- sort(as.numeric(as.character(names(mop_list))))
     mop_names <- as.character(mop_names)
     mop_vals <- unlist(mop_list[mop_names])
+    future::plan(future::sequential)
+
   }
 
-  if(!is.null(g_naID)){
-    mop_all <- data.frame(gPoints[,1:2])
-    mop_all$mop <- NA
-    mop_all$mop[-g_naID] <- mop_vals
-
-  }else{
-    mop_all <- data.frame(gPoints[, 1:2], mop = mop_vals)
-  }
-
-  mop_max <- max(stats::na.omit(mop_vals)) * 1.05
-  mop_all[out_index, 3] <- mop_max
-  suppressWarnings({
-    sp::coordinates(mop_all) <- ~ x + y
-    sp::gridded(mop_all) <- TRUE
-    mop_raster <- raster::raster(mop_all)
-    if(normalized)
-      mop_raster <- 1 - (mop_raster / mop_max)
-  })
-
-
+  mop_raster[ids_raster] <- mop_vals
+  mop_max <- raster::cellStats(mop_raster,"max")* 1.05
+  mop_raster[ out_index] <- mop_max
+  if(normalized)
+    mop_raster <- 1 - (mop_raster / mop_max)
   return(mop_raster)
 }
 
@@ -161,7 +148,7 @@ plot_out <- function (M1, G1) {
 
   for (i in 3:d1[2]) {
     MRange <- range(M1[, i])
-    l1 <- which(G1[, i] < range(M1[, i])[1] | G1[,i] > range(M1[, i])[2])
+    l1 <- which(G1[, i] < range(M1[, i],na.rm = T)[1] | G1[,i] > range(M1[, i],na.rm = T)[2])
     AllVec <- c(l1, AllVec)
   }
 
