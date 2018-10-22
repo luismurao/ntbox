@@ -31,6 +31,7 @@
 #' pcs <- spca(layers_stack, sv_dir=NULL,layers_format=NULL)
 #' raster::plot(pcs$pc_layers)
 #'
+#' \dontrun{
 #' # -------------------------------------------------------------------
 #' # PCA projection  without saving.
 #'
@@ -44,7 +45,7 @@
 #'                       sv_dir=NULL,layers_format=NULL)
 #' # Barplot of the Cumulative and explained variance in each component,
 #' print(pcs_with_proj$pca_plot)
-#'
+#' }
 #' # -------------------------------------------------------------------
 #' # PCA projection and saving.
 #' \dontrun{
