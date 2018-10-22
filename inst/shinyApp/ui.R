@@ -43,10 +43,12 @@ shinyUI(
              ),
              navbarMenu("SDM performance",
                         tabPanel("Partial ROC",partial_roc),
-                        tabPanel("Binarization methods",ui_binary)),
-             navbarMenu("Extrapolation Risk",
-                        tabPanel("MOP",ui_mop)
-                        ),
-             tabPanel("GIS Tools",gistools)
+                        tabPanel("Binarization methods",ui_binary),
+                        tabPanel("Binomial test",binomial)),
+             #navbarMenu("Extrapolation Risk",
+            #            tabPanel("MOP",ui_mop)
+             #           ),
+            tabPanel("Extrapolation Risk",ui_extrapo),
+            tabPanel("GIS Tools",gistools)
   )
 )
