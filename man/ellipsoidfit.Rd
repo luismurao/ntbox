@@ -42,17 +42,19 @@ of the niche variables.
 }
 \examples{
 ## Load niche data
-# d_cardon <-  read.csv(system.file("extdata", "cardon_virtual.csv", package = "nichetoolbox"))
+\dontrun{
+d_cardon <-  read.csv(system.file("extdata", "cardon_virtual.csv", package = "ntbox"))
 ## Compute the centroid and shape (covariance matrix) of the ellipsoid model.
-# covar_centroid <- cov_center(d_cardon,mve=TRUE,level=0.99,vars=c(3,4,5))
+covar_centroid <- cov_center(d_cardon,mve=TRUE,level=0.99,vars=c(3,4,5))
 ## RasterStack with the niche variables
-# nicheStack <- stack(list.files(system.file("extdata",
-#                   package = "nichetoolbox"),
-#                   pattern = ".asc$",full.names = TRUE))
+nicheStack <- stack(list.files(system.file("extdata",
+                   package = "ntbox"),
+                   pattern = ".asc$",full.names = TRUE))
 # Fitting the ellipsoid model
-# ellipsoidMod <- ellipsoidfit(nicheStack,
-#                          covar_centroid$centroid,
-#                          covar_centroid$covariance,
-#                          level=0.95,threshold=0.05,plot=TRUE,size=3)
-# plot(ellipsoidMod$suitRaster)
+ ellipsoidMod <- ellipsoidfit(nicheStack,
+                          covar_centroid$centroid,
+                          covar_centroid$covariance,
+                          level=0.95,plot=TRUE,size=3)
+ plot(ellipsoidMod$suitRaster)
+}
 }
