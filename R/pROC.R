@@ -29,8 +29,8 @@ pROC <- function(continuos_mod,test_data,n_iter=1000,E_percent=5,boost_percent=5
 
   continuos_mod <-round((continuos_mod/raster::cellStats(continuos_mod,
                                                          max)) * 1000)
-  test_value <- raster::extract(continuos_mod,test_data)
-  #test_value <- unique(test_value)
+  test_value <- stats::na.omit(raster::extract(continuos_mod,test_data))
+
   classpixels <- data.frame(raster::freq(continuos_mod))
   classpixels <- data.frame(stats::na.omit(classpixels))
 
