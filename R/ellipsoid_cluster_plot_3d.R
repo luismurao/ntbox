@@ -13,7 +13,19 @@
 #' @param cex1 Point size
 #' @return Returns a data.frame with coordinate data from species
 #' @export
-
+#' @examples
+#' \dontrun{
+#' cluster_data <- read.csv(system.file("extdata",
+#'                                      "nichekmeansCluster.csv",
+#'                                       package = "ntbox"))
+#'
+#' ellipsoid_cluster_plot_3d(niche_data = cluster_data,
+#'                           cluster_ids = cluster_data$cluster,
+#'                           x = "bio1",y = "bio3",z = "bio12",
+#'                           ellips = TRUE,alpha = 0.25,
+#'                           grupos = F,vgrupo = NULL,
+#'                           cex1 = 1,level = 0.975)
+#' }
 
 ellipsoid_cluster_plot_3d <- function(niche_data,cluster_ids,x,y,z,ellips,alpha,grupos,vgrupo,cex1=0.25,level){
 
