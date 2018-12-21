@@ -15,7 +15,7 @@ ntb_mess(M_stack, G_stack)
 A rasterLayer with MESS values
 }
 \description{
-ntb_mess calculates multivariate environmental similarity surfaces as described by Elith et al., (2010) and optimized from the \code{\link[dismo]{mess}} function of the \code{\link[dismo]{dismo}} package.
+ntb_mess calculates multivariate environmental similarity surfaces as described by Elith et al., (2010) and optimized from the \code{\link[dismo]{mess}} function of the \code{\link[dismo]{dismo-package}}.
 }
 \examples{
 m_stack <- raster::stack(list.files(system.file("extdata",
