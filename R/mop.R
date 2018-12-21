@@ -9,6 +9,7 @@
 #' cores of the computer. This will demand more RAM and almost full use of the CPU; hence, its use
 #' is more recommended in high-performance computers. Using this option will speed up the analyses.
 #' Default = FALSE
+#' @param ncores (numeric) Number of cores to be used if the process is going to be run in parallel
 #' @param normalized (logical) if TRUE mop output will be normalized to 1.
 #' @return A mobility-oriented parity RasterLayer where values of 0 represent strict extrapolation,
 #' which means complete dissimilarity of environments between the calibration (M) and projection area (G).
@@ -35,7 +36,7 @@
 #'                comp_each=2000)
 #' raster::plot(mop_res)
 
-mop <- function(M_stack, G_stack, percent = 10, comp_each = 2000, parallel = FALSE,normalized=TRUE) {
+mop <- function(M_stack, G_stack, percent = 10, comp_each = 2000, parallel = FALSE,normalized=TRUE,ncores=4) {
   mop_raster <- G_stack[[1]]
   mValues <- raster::getValues(M_stack)
   m_noNA <- stats::na.omit(mValues)
@@ -80,7 +81,7 @@ mop <- function(M_stack, G_stack, percent = 10, comp_each = 2000, parallel = FAL
     mop_vals <- unlist(mop1)
 
   }else {
-    future::plan(future::multiprocess)
+    future::plan(future::multiprocess(workers = ncores))
     mop_env <- new.env()
 
     pasos <- 1:(length(kkk) - 1)
@@ -133,22 +134,20 @@ mop <- function(M_stack, G_stack, percent = 10, comp_each = 2000, parallel = FAL
 #' @export
 
 plot_out <- function (M1, G1) {
-  if(class(M1) == "RasterBrick" | class(M1) == "RasterStack" |class(M1) == "raster"){
-    M1 <- raster::rasterToPoints(M1)
-
+  if(class(M1) == "RasterBrick" | class(M1) == "RasterStack" | class(M1) == "raster"){
+    M1 <- raster::values(M1)
   }
 
-  if(class(G1) == "RasterBrick" | class(G1) == "RasterStack" |class(G1) == "raster"){
-    G1 <- raster::rasterToPoints(G1)
-
+  if(class(G1) == "RasterBrick" | class(G1) == "RasterStack" | class(G1) == "raster"){
+    G1 <- raster::values(G1)
   }
 
   d1 <- dim(M1)
-  AllVec <- matrix(0, 0, 0)
+  AllVec <- vector()
 
-  for (i in 3:d1[2]) {
+  for (i in 1:d1[2]) {
     MRange <- range(M1[, i])
-    l1 <- which(G1[, i] < range(M1[, i],na.rm = T)[1] | G1[,i] > range(M1[, i],na.rm = T)[2])
+    l1 <- which(G1[, i] < range(M1[, i], na.rm = T)[1] | G1[, i] > range(M1[, i], na.rm = T)[2])
     AllVec <- c(l1, AllVec)
   }
 
