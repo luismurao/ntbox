@@ -5,10 +5,12 @@
 #' @return Returns a raster stack of raster layers with the same extent and resolution
 #' @export
 #' @examples
+#' \dontrun{
 #' ## RasterStack with the niche variables
-#' # nicheStack <- rlayers_ntb(list.files(system.file("extdata",
-#' #                   package = "nichetoolbox"),
-#' #                   pattern = ".asc$",full.names = TRUE))
+#' nicheStack <- rlayers_ntb(list.files(system.file("extdata",
+#'                                      package = "nichetoolbox"),
+#'                                      pattern = ".asc$",full.names = TRUE))
+#' }
 
 rlayers_ntb <- function(layers_path){
   # Regular expression to cheack for rasters layer with different formats
