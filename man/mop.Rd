@@ -5,7 +5,7 @@
 \title{MOP: Extrapolation risk analysis for model transfer}
 \usage{
 mop(M_stack, G_stack, percent = 10, comp_each = 2000,
-  parallel = FALSE, normalized = TRUE)
+  parallel = FALSE, normalized = TRUE, ncores = 4)
 }
 \arguments{
 \item{M_stack}{a RasterStack of variables representing the calibration area (M area in ENM context).}
@@ -22,6 +22,8 @@ is more recommended in high-performance computers. Using this option will speed 
 Default = FALSE}
 
 \item{normalized}{(logical) if TRUE mop output will be normalized to 1.}
+
+\item{ncores}{(numeric) Number of cores to be used if the process is going to be run in parallel}
 }
 \value{
 A mobility-oriented parity RasterLayer where values of 0 represent strict extrapolation,
