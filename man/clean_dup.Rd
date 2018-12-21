@@ -13,8 +13,8 @@ clean_dup(data, longitude, latitude, threshold = 0)
 
 \item{latitude}{A character vector of the column name of latitude.}
 
-\item{threshold}{A numerc value representig the distance (in grades) between coordinates
-to be considered as a duplicate.}
+\item{threshold}{A numerc value representig the euclidean distance between coordinates
+to be considered a duplicate.}
 }
 \value{
 Returns a data.frame with coordinate data from species
