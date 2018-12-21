@@ -1,6 +1,6 @@
 #' ntb_mess: Multivariate Environmental Similarity Surfaces (MESS)
 #'
-#' @description ntb_mess calculates multivariate environmental similarity surfaces as described by Elith et al., (2010) and optimized from the \code{\link[dismo]{mess}} function of the \code{\link[dismo]{dismo}} package.
+#' @description ntb_mess calculates multivariate environmental similarity surfaces as described by Elith et al., (2010) and optimized from the \code{\link[dismo]{mess}} function of the \code{\link[dismo]{dismo-package}}.
 #' @param M_stack a RasterStack or a Matrix of variables representing the calibration area (M area in ENM context). If M_stack is matrix it should contain the values of environmental variables as get it from \code{\link[raster]{getValues}} function.
 #' @param G_stack a RasterStack or a Matrix of variables representing areas or scenarios to which models will be transferred. If G_stack is matrix it should contain the values of environmental variables as get it from \code{\link[raster]{getValues}} function.
 #' @references Elith J., M. Kearney M., and S. Phillips, 2010. The art of modelling range-shifting species. Methods in Ecology and Evolution 1:330-342.
