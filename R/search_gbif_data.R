@@ -8,15 +8,18 @@
 #' @export
 #' @import stringi
 #' @examples
+#' \dontrun{
 #' # Species genus
-#' # genus <- "ambystoma"
+#' genus <- "ambystoma"
 #' # Species name
-#' # species <- "tigrinum"
+#' species <- "tigrinum"
 #' # GBIF search
-#' # ambystoma_tigrinum <- searh_gbif_data(genus,species,
-#' #                                        occlim=100,
-#' #                                        writeFile=FALSE)
-#' # head(ambystoma_tigrinum[,1:5])
+#' ambystoma_tigrinum <- searh_gbif_data(genus,species,
+#'                                       occlim=100,
+#'                                       writeFile=FALSE)
+#' head(ambystoma_tigrinum[,1:5])
+#' }
+
 searh_gbif_data <- function(genus,species,occlim=10000,writeFile=FALSE){
 
   # Check if species data is on working directory
