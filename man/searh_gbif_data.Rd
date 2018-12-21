@@ -22,13 +22,15 @@ Returns a data.frame with coordinate data from species
 Searchs gbif data using the function \code{\link[spocc]{occ}} from the spocc package
 }
 \examples{
+\dontrun{
 # Species genus
-# genus <- "ambystoma"
+genus <- "ambystoma"
 # Species name
-# species <- "tigrinum"
+species <- "tigrinum"
 # GBIF search
-# ambystoma_tigrinum <- searh_gbif_data(genus,species,
-#                                        occlim=100,
-#                                        writeFile=FALSE)
-# head(ambystoma_tigrinum[,1:5])
+ambystoma_tigrinum <- searh_gbif_data(genus,species,
+                                      occlim=100,
+                                      writeFile=FALSE)
+head(ambystoma_tigrinum[,1:5])
+}
 }
