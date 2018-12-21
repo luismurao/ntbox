@@ -14,7 +14,7 @@ Returns a raster stack of raster layers with the same extent and resolution
 }
 \description{
 Read raster layers that that have the same extent and resolution,
-             all  \link{raster} formats are accepted
+all  \code{\link[raster]{raster-package}} formats are accepted (see \code{\link[raster]{writeFormats}})
 }
 \examples{
 \dontrun{

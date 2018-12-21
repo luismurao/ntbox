@@ -1,6 +1,6 @@
 #' Function to read raster layers with the same extent and resolution in all `raster` acepted formats
 #' @description Read raster layers that that have the same extent and resolution,
-#'              all  \link{raster} formats are accepted
+#' all  \code{\link[raster]{raster-package}} formats are accepted (see \code{\link[raster]{writeFormats}})
 #' @param layers_path Path to the folder conteining raster layers. All layers in the folder have to have the same extent and resoltion
 #' @return Returns a raster stack of raster layers with the same extent and resolution
 #' @export
