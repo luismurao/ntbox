@@ -11,8 +11,6 @@ data_gbif_search <- eventReactive(input$search_gbif_data,{
   if(is.null(test))
     return(0)
 
-
-
   data <- ntbox::searh_gbif_data(genus = input$genus,
                                  species = input$species,
                                  occlim = input$occlim,
@@ -26,48 +24,128 @@ data_gbif_search <- eventReactive(input$search_gbif_data,{
 })
 
 
-# Global data frame for GBIF data (clean)
 
+
+# Create an observer for updating selectInput of GBIF data
+
+observe({
+  # Data frame with gbif records
+  df_gbif_search <- data_gbif_search()
+  if (is.data.frame(df_gbif_search)) {
+
+    # Regular expression to look for longitude and latitude
+
+    lon_gbif <- grep(pattern = "longitude",
+                     x = names(df_gbif_search),value=TRUE)[1]
+    lat_gbif <- grep(pattern = "latitude",
+                     x = names(df_gbif_search),value=TRUE)[1]
+
+    ifelse(test = !is.null(lon_gbif),
+           longitud_gbif <- lon_gbif ,
+           longitud_gbif <- names(df_gbif_search)[1])
+    ifelse(test = !is.null(lat_gbif),
+           latitud_gbif <- lat_gbif ,
+           latitud_gbif  <- names(df_gbif_search)[1])
+
+    # Update select input for longitude
+    updateSelectInput(session, 'xLongitudeGBIF',
+                      choices = names(df_gbif_search),
+                      selected = longitud_gbif)
+    # Update select input for latitude
+    updateSelectInput(session, 'yLatitudeGBIF',
+                      choices = names(df_gbif_search),
+                      selected = latitud_gbif)
+
+
+  }
+})
+
+# Observer for year variable
+observe({
+  if(!is.null(selectYear()))
+    updateSelectInput(session,"GBIFYears",choices = selectYear())
+})
+
+
+# Observer for Groupping variable that will be used to clean data
+
+observeEvent(input$search_gbif_data,{
+  if(is.data.frame(data_gbif_search())){
+    updateSelectInput(session,"groupGBIF",
+                      choices = names(data_gbif_search()))
+  }
+})
+
+# Observer for the levels of the Groupping variable that will be used to clean data
+
+observe({
+  if(is.data.frame(data_gbif_search())){
+
+    if(input$groupGBIF != "Search for a species"){
+      occ_levels <- levels(as.factor(data_gbif_search()[,input$groupGBIF]))
+      updateSelectInput(session,"groupLevelsGBIF",
+                        choices = occ_levels,
+                        selected = occ_levels)
+    }
+  }
+})
+
+
+# Global data frame for species data
+
+data_gbif_sp <- shiny::eventReactive(input$clean_dup_gbif,{
+  data <- data_gbif_search()
+  if(is.data.frame(data)){
+    longitude <- input$xLongitudeGBIF
+    latitude <-  input$yLatitudeGBIF
+    threshold <- as.numeric(input$threshold_gbif)
+    data_clean <- clean_dup(data,longitude = longitude,
+                            latitude = latitude,
+                            threshold= threshold)
+    data_clean <- data.frame(ID_ntb= 1:nrow(data_clean),
+                             data_clean)
+    return(data_clean)
+  }
+})
+
+# Global data frame for grupped data
+
+data_gbif_group <- shiny::eventReactive(input$clean_dup_gbif_group,{
+  data <- data_gbif_search()
+  if(is.data.frame(data) && input$groupGBIF != "Search for a species"){
+    longitude <- input$xLongitudeGBIF
+    latitude <-  input$yLatitudeGBIF
+    threshold <- as.numeric(input$threshold_gbif)
+    dataL <- data %>% split(.[,input$groupGBIF])
+    data_clean <- dataL[input$groupLevelsGBIF] %>%
+      purrr::map_df(~clean_dup(.x,longitude = longitude,
+                               latitude = latitude,
+                               threshold= threshold))
+    return(data_clean)
+  }
+})
+# Gbif data
 data_gbif <- reactive({
   data <- data_gbif_search()
-
   if(is.data.frame(data)){
     input$clean_dup_gbif
 
     isolate({
       if(input$clean_dup_gbif){
-        longitude <- input$xLongitudeGBIF
-        latitude <-  input$yLatitudeGBIF
-        threshold <- as.numeric(input$threshold_gbif)
-        data_clean <- clean_dup(data,longitude = longitude,
-                                latitude = latitude,
-                                threshold= threshold)
+        data <- data_gbif_sp()
       }
-      else
-        return(data)
     })
 
-    # Clean duplicates by grouping variable
     input$clean_dup_gbif_group
     isolate({
       if(input$clean_dup_gbif_group){
-        if(!is.null(input$groupLevelsGBIF)){
-          selection <- unlist(lapply(input$groupLevelsGBIF,
-                                     function(x)
-                                       which(x == data_clean[,input$groupGBIF])))
-
-          #data_clean <- data_clean[-selection,]
-          data_clean <- clean_dup(data_clean[selection,],
-                                  longitude,longitude,
-                                  threshold=threshold)
-          }
-        }
-      })
-      data_clean$ID_ntb <- 1:dim(data_clean)[1]
-      return(data_clean)
-    }
-    else
-      return(NULL)
+        data <- data_gbif_group()
+      }
+    })
+    return(data)
+  }
+  else
+    return()
 })
 
 
@@ -324,66 +402,4 @@ output$ani_GBIF = downloadHandler(
       file.copy(from = anifile,to = file)
     }
   })
-
-
-
-
-
-
-# Create an observer for updating selectInput of GBIF data
-
-observe({
-  # Data frame with gbif records
-  df_gbif_search <- data_gbif_search()
-  if (is.data.frame(df_gbif_search)) {
-
-    # Regular expression to look for longitude and latitude
-
-    lon_gbif <- grep(pattern = "longitude",
-                     x = names(df_gbif_search),value=TRUE)[1]
-    lat_gbif <- grep(pattern = "latitude",
-                     x = names(df_gbif_search),value=TRUE)[1]
-
-    ifelse(test = !is.null(lon_gbif),
-           longitud_gbif <- lon_gbif ,
-           longitud_gbif <- names(df_gbif_search)[1])
-    ifelse(test = !is.null(lat_gbif),
-           latitud_gbif <- lat_gbif ,
-           latitud_gbif  <- names(df_gbif_search)[1])
-
-    # Update select input for longitude
-    updateSelectInput(session, 'xLongitudeGBIF',
-                      choices = names(df_gbif_search),
-                      selected = longitud_gbif)
-    # Update select input for latitude
-    updateSelectInput(session, 'yLatitudeGBIF',
-                      choices = names(df_gbif_search),
-                      selected = latitud_gbif)
-    # Update select input for GBIF grouping variable
-    updateSelectInput(session, 'groupGBIF',
-                      choices = names(df_gbif_search),
-                      selected = names(df_gbif_search))
-
-
-  }
-})
-
-# Observer for updating the levels of the grouping variable
-
-observe({
-  df_gbif_search <- data_gbif_search()
-  if (is.data.frame(df_gbif_search)) {
-    if(input$groupGBIF != "Search for a species" && input$groupGBIF %in% df_gbif_search){
-      niveles <- levels(as.factor(df_gbif_search[,input$groupGBIF]))
-      updateSelectInput(session, 'groupLevelsGBIF', choices =niveles)
-    }
-  }
-
-})
-
-observe({
-  if(!is.null(selectYear()))
-    updateSelectInput(session,"GBIFYears",choices = selectYear())
-})
-
 
