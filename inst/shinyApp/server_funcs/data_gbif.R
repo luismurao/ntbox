@@ -124,30 +124,42 @@ data_gbif_group <- shiny::eventReactive(input$clean_dup_gbif_group,{
     return(data_clean)
   }
 })
-# Gbif data
+
+values_gbif <- reactiveValues(counter_sp=0,counter_group=0)
+
+observeEvent(input$clean_dup_gbif,{
+  if(is.data.frame(data_gbif_sp())){
+    values_gbif$counter_sp <- 1
+    values_gbif$counter_group <- 0
+  }
+})
+
+observeEvent(input$clean_dup_gbif_group,{
+  if(is.data.frame(data_gbif_group())){
+    values_gbif$counter_group <-  1
+    values_gbif$counter_sp <-  0
+  }
+})
+
+
+
 data_gbif <- reactive({
   data <- data_gbif_search()
+
   if(is.data.frame(data)){
-    input$clean_dup_gbif
 
-    isolate({
-      if(input$clean_dup_gbif){
-        data <- data_gbif_sp()
-      }
-    })
+    if(values_gbif$counter_sp){
+      data <- data_gbif_sp()
+    }
 
-    input$clean_dup_gbif_group
-    isolate({
-      if(input$clean_dup_gbif_group){
-        data <- data_gbif_group()
-      }
-    })
+    if(values_gbif$counter_group){
+      data <- data_gbif_group()
+    }
     return(data)
   }
   else
     return()
 })
-
 
 # Show the dimension of species data (number of rows and columns)
 
