@@ -30,16 +30,16 @@ suppressPackageStartupMessages({
 #if(!require("leaflet.ntbox"))
 #  devtools::install_github("luismurao/leaflet.ntbox")
 
-pkgs_ntb <- c("ENMGadgets","shinysky")
+pkgs_ntb <- c("shinysky")
 
 # Missing packages
 pkgs_ntb_miss1 <- pkgs_ntb[!(pkgs_ntb %in% installed.packages())]
 # Install missing packages
 if(length(pkgs_ntb_miss1)>0L){
   devtools::install_github("AnalytixWare/ShinySky")
-  devtools::install_github("ENMGadgets", "narayanibarve")
+  #devtools::install_github("ENMGadgets", "narayanibarve")
 }
-library(ENMGadgets)
+#library(ENMGadgets)
 library(shinysky)
 library(leaflet)
 
