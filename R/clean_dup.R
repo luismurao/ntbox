@@ -5,8 +5,8 @@
 #' @param data A data.frame with longitude and latitude data
 #' @param longitude A character vector of the column name of longitude.
 #' @param latitude A character vector of the column name of latitude.
-#' @param threshold A numerc value representig the distance (in grades) between coordinates
-#'            to be considered as a duplicate.
+#' @param threshold A numerc value representig the euclidean distance between coordinates
+#'            to be considered a duplicate.
 #' @return Returns a data.frame with coordinate data from species
 #' @export
 #' @examples
