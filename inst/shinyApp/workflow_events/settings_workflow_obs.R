@@ -20,7 +20,7 @@ source("helpers/ldraw2sp.R",local = TRUE)
 #volumes <- c(path.expand('~'))
 osSystem <- Sys.info()["sysname"]
 
-if(osSystem == "Darwin"){
+if(osSystem %in% c("Darwin","Linux") ){
 
   #------------------------------------------------------------------------------
   # Raster layer directory
@@ -155,7 +155,7 @@ if(osSystem == "Darwin"){
 }
 
 
-if(osSystem != "Darwin"){
+if(!osSystem %in% c("Darwin","Linux")){
   observeEvent(
     ignoreNULL = TRUE,
     eventExpr = {
