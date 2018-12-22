@@ -16,7 +16,9 @@ pkg_check <- c("shiny","rgeos","rgdal",
 packageVersion("dygraphs")
 
 pkgs_ntb_miss <- pkg_check[!(pkg_check %in% installed.packages())]
-
+ifelse("animation" %in% pkgs_ntb_miss,
+       pkgs_ntb_miss <- pkgs_ntb_miss[-which(pkgs_ntb_miss=="animation")],
+       pkgs_ntb_miss)
 if(!identical(pkgs_ntb_miss , character(0))){
   install.packages(pkgs_ntb_miss,repos = "https://cloud.r-project.org/")
 }
@@ -50,7 +52,6 @@ library(leaflet)
 options(rgl.useNULL=TRUE)
 #sapply(pkgs_ntb,function(x) library(x,character.only = TRUE))
 #rgl.init()
-
 
 
 
