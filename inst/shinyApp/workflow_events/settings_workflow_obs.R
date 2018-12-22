@@ -155,7 +155,7 @@ if(osSystem %in% c("Darwin","Linux") ){
 }
 
 
-if(!osSystem %in% c("Darwin","Linux")){
+if(osSystem %in% c("Windows")){
   observeEvent(
     ignoreNULL = TRUE,
     eventExpr = {
