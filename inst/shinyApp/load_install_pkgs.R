@@ -22,7 +22,7 @@ ifelse("animation" %in% pkgs_ntb_miss,
 if(!identical(pkgs_ntb_miss , character(0))){
   install.packages(pkgs_ntb_miss,repos = "https://cloud.r-project.org/")
 }
-
+pkg_check <- pkg_check[-which(pkg_check == "animation")]
 suppressPackageStartupMessages({
   loadntbPkg <- sapply(pkg_check,function(x) library(x,character.only = TRUE))
 })
