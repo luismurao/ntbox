@@ -418,8 +418,9 @@ output$animation_gif <- shiny::renderUI({
   if(animation_installed ())
     downloadButton("ani_GBIF",label = "Create")
   else
-    shiny::HTML("Install", shiny::code("animation"),
-                " package to create a time series animation of occurrence points.")
+    #shiny::HTML("Install", shiny::code("`animation`"),
+    #            " package to create a time series animation of occurrence points.")
+    shiny::code("animation")
 })
 
 # Animated GBIF data Map
