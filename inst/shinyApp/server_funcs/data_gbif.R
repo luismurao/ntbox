@@ -232,7 +232,7 @@ output$downGBIF <- downloadHandler(
 # GBIF history of reccords and pie chart
 GBIF_vis <- reactive({
   if(!is.null(data_gbif())){
-    dfGBIF_vis <- occs_history(data_gbif())
+    dfGBIF_vis <- ntbox::occs_history(data_gbif())
     d <- dfGBIF_vis$mot
     gD <- dfGBIF_vis$data[,c("country","year")]
     gD <- gD %>% group_by(country) %>% summarise(count1 = n())
@@ -256,7 +256,7 @@ output$gbifVis <- renderGvis({
 calData <- reactive({
   d1 <- data_gbif()
   if(!is.null(d1)){
-    d1 <- occs_history(data_gbif())$data
+    d1 <- ntbox::occs_history(data_gbif())$data
     d1$date <- as.Date(paste(d1$year,d1$month,d1$day,sep="/"),format = '%Y/%m/%d')
     datos <- d1[with(d1,order(date)),]
     datos <- datos[!is.na(datos$year),]
