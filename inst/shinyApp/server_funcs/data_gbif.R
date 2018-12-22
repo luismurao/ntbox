@@ -361,47 +361,64 @@ temGBIF <- reactive({
   return(paste0(input$genus,"_",input$species,"_animation",".gif"))
 })
 # Generte animated Map
+
+animation_installed <- reactive({
+  if("animation" %in% installed.packages())
+    return(TRUE)
+  else
+    return(FALSE)
+})
+
 animatedGBIF <- reactive({
-  if(!is.null(data_gbif())) {
-    d1 <- data_gbif()
-    d1$date <- as.Date(paste(d1$year,d1$month,d1$day,sep="/"),format = '%Y/%m/%d')
-    datos <- d1[with(d1,order(date)),]
-    datos <- datos[!is.na(datos$year),]
-    nD <- unique(datos$year)
-    n <- length(nD)
-    namesSp <- levels(d1$name)
-    if(length(namesSp) == 1) sps <- bquote(bold("GBIF"~"occs"~"for")~bolditalic(.(namesSp)))
-    else sps <- paste0("GBIF data")
+  if(animation_installed()){
+    if(!is.null(data_gbif())) {
+      d1 <- data_gbif()
+      d1$date <- as.Date(paste(d1$year,d1$month,d1$day,sep="/"),format = '%Y/%m/%d')
+      datos <- d1[with(d1,order(date)),]
+      datos <- datos[!is.na(datos$year),]
+      nD <- unique(datos$year)
+      n <- length(nD)
+      namesSp <- levels(d1$name)
+      if(length(namesSp) == 1) sps <- bquote(bold("GBIF"~"occs"~"for")~bolditalic(.(namesSp)))
+      else sps <- paste0("GBIF data")
 
-    saveGIF({
-      for(i in 1:n) {
+      animation::saveGIF({
+        for(i in 1:n) {
 
-        maps::map("world", fill=TRUE, col="white",
-                  bg="lightblue", ylim=c(-60, 90), mar=c(0,0,0,0))
-        title(sps,cex=40,cex.main = 2)
-        ## Poniendo ejes al mapa
-        axis(1,las=1)
-        axis(2,las=1)
-        toP <- which(datos$year<=nD[i])
-        legend("topleft", legend = paste0(nD[i]),cex=2)
+          maps::map("world", fill=TRUE, col="white",
+                    bg="lightblue", ylim=c(-60, 90), mar=c(0,0,0,0))
+          title(sps,cex=40,cex.main = 2)
+          ## Poniendo ejes al mapa
+          axis(1,las=1)
+          axis(2,las=1)
+          toP <- which(datos$year<=nD[i])
+          legend("topleft", legend = paste0(nD[i]),cex=2)
 
-        colores <- as.numeric(datos$year[toP])
-        leyenda <- unique(as.character(datos$year))
-        colL <-   unique(as.numeric(datos$year))
-
-
-        points(datos$longitude[toP],datos$latitude[toP], col=colores,cex=1.5,pch=20)
-        legend("topright",legend = leyenda,col=colL,pch=20,ncol = 2,cex=0.95)
-        #colores <- as.numeric(datos$name[1:i])
+          colores <- as.numeric(datos$year[toP])
+          leyenda <- unique(as.character(datos$year))
+          colL <-   unique(as.numeric(datos$year))
 
 
-      }
-    }, interval = 0.4, movie.name = temGBIF(), ani.width = 1200, ani.height = 800)
+          points(datos$longitude[toP],datos$latitude[toP], col=colores,cex=1.5,pch=20)
+          legend("topright",legend = leyenda,col=colL,pch=20,ncol = 2,cex=0.95)
+          #colores <- as.numeric(datos$name[1:i])
 
+
+        }
+      }, interval = 0.4, movie.name = temGBIF(), ani.width = 1200, ani.height = 800)
+
+    }
   }
   else
     return(NULL)
 
+})
+
+output$animation_gif <- shiny::renderUI({
+  if(animation_installed ())
+    downloadButton("ani_GBIF",label = "Create")
+  else
+    shiny::HTML("install `animation` package to create a time series animation of occurrence points.")
 })
 
 # Animated GBIF data Map
