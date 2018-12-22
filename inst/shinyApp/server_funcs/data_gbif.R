@@ -420,7 +420,7 @@ output$animation_gif <- shiny::renderUI({
   else
     #shiny::HTML("Install", shiny::code("`animation`"),
     #            " package to create a time series animation of occurrence points.")
-    shiny::code("animation")
+    p("Install",shiny::code("animation")," package to create a time series animation of occurrence points.")
 })
 
 # Animated GBIF data Map
