@@ -99,9 +99,9 @@ data_gbif_sp <- shiny::eventReactive(input$clean_dup_gbif,{
     longitude <- input$xLongitudeGBIF
     latitude <-  input$yLatitudeGBIF
     threshold <- as.numeric(input$threshold_gbif)
-    data_clean <- clean_dup(data,longitude = longitude,
-                            latitude = latitude,
-                            threshold= threshold)
+    data_clean <- ntbox::clean_dup(data,longitude = longitude,
+                                   latitude = latitude,
+                                   threshold= threshold)
     data_clean <- data.frame(ID_ntb= 1:nrow(data_clean),
                              data_clean)
     return(data_clean)
@@ -118,9 +118,9 @@ data_gbif_group <- shiny::eventReactive(input$clean_dup_gbif_group,{
     threshold <- as.numeric(input$threshold_gbif)
     dataL <- data %>% split(.[,input$groupGBIF])
     data_clean <- dataL[input$groupLevelsGBIF] %>%
-      purrr::map_df(~clean_dup(.x,longitude = longitude,
-                               latitude = latitude,
-                               threshold= threshold))
+      purrr::map_df(~ntbox::clean_dup(.x,longitude = longitude,
+                                      latitude = latitude,
+                                      threshold= threshold))
     return(data_clean)
   }
 })
@@ -235,10 +235,10 @@ GBIF_vis <- reactive({
     dfGBIF_vis <- ntbox::occs_history(data_gbif())
     d <- dfGBIF_vis$mot
     gD <- dfGBIF_vis$data[,c("country","year")]
-    gD <- gD %>% group_by(country) %>% summarise(count1 = n())
+    gD <- gD %>% dplyr::group_by(country) %>% dplyr::summarise(count1 = n())
     gD <- gD[,c("country","count1")]
-    Pie <- gvisPieChart(gD,options=list(legend="All time %"))
-    GT <- gvisMerge(d,Pie, horizontal=TRUE)
+    Pie <- googleVis::gvisPieChart(gD,options=list(legend="All time %"))
+    GT <-  googleVis::gvisMerge(d,Pie, horizontal=TRUE)
     return(list(pie=Pie,motion=d,pieMotion=GT))
   }
 })
@@ -306,23 +306,23 @@ calendar <- reactive({
     datos$date <- as.Date(datos$date)
     nyears <- length(unique(format(datos$date,'%Y')))
 
-    Cal <- gvisCalendar(datos,
-                        datevar="date",
-                        numvar="records",
-                        options=list(
-                          title="Occs records Calendar & % of records by country",
-                          height=140*nyears,
-                          calendar="{yearLabel: { fontName: 'Times-Roman',
-                          fontSize: 32, color: '#1A8763', bold: true},
-                          cellSize: 10,
-                          cellColor: { stroke: 'red', strokeOpacity: 0.2 },
-                          focusedCellColor: {stroke:'red'}}"))
+    Cal <- googleVis::gvisCalendar(datos,
+                                   datevar="date",
+                                   numvar="records",
+                                   options=list(
+                                                title="Occs records Calendar & % of records by country",
+                                                height=140*nyears,
+                                                calendar="{yearLabel: { fontName: 'Times-Roman',
+                                                           fontSize: 32, color: '#1A8763', bold: true},
+                                                           cellSize: 10,
+                                                           cellColor: { stroke: 'red', strokeOpacity: 0.2 },
+                                                           focusedCellColor: {stroke:'red'}}"))
     datPie <- calData()$datPie
     gD <- datPie[,c("country","year")]
-    gD <- gD %>% group_by(country) %>% summarise(count1 = n())
+    gD <- gD %>% dplyr::group_by(country) %>% dplyr::summarise(count1 = n())
     gD <- gD[,c("country","count1")]
-    Pie <- gvisPieChart(gD,options=list(legend="All time %"))
-    CalPie <- gvisMerge(Cal,Pie, horizontal=TRUE)
+    Pie <- googleVis::gvisPieChart(gD,options=list(legend="All time %"))
+    CalPie <- googleVis::gvisMerge(Cal,Pie, horizontal=TRUE)
     return(CalPie)
     }
 

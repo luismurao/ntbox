@@ -1,10 +1,19 @@
 #' Function to visualize GIBIF data using googleVis
-#' @description Visualize history of GBIF records
+#' @description Visualize a time series of the history of GBIF records.
 #' @param gbif_data A data.frame with GBIF data
 #' @importFrom magrittr %>%
 #' @return Returns a list with googleVis motin chart and a data.frame
 #' @export
-
+#' @details Creates a motionchart of the time series of the occurrence data. It uses the function \code{\link[googleVis]{gvisMotionChart}} from \code{\link[googleVis]{googleVis-package}}.
+#' @examples
+#' \dontrun{
+#' ambystoma_tigrinum <- searh_gbif_data(genus = "Ambystoma",
+#'                                       "tigrinum",occlim=1000,
+#'                                       writeFile=FALSE)
+#'
+#' atigrinum_history <- occs_history(ambystoma_tigrinum)
+#' plot(atigrinum_history$mot)
+#' }
 occs_history <- function(gbif_data){
 
 

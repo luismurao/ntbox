@@ -523,7 +523,7 @@ observeEvent(input$saveState, {
         #if(poly_name_ext %in% list.files(file_dir)){
         #  poly_name <- paste0(poly_name,"B_RandNUM",sample(1:1000,1))
         #}
-        writeOGR(myPolygon(), file_dir, poly_name,"_",input$dataset_dynMap, driver="ESRI Shapefile",overwrite_layer = T)
+        rgdal::writeOGR(myPolygon(), file_dir, poly_name,"_",input$dataset_dynMap, driver="ESRI Shapefile",overwrite_layer = T)
 
       }
 
@@ -535,12 +535,13 @@ observeEvent(input$saveState, {
 
       # Compile workflow report
 
-      render(input = report_path,
-             output_format = html_document(pandoc_args = c("+RTS", "-K64m","-RTS"),
-                                           highlight="haddock",
-                                           self_contained = FALSE,
-                                           toc = TRUE,theme = "readable"),
-             output_file = report_save)
+      rmarkdown::render(input = report_path,
+                        output_format = html_document(pandoc_args = c("+RTS", "-K64m","-RTS"),
+                                                      highlight="haddock",
+                                                      self_contained = FALSE,
+                                                      toc = TRUE,theme = "readable"),
+                        output_file = report_save)
+
 
       # Compile Motion Chart instructions
 
@@ -665,11 +666,12 @@ observeEvent(input$saveState, {
 
 
 
-      render(input = niche_data_report_path,
-             output_format = html_document(pandoc_args = c("+RTS", "-K64m","-RTS"),
-                                           highlight="haddock",
-                                           toc = TRUE,theme = "readable"),
-             output_file = niche_data_report_save)
+      rmarkdown::render(input = niche_data_report_path,
+                        output_format = html_document(pandoc_args = c("+RTS", "-K64m","-RTS"),
+                                                      highlight="haddock",
+                                                      toc = TRUE,theme = "readable"),
+                        output_file = niche_data_report_save)
+
 
       niche_data <- niche_data()
       ifelse(input$datasetM== "gbif_dat",data <- "GBIF_data", data <- "User_data")

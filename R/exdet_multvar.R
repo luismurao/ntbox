@@ -46,7 +46,7 @@ exdet_multvar <- function(M_stack, G_stack,G_mold=NULL) {
                         center = mu_m,
                         cov = var_m,na.rm = T)
   maha_max <- max(maha_m,na.rm = T)
-  NT2 <- maha_m / maha_max
+  NT2 <- maha_g / maha_max
   extD[] <- NT2
   names(extD) <- "NT2"
   return(extD)

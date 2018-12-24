@@ -4,23 +4,23 @@
 \alias{confu_mat_optim}
 \title{Function to find the cut-off threshold that optimizes the confusion matrix}
 \usage{
-confu_mat_optim(sdm_raster, valData, longitude, latitude, pres_aus,
+confu_mat_optim(sdm_raster, valData, longitude, latitude, pres_abs,
   optim_by = "kappa", th_range = c(0, 1), step = 0.005)
 }
 \arguments{
-\item{sdm_raster}{SDM predicition raster}
+\item{sdm_raster}{Continuos predicition raster.}
 
 \item{valData}{A data.frame or a matrix with validation data. The data must contain
-ongitude, latitude and a column of presences (1) and absences (0).}
+longitude, latitude and a column of presences (1) and absences (0).}
 
 \item{longitude}{Column name of the longitude data}
 
 \item{latitude}{Column name of the latitude data}
 
-\item{pres_aus}{Column name of presences and absences. The presences have to represented by
+\item{pres_abs}{Column name of presences and absences. The presences have to represented by
 1 and the absences with 0.}
 
-\item{optim_by}{The optimation should be by kappa (Kappa)  metric or by tss (TSS) metric.}
+\item{optim_by}{The optimation should be by any of the following options: kappa, tss, a, b, c, d, correct_class_rate, miss_cla_rate, posit_pre_pow, nega_pre_pow, comission_error,or by omission_error.}
 
 \item{th_range}{A vector with the minimum and max range of threshold values used in the searching process.}
 
@@ -28,11 +28,54 @@ ongitude, latitude and a column of presences (1) and absences (0).}
 }
 \value{
 Returns a data.frame with the values of: confusion matrix, kappa, tss, prevalence,
-specificity, sensibility,correct classification rate (correct_class_rate), miss classification rate (miss_cla_rate),
-positive predictive power (posit_pre_pow), negative predictive power (nega_pre_pow), comission error (comission_error)
-omission error (omission_error).
+specificity, sensibility,correct classification rate (correct_class_rate), miss classification rate (miss_cla_rate), positive predictive power (posit_pre_pow), negative predictive power (nega_pre_pow), comission error (comission_error) and omission error (omission_error).
 }
 \description{
 The function finds out which is the best cut-off threshold that
-optimizes the confusion matrix based on Kappa or TSS
+optimizes the confusion matrix based on any of the entries of the confussion matrix (a,b,c,d) or by Kappa, TSS, Prevalence, Specificity, Sensibility,Correct Classification Rate , Miss Classification Rate.
+}
+\examples{
+\dontrun{
+# Read a Ambystoma tigrinum model
+sdm_model <- raster::raster(file.path(system.file("extdata",
+                                                     package = "ntbox"),
+                                                     "ambystoma_model.tif"))
+# Validation data with presences and absences
+validation_data <- utils::read.csv(file.path(system.file("extdata",
+                                                     package = "ntbox"),
+                                                     "ambystoma_validation.csv"))
+# ----------------------------------------------------------------------------------
+# Optimization by Kappa metric
+# ----------------------------------------------------------------------------------
+kappa_threshold <- confu_mat_optim(sdm_raster = sdm_model,
+                                      valData = validation_data,
+                                      longitude = "longitude",
+                                      latitude = "latitude",
+                                      pres_abs = "presence_absence",
+                                      optim_by = "kappa",
+                                      th_range = c(0.005,0.5),step = 0.005)
+
+# Convert continuos model to binary by using Kappa optimization threshold
+sdm_bin_kappa <- sdm_model >= kappa_threshold$threshold[1]
+# Plot binary model
+raster::plot(sdm_bin_kappa)
+# ----------------------------------------------------------------------------------
+# Optimization by Sensibility.
+# ----------------------------------------------------------------------------------
+sensibility_threshold <- confu_mat_optim(sdm_raster = sdm_model,
+                                         valData = validation_data,
+                                         longitude = "longitude",
+                                         latitude = "latitude",
+                                         pres_abs = "presence_absence",
+                                         optim_by = "sensibility",
+                                         th_range = c(0.005,0.5),step = 0.005)
+
+# Convert continuos model to binary by using Sensibility optimization threshold
+sdm_bin_sensibility <- sdm_model >= sensibility_threshold$threshold[1]
+# Plot binary model
+raster::plot(sdm_bin_sensibility)
+}
+}
+\references{
+Fielding,A.H. and Bell,J. (1997) A review of methods for the assessment of prediction errors in conservation presence/absence models. Environ. Conserv., 24, 38–49.
 }

@@ -146,18 +146,57 @@ kmeans_3d_plot_data <- reactive({
     return(NULL)
 })
 
+# Kmeans metadata and plot
+
+kmeans_3d_plot <- shiny::reactive({
+  if(!is.null(kmeans_3d_plot_data())){
+    k3d <- ellipsoid_cluster_plot_3d(niche_data = kmeans_3d_plot_data()$data,
+                                     cluster_ids = kmeans_3d_plot_data()$cluster_ids,
+                                     mve = input$km_mve,
+                                     vgrupo = kmeans_3d_plot_data()$vgrupo,
+                                     x = input$x1,y = input$y1,
+                                     z = input$z1,alpha = input$alpha,ellips = input$ellips,
+                                     grupos=input$grupos,input$cex1,level=input$kmeans_level)
+    return(k3d)
+
+  }
+  return()
+})
+
+output$kmeansmeta <- renderPrint({
+  kmeansmetada <- kmeans_3d_plot()
+  if(!is.null(kmeansmetada)){
+    cat("----------------------------------------------------------\n")
+    cat("       Ellipsoid metadata for each cluster\n")
+    print(kmeansmetada)
+    cat("----------------------------------------------------------\n")
+  }
+})
+
+observe({
+  if(!is.null(kmeans_3d_plot()))
+    print(kmeans_3d_plot())
+})
+
+output$downloadKmetada <- downloadHandler(
+  filename = "kmeans_metadata.txt",
+  content = function(file) {
+    if(!is.null(kmeans_3d_plot())){
+      kmclust <- kmeans_3d_plot()
+      capture.output({
+        kmclust
+      },file=file)
+    }
+  }
+)
+
 output$kmeans_clust_3d <- renderRglwidget({
   open3d(windowRect=c(100/2,100/2,700/2,700/2))
   if(!is.null(kmeans_3d_plot_data())){
 
     withProgress(message = 'Doing computations', value = 0, {
 
-      ellipsoid_cluster_plot_3d(niche_data = kmeans_3d_plot_data()$data,
-                                cluster_ids = kmeans_3d_plot_data()$cluster_ids,
-                                vgrupo = kmeans_3d_plot_data()$vgrupo,
-                                x = input$x1,y = input$y1,
-                                z = input$z1,alpha = input$alpha,ellips = input$ellips,
-                                grupos=input$grupos,input$cex1,level=input$kmeans_level)
+      kmeans_3d_plot()
 
     })
   }
@@ -232,11 +271,11 @@ output$downloadKmeans <- downloadHandler(
   filename = function() return(paste0(input$genus,"_",input$species,"kmeans_data.csv")),
   content = function(file) {
     if(!is.null(kmeans_3d_plot_data())){
-      kmeans_df <- data.frame(kmeans_3d_plot_data()$lat_long,
-                              kmeans_cluster=kmeans_3d_plot_data()$cluster_ids,
-                              kmeans_3d_plot_data()$data)
+      #kmeans_df <- data.frame(kmeans_3d_plot_data()$lat_long,
+      #                        kmeans_cluster=kmeans_3d_plot_data()$cluster_ids,
+      #                        kmeans_3d_plot_data()$data)
       ## Leyendo los datos de la especie e escriendolos en un .csv
-      write.csv(kmeans_df,file,row.names = FALSE)
+      write.csv(kmeans_df(),file,row.names = FALSE)
     }
   }
 )

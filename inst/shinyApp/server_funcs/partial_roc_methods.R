@@ -9,15 +9,15 @@ dat_raster <- reactive({
   else if(identical(input$format2,'.asc'))
     path_ras <- input$sdm_mod$datapath
   else if(identical(input$format2,'.tif'))
-    path_ras <- input$fileBin$datapath
+    path_ras <- input$sdm_mod$datapath
   else if(identical(input$format2,'.bil'))
-    path_ras <- input$fileBin$datapath
+    path_ras <- input$sdm_mod$datapath
   else if(identical(input$format2,'.nc'))
-    path_ras <- input$fileBin$datapath
+    path_ras <- input$sdm_mod$datapath
   else if(identical(input$format2,'.sdat'))
-    path_ras <- input$fileBin$datapath
+    path_ras <- input$sdm_mod$datapath
   else if(identical(input$format2,'.img'))
-    path_ras <- input$fileBin$datapath
+    path_ras <- input$sdm_mod$datapath
   return(raster::raster(path_ras))
 
 })
@@ -41,15 +41,17 @@ partialRoc <- reactive({
   error <-as.numeric(input$omission)*100
   randper <- as.numeric(input$randper)
   parallel <- input$parallel_roc
+  ncores <- as.numeric(input$ncores_proc)
   if(!is.null(dat_presence()) && !is.null(dat_raster())){
 
     test_data <- read.csv(dat_presence())
-    pRoc <- ntbox::pROC(continuos_mod = dat_raster(),
+    pRoc <- ntbox::pROC(continuous_mod = dat_raster(),
                         test_data = test_data[,-1],
                         n_iter = sims,
                         E_percent = error,
                         boost_percent = randper,
-                        parallel = parallel)
+                        parallel = parallel,
+                        ncores = ncores)
     pRoc <- pRoc[[2]]
     pRoc <- data.frame(Iteration=1:dim(pRoc)[1],pRoc )
     names(pRoc) <- c("Iteration","AUC_partial","AUC_prandom","AUC_ratio")
@@ -93,9 +95,9 @@ pRoc_distribution <- reactive({
   if(!is.null(dataP)){
 
     aucRatio <- dataP$AUC_ratio
-    aucRand <- random <- rnorm(n=500,mean=1,sd=sd(aucRatio))
-    dens_rnd <- density(aucRand,adjust=2)
-    dens_ratio <- density(aucRatio,adjust=2)
+    aucRand <-  rnorm(n=500,mean=1,sd=sd(aucRatio,na.rm = TRUE))
+    dens_rnd <- density(aucRand,na.rm=TRUE,adjust=2)
+    dens_ratio <- density(aucRatio,na.rm=TRUE,adjust=2)
 
     return(list(aucRatio=aucRatio,dens_rnd=dens_rnd,dens_ratio=dens_ratio))
 
@@ -110,7 +112,8 @@ output$rocPartPlot <- renderPlot({
   auc_res <- pRoc_distribution()
  if(!is.null(auc_res)){
 
-   hist(auc_res$aucRatio,prob=TRUE,col="grey",xlim=c(min(auc_res$dens_rnd$x),max(auc_res$aucRatio)),
+   hist(auc_res$aucRatio,prob=TRUE,col="grey",xlim=c(min(auc_res$dens_rnd$x,na.rm = TRUE),
+                                                     max(auc_res$aucRatio,na.rm = TRUE)),
         main="Partial AUC distribution", xlab="AUC ratio")
    lines(auc_res$dens_rnd,col='red')
    lines(auc_res$dens_ratio,col='blue')
@@ -141,9 +144,9 @@ pRocStats <- reactive({
     cat('                          after',input$iter, 'simulations                          \n')
     cat('++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n\n')
 
-    cat('The mean value for AUC ratio at, ',1 - input$omission,' is:',mean(dataP[,4]),'\n\n')
-    cat('The mean value for partial AUC at, ',1 - input$omission,' is:',mean(dataP[,2]),'\n\n')
-    cat('The mean value for partial AUC at random is:',mean(dataP[,3]),'\n\n')
+    cat('The mean value for AUC ratio at, ',1 - input$omission,' is:',mean(dataP[,4],na.rm=TRUE),'\n\n')
+    cat('The mean value for partial AUC at, ',1 - input$omission,' is:',mean(dataP[,2],na.rm=TRUE),'\n\n')
+    cat('The mean value for partial AUC at random is:',mean(dataP[,3],na.rm=TRUE),'\n\n')
 
 
     cat('++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n')
@@ -156,7 +159,7 @@ pRocStats <- reactive({
 
     print(describe(dataP$AUC_ratio)[c(2,3,4,5,7,8,9,10,11,12)])
     #mod <- t.test(y = dataP$AUC_at_0.5,x = dataP[,2],alternative = 'greater')
-    mod <- 1 - (length(which(dataP[,4]>1))/length(dataP[,4]))
+    mod <- 1 - (length(which(dataP[,4]>1))/length(which(!is.na(dataP[,4]))))
     mod <- list(p.value=mod)
     cat('\n\n')
     if(mod$p.value<0.001) pval <- paste0(round(mod$p.value,4),' ***')

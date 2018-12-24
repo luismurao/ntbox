@@ -2,10 +2,10 @@
 % Please edit documentation in R/ellipsoid_cluster_plot_3d.R
 \name{ellipsoid_cluster_plot_3d}
 \alias{ellipsoid_cluster_plot_3d}
-\title{Function to plot clusters}
+\title{Function to plot clusters in 3-dimsensions.}
 \usage{
-ellipsoid_cluster_plot_3d(niche_data, cluster_ids, x, y, z, ellips, alpha,
-  grupos, vgrupo, cex1 = 0.25, level)
+ellipsoid_cluster_plot_3d(niche_data, cluster_ids, x, y, z, mve = FALSE,
+  ellips = TRUE, level = 0.975, alpha, grupos, vgrupo, cex1 = 0.25)
 }
 \arguments{
 \item{niche_data}{A data.frame or matrix containing niche variables}
@@ -18,7 +18,12 @@ ellipsoid_cluster_plot_3d(niche_data, cluster_ids, x, y, z, ellips, alpha,
 
 \item{z}{variable on z-axes}
 
+\item{mve}{A logical value. If TRUE a minimum volume ellipsoid will be computed using
+the function \code{\link[MASS]{cov.rob}} of the \pkg{MASS} package. If False the covariance matrix of the input data will be used.}
+
 \item{ellips}{Ellipsoid plot of each cluster}
+
+\item{level}{proportion of points inside the ellipsoid.}
 
 \item{alpha}{Transparency level of ellipsoid plots}
 
@@ -27,14 +32,15 @@ ellipsoid_cluster_plot_3d(niche_data, cluster_ids, x, y, z, ellips, alpha,
 \item{vgrupo}{A vector containing the levels of the  geographic grouping variable}
 
 \item{cex1}{Point size}
-
-\item{level}{proportion of points inside the ellipsoid}
 }
 \value{
-Returns a data.frame with coordinate data from species
+Returns a list of the ellipsoid metada for each cluster.
 }
 \description{
-3D plot of clusters
+Plot cluster data in 3D by modelling them as an Ellipsoid.
+}
+\details{
+The output of this function is the same of the \code{\link[ntbox]{cov_center}} function.
 }
 \examples{
 \dontrun{
@@ -42,11 +48,13 @@ cluster_data <- read.csv(system.file("extdata",
                                      "nichekmeansCluster.csv",
                                       package = "ntbox"))
 
-ellipsoid_cluster_plot_3d(niche_data = cluster_data,
-                          cluster_ids = cluster_data$cluster,
-                          x = "bio1",y = "bio3",z = "bio12",
-                          ellips = TRUE,alpha = 0.25,
-                          grupos = F,vgrupo = NULL,
-                          cex1 = 1,level = 0.975)
+ellipsoid_clusters <- ellipsoid_cluster_plot_3d(niche_data =environ_data[,c("bio5","bio6","bio12")],
+                                                cluster_ids = cluster_data$cluster,
+                                                x = "bio5",y="bio6",z="bio12",mve = T,
+                                                ellips = T,alpha = 0.25,
+                                                grupos = T,vgrupo =cluster_data$cluster,
+                                                cex1 = 1,level = 0.975)
+# Print metadata for the Minimum Volume Ellipsoid that belongs to cluster 1
+print(ellipsoid_clusters$cluster_n_1)
 }
 }

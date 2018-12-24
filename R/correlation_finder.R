@@ -9,16 +9,13 @@
 #' @return Returns a vector with variable names that can summarize the information.
 #' @export
 #' @examples
-#' # library(Matrix)
-#' # set.seed(111)
-#' # mat_cor <-Matrix(runif(16), 4)
-#' # mat_cor <- forceSymmetric(mat_cor)
-#' # diag(mat_cor) <- 1
-#' # colnames(mat_cor) <- c(paste0("var_",1:4))
-#' # Correlation matrix
-#' # cor_mat <- data.frame(as.matrix(mat_cor))
-#' # correlation_finder(cor_mat = cor_mat ,threshold = 0.7,verbose = TRUE)
-
+#' \dontrun{
+#' environ_data <- read.csv(system.file("extdata",
+#'                                      "nichekmeansCluster.csv",
+#'                                       package = "ntbox"))[,-(1:3)]
+#' environ_cors <- cor(environ_data)
+#' correlation_finder(cor_mat = environ_cors ,threshold = 0.7,verbose = TRUE)
+#' }
 
 correlation_finder <- function(cor_mat,threshold,verbose=TRUE){
   if(is.matrix(cor_mat) || is.data.frame(cor_mat)){

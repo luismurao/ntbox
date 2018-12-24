@@ -12,6 +12,27 @@
 #' @return Returns a list containing the centroid of the ellipsoid, the covariance matrix based on
 #' the input data, ellipsoid volume, semi-axis length and axis coordinates.
 #' @export
+#' @examples
+#' environ_data <- read.csv(system.file("extdata",
+#'                                      "nichekmeansCluster.csv",
+#'                                       package = "ntbox"))[,-(1:3)]
+#' ellipsoid_metadata <- cov_center(environ_data,mve = TRUE,
+#'                                  level=0.975,
+#'                                  vars = c("bio5","bio6","bio12"))
+#' # Ellipsoid center
+#' ellipsoid_metadata$centroid
+#' # Shape matrix
+#' ellipsoid_metadata$covariance
+#' # Ellipsoid volume
+#' ellipsoid_metadata$niche_volume
+#' \dontrun{
+#' # Plot ellipsoid
+#' rgl::plot3d(rgl::ellipse3d(ellipsoid_metadata$covariance,
+#'                            centre = ellipsoid_metadata$centroid,
+#'                            level = 0.99999),
+#'             alpha=0.4,col="blue")
+#' rgl::points3d(environ_data[,c("bio5","bio6","bio12")])
+#' }
 
 cov_center <- function (data, mve = TRUE, level, vars = NULL)
 {

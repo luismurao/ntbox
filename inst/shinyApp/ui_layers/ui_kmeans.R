@@ -11,6 +11,7 @@ ui_kmeans <- sidebarLayout(position = "left",
                                 selectInput("cluster_vars","Select at least 3 niche variables",choices = layer_names_kmeans,multiple = TRUE),
                                 numericInput("Suggest a number of clusters",inputId = "nclust",value = 3,min = 2,max=100),
                                 numericInput("kmeans_level", "Select a conffidence level",value = 0.95,min = 0.5,max=0.99),
+                                shiny::checkboxInput("km_mve","Minumum Volume Ellipsoid",value = TRUE),
                                 busyIndicator("Computation In progress",wait = 0),
                                 actionButton("load_kmeas_vars","Go!!!",styleclass = "primary"),
                                 selectInput(inputId = "x1",label = "Select a variable for the x-axis",
@@ -28,10 +29,14 @@ ui_kmeans <- sidebarLayout(position = "left",
                                                  selectInput("vgrupo",label = "Select the variable",choices = names(dataset_cluster)[1])),
                                 numericInput(inputId = "cex1","Font size",min = 0.05,max = 1,step = 0.01,value = 0.35),
                                 sliderInput("alpha",label = "Ellipsoid transparency",min = 0,max=1,value = 0.1,step = 0.05),
-                                downloadButton("downloadKmeans",label = "Download K-means")
+                                p("Download a k-means table"),
+                                downloadButton("downloadKmeans",label = "Download K-means"),
+                                p("Download ellipsoid metadata for each cluster"),
+                                downloadButton("downloadKmetada",label = "Download")
                                 #downloadButton("down3dClust",label = "Download plot")),
                                 ),
                               mainPanel(
                                 leafletOutput(outputId = "kmeans_geo_leaflet"),
                                 rglwidgetOutput("kmeans_clust_3d",width = "800px",height = "800px")
+                                #shiny::verbatimTextOutput("kmeansmeta")
                               ))

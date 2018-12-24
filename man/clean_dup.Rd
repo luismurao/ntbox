@@ -29,15 +29,17 @@ Clean duplicated longitude and latitude data using threshold distance
 genus <- "ambystoma"
 # Species name
 species <- "tigrinum"
+\dontrun{
 # GBIF search
-# ambystoma_tigrinum <- searh_gbif_data(genus,species,
-#                                        occlim=100,
-#                                        writeFile=FALSE)
-# ambystoma_tigrinum_clean <- clean_dup(ambystoma_tigrinum,
-#                                     longitude = "longitude",
-#                                     latitude = "latitude",
-#                                     threshold=0.0)
+ambystoma_tigrinum <- searh_gbif_data(genus,species,
+                                       occlim=100,
+                                       writeFile=FALSE)
+ambystoma_tigrinum_clean <- clean_dup(ambystoma_tigrinum,
+                                    longitude = "longitude",
+                                    latitude = "latitude",
+                                    threshold=0.1666)
 # Check the dimensions of  data
-# dim(ambystoma_tigrinum)
-# dim(ambystoma_tigrinum_clean)
+dim(ambystoma_tigrinum)
+dim(ambystoma_tigrinum_clean)
+}
 }

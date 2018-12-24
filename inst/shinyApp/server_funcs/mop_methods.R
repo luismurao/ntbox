@@ -116,12 +116,13 @@ mop_comp <- eventReactive(input$run_mop,{
   percent <- as.numeric(as.character(input$ref_percent))
   comp_each <- as.numeric(as.character(input$comp_each))
   if(mop_names){
-
+    ncores= as.numeric(input$cores_mop)
     mop_anlysis <- ntbox::mop(M_stack =  m_layers,
                               G_stack = g_layers,
                               percent= percent,
                               comp_each = comp_each,
                               parallel = input$parallel_comp,
+                              ncores = ncores,
                               normalized=FALSE)
     mop_max <- cellStats(mop_anlysis,max)*1.05
     mop_norm <- 1 - (mop_anlysis/mop_max)

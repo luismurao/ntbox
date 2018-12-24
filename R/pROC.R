@@ -4,7 +4,7 @@
 #'
 #' @param test_data a numerical matrix containing coordinates of the occurrences used to test
 #' the ecological niche model to be evaluated; columns must be: longitude and latitude.
-#' @param continuos_mod a RasterLayer of the ecological niche model to be evaluated.
+#' @param continuous_mod a RasterLayer of the ecological niche model to be evaluated.
 #' @param E_percent (numeric) value from 0 to 100 that will be used as threshold (E);
 #' default = 5.
 #' @param boost_percent (numeric) value from 0 to 100 representing the percent of testing data
@@ -13,25 +13,48 @@
 #' @param n_iter (numeric) number of bootstrap iterations to be performed;
 #' default = 1000.
 #' @param parallel Logical to specify if the computation will be done in parallel. default=TRUE.
+#' @param ncores Numeric; number of cores to be used for parallelization.
 #' @return A data.frame containing the AUC values and AUC ratios calculated for each iteration.
 #' @details Partial ROC is calculated following Peterson et al.
 #' (2008; \url{http://dx.doi.org/10.1016/j.ecolmodel.2007.11.008}). This function is a modification
 #' of the \code{\link[ENMGadgets]{PartialROC}} funcion, available at \url{https://github.com/narayanibarve/ENMGadgets}.
+#' @references Peterson,A.T. et al. (2008) Rethinking receiver operating characteristic analysis applications in ecological niche modeling. Ecol. Modell., 213, 63–72.
+#' @examples
+#' # Load a continuous model
+#' conti_model <- raster::raster(system.file("extdata",
+#'                                           "ambystoma_model.tif",
+#'                                            package="ntbox"))
+#' # Read validation (test) data
+#' test_data <- read.csv(system.file("extdata",
+#'                                   "ambystoma_validation.csv",
+#'                                   package = "ntbox"))
+#'
+#' # Filter only presences as the Partial ROC just need occurrence data
+#' test_data <- dplyr::filter(test_data, presence_absence==1)
+#' test_data <- test_data[,c("longitude","latitude")]
+#'
+#' partial_roc <- pROC(continuous_mod=conti_model,
+#'                     test_data = test_data,
+#'                     n_iter=1000,E_percent=5,
+#'                     boost_percent=50,
+#'                     parallel=FALSE)
+#'
 #' @importFrom purrr map_df
 #' @useDynLib ntbox
 #' @export
 
-pROC <- function(continuos_mod,test_data,n_iter=1000,E_percent=5,boost_percent=50,parallel=TRUE){
 
-  if(continuos_mod@data@min == continuos_mod@data@max){
+pROC <- function(continuous_mod,test_data,n_iter=1000,E_percent=5,boost_percent=50,parallel=FALSE,ncores=4){
+
+  if(continuous_mod@data@min == continuous_mod@data@max){
     stop("\nModel with no variability.\n")
   }
 
-  continuos_mod <-round((continuos_mod/raster::cellStats(continuos_mod,
+  continuous_mod <-round((continuous_mod/raster::cellStats(continuous_mod,
                                                          max)) * 1000)
-  test_value <- stats::na.omit(raster::extract(continuos_mod,test_data))
+  test_value <- stats::na.omit(raster::extract(continuous_mod,test_data))
 
-  classpixels <- data.frame(raster::freq(continuos_mod))
+  classpixels <- data.frame(raster::freq(continuous_mod))
   classpixels <- data.frame(stats::na.omit(classpixels))
 
   classpixels <- classpixels  %>% dplyr::mutate_(value= ~rev(value),
@@ -83,15 +106,13 @@ pROC <- function(continuos_mod,test_data,n_iter=1000,E_percent=5,boost_percent=5
 
 
   if(parallel){
-
-    future::plan(future::multiprocess)
+    n_cores <- ntbox::nc(ncores)
+    future::plan(tweak(multiprocess, workers =n_cores))
     roc_env <- new.env()
-    n_cores <- future::availableCores()
     niter_big <- floor(n_iter/n_cores)
     n_runs <- rep(niter_big,n_cores)
     sum_n_runs <- sum(n_runs)
     n_runs[1] <- n_runs[1] + (n_iter - sum_n_runs)
-
     for(i in 1:length(n_runs)){
       x <- as.character(i)
       roc_env[[x]] %<-% {
@@ -121,9 +142,9 @@ pROC <- function(continuos_mod,test_data,n_iter=1000,E_percent=5,boost_percent=5
   }
   #return(partial_AUC)
   mauc <- mean(partial_AUC$auc_ratio,na.rm = TRUE)
-  proc <- sum(partial_AUC$auc_ratio <= 1) / length(partial_AUC$auc_ratio)
+  proc <- sum(partial_AUC$auc_ratio <= 1,na.rm = TRUE) / length(partial_AUC$auc_ratio[!is.na(partial_AUC$auc_ratio)])
   p_roc <- c(mauc, proc)
-  names(p_roc) <- c(paste("Mean_AUC_ratio_at_", E_percent, "%", sep = ""), "Partial_ROC")
+  names(p_roc) <- c(paste("Mean_AUC_ratio_at_", E_percent, "%", sep = ""), "P_value")
 
   p_roc_res <- list(pROC_summary=p_roc, pROC_results=partial_AUC)
   return(p_roc_res)

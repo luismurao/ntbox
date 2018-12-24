@@ -81,9 +81,9 @@ mop <- function(M_stack, G_stack, percent = 10, comp_each = 2000, parallel = FAL
     mop_vals <- unlist(mop1)
 
   }else {
-    future::plan(future::multiprocess(workers = ncores))
+    n_cores <- ntbox::nc(ncores)
+    future::plan(tweak(multiprocess, workers =n_cores))
     mop_env <- new.env()
-
     pasos <- 1:(length(kkk) - 1)
     pasosChar <- paste0(pasos)
 

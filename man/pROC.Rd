@@ -4,11 +4,11 @@
 \alias{pROC}
 \title{Partial ROC calculation for Niche Models}
 \usage{
-pROC(continuos_mod, test_data, n_iter = 1000, E_percent = 5,
-  boost_percent = 50, parallel = TRUE)
+pROC(continuous_mod, test_data, n_iter = 1000, E_percent = 5,
+  boost_percent = 50, parallel = FALSE, ncores = 4)
 }
 \arguments{
-\item{continuos_mod}{a RasterLayer of the ecological niche model to be evaluated.}
+\item{continuous_mod}{a RasterLayer of the ecological niche model to be evaluated.}
 
 \item{test_data}{a numerical matrix containing coordinates of the occurrences used to test
 the ecological niche model to be evaluated; columns must be: longitude and latitude.}
@@ -24,6 +24,8 @@ to be used for performing the bootstrap process for calculating the partial ROC;
 default = 50.}
 
 \item{parallel}{Logical to specify if the computation will be done in parallel. default=TRUE.}
+
+\item{ncores}{Numeric; number of cores to be used for parallelization.}
 }
 \value{
 A data.frame containing the AUC values and AUC ratios calculated for each iteration.
@@ -35,4 +37,28 @@ pROC applies partial ROC tests to continues niche models.
 Partial ROC is calculated following Peterson et al.
 (2008; \url{http://dx.doi.org/10.1016/j.ecolmodel.2007.11.008}). This function is a modification
 of the \code{\link[ENMGadgets]{PartialROC}} funcion, available at \url{https://github.com/narayanibarve/ENMGadgets}.
+}
+\examples{
+# Load a continuous model
+conti_model <- raster::raster(system.file("extdata",
+                                          "ambystoma_model.tif",
+                                           package="ntbox"))
+# Read validation (test) data
+test_data <- read.csv(system.file("extdata",
+                                  "ambystoma_validation.csv",
+                                  package = "ntbox"))
+
+# Filter only presences as the Partial ROC just need occurrence data
+test_data <- dplyr::filter(test_data, presence_absence==1)
+test_data <- test_data[,c("longitude","latitude")]
+
+partial_roc <- pROC(continuous_mod=conti_model,
+                    test_data = test_data,
+                    n_iter=1000,E_percent=5,
+                    boost_percent=50,
+                    parallel=FALSE)
+
+}
+\references{
+Peterson,A.T. et al. (2008) Rethinking receiver operating characteristic analysis applications in ecological niche modeling. Ecol. Modell., 213, 63–72.
 }

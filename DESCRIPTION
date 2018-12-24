@@ -1,16 +1,17 @@
 Package: ntbox
 Type: Package
 Title: From Getting Biodiversity Data to Evaluating Species Distribution Models in a Friendly GUI Environment
-Version: 0.4.1.3
-Date: 2018-12-21
+Version: 0.4.1.5
+Date: 2018-12-23
 Authors@R: c(person("Luis", "Osorio-Olvera", email = "luimurao@gmail.com", role = c("aut", "cre")),
              person("Jorge", "Soberón", email = "soberon@ku.edu", role = "aut"),
              person("Vijay", "Barve", email = "vijay.barve@gmail.com", role = "aut"),
              person("Narayani", "Barve", email = "narayani.ku@gmail.com", role = "aut"),
              person("Manuel", "Falconi", email = "mjfalconi@gmail.com", role = "aut"))
-Description: NicheToolbox is an R package with a friendly Graphical User
-    Interface (GUI) developed using shiny framework that aims to facilitate the
-    process of building niche models and estimate the species distributions.
+Description: NicheToolbox is an R package with a friendly Graphical User Interface (GUI)
+             developed using shiny framework that aims to facilitate the process of building 
+             niche models and estimate the species distributions.
+Maintainer: Luis Osorio-Olvera <luimurao@gmail.com>
 Depends:
  R (>= 3.3.0)
 Imports:
@@ -69,4 +70,3 @@ LazyData: true
 RoxygenNote: 6.1.0
 LinkingTo: Rcpp
 Suggests: animation (>= 2.5)
-
