@@ -4,21 +4,17 @@
 \alias{ellipsoidfit}
 \title{Function fit an ellipsoid model}
 \usage{
-ellipsoidfit(data, centroid, covar, level = 0.95, threshold = 0.05,
-  plot = T, size, xlab1 = "niche var 1", ylab1 = "niche var 2",
-  zlab1 = "Suitability", ...)
+ellipsoidfit(envlayers, centroid, covar, level = 0.95, plot = T, size,
+  xlab1 = "niche var 1", ylab1 = "niche var 2", zlab1 = "S", ...)
 }
 \arguments{
-\item{data}{A RasterStack or RasterBrick objet of the niche varibles.}
+\item{envlayers}{A RasterStack or RasterBrick objet of the niche varibles.}
 
 \item{centroid}{A vector with the values of the centers of the ellipsoid (see \code{\link[ntbox]{cov_center}}).}
 
 \item{covar}{The shape matrix (covariance) of the ellipoid (see \code{\link[ntbox]{cov_center}}).}
 
 \item{level}{The proportion of points  to be included inside the ellipsoid}
-
-\item{threshold}{Threshold value for the suitabilities to be cosidered as 0,
-by default all suiabilities <0.05 are cosidered as zeros}
 
 \item{plot}{Logical If True a plot of niche will be shown.}
 
@@ -54,7 +50,7 @@ nicheStack <- stack(list.files(system.file("extdata",
  ellipsoidMod <- ellipsoidfit(nicheStack,
                           covar_centroid$centroid,
                           covar_centroid$covariance,
-                          level=0.95,plot=TRUE,size=3)
+                          level=0.99,plot=TRUE,size=3)
  plot(ellipsoidMod$suitRaster)
 }
 }

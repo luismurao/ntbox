@@ -51,16 +51,16 @@ ellipsoid_cluster_plot_3d <- function(niche_data,cluster_ids,x,y,z,mve=FALSE,ell
   else
     rgl::plot3d(dat_clus[,c(x,y,z)],col=cols)
 
-  if(ellips){
-    plot_clusters <- split(x = dat_clus,
-                           f = dat_clus[,"cluster_ids"]) %>%
-      purrr::map(~.plot_ellipsoid3d(.x[,c(x,y,z)],
-                                    alpha = alpha,
-                                    level = level,
-                                    color_index = .x$cluster_ids,
-                                    colores=colores))
-    names(plot_clusters) <- paste0("cluster_n_",names(plot_clusters))
-  }
+  plot_clusters <- split(x = dat_clus,
+                         f = dat_clus[,"cluster_ids"]) %>%
+    purrr::map(~.plot_ellipsoid3d(.x[,c(x,y,z)],
+                                  alpha = alpha,
+                                  level = level,
+                                  color_index = .x$cluster_ids,
+                                  colores=colores,
+                                  plot_clusters = ellips))
+  names(plot_clusters) <- paste0("cluster_n_",names(plot_clusters))
+
 
   if(grupos){
 
@@ -79,7 +79,7 @@ ellipsoid_cluster_plot_3d <- function(niche_data,cluster_ids,x,y,z,mve=FALSE,ell
 
 }
 
-.plot_ellipsoid3d <- function(data,mve=F,color_index,alpha,level,colores){
+.plot_ellipsoid3d <- function(data,mve=F,color_index,alpha,level,colores,plot_clusters){
 
   if(mve){
     centroid_shape <- ntbox::cov_center(data,mve=T,
@@ -92,12 +92,14 @@ ellipsoid_cluster_plot_3d <- function(niche_data,cluster_ids,x,y,z,mve=FALSE,ell
                                         vars = 1:3)
   }
 
+  if(plot_clusters){
+    ellips <- rgl::ellipse3d(centroid_shape$covariance,
+                             centre=centroid_shape$centroid,
+                             level = 0.99)
+    rgl::shade3d(ellips,
+                 col=colores[color_index],
+                 alpha=alpha,lit=FALSE)
+  }
 
-  ellips <- rgl::ellipse3d(centroid_shape$covariance,
-                           centre=centroid_shape$centroid,
-                           level = 0.99)
-  rgl::shade3d(ellips,
-               col=colores[color_index],
-               alpha=alpha,lit=FALSE)
   return(centroid_shape)
 }

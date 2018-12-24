@@ -1,12 +1,10 @@
 #' Function fit an ellipsoid model
 #' @description Function fit an ellipsoid model using the shape matrix (covariance matrix)
 #' of the niche variables.
-#' @param data A RasterStack or RasterBrick objet of the niche varibles.
+#' @param envlayers A RasterStack or RasterBrick objet of the niche varibles.
 #' @param centroid A vector with the values of the centers of the ellipsoid (see \code{\link[ntbox]{cov_center}}).
 #' @param covar The shape matrix (covariance) of the ellipoid (see \code{\link[ntbox]{cov_center}}).
 #' @param level The proportion of points  to be included inside the ellipsoid
-#' @param threshold Threshold value for the suitabilities to be cosidered as 0,
-#' by default all suiabilities <0.05 are cosidered as zeros
 #' @param plot Logical If True a plot of niche will be shown.
 #' @param size The size of the points of the niche plot.
 #' @param xlab1 For x label for 2-dimensional histogram
@@ -30,46 +28,69 @@
 #'  ellipsoidMod <- ellipsoidfit(nicheStack,
 #'                           covar_centroid$centroid,
 #'                           covar_centroid$covariance,
-#'                           level=0.95,plot=TRUE,size=3)
+#'                           level=0.99,plot=TRUE,size=3)
 #'  plot(ellipsoidMod$suitRaster)
 #' }
 
 
-ellipsoidfit <- function(data,centroid,covar,level=0.95,
-                         threshold=0.05,plot=T,size,
-                         xlab1="niche var 1",ylab1= "niche var 2",zlab1="Suitability",...){
+ellipsoidfit <- function(envlayers,centroid,covar,level=0.95,
+                         plot=T,size,
+                         xlab1="niche var 1",ylab1= "niche var 2",zlab1="S",...){
 
-  if(class(data)=="RasterStack" || class(data)=="RasterBrick"){
-    resolution <- raster::res(data)
-    extention <- raster::extent(data)
-    toDF<- data.frame(raster::rasterToPoints(data))
-    coordinates <- toDF[,c(1,2)]
-    data <- toDF[,-c(1,2)]
+  if(class(envlayers)=="RasterStack" || class(envlayers)=="RasterBrick"){
+    resolution <- raster::res(envlayers)
+    extention <- raster::extent(envlayers)
+    env_vars <- raster::getValues(envlayers)
+    coordinates <- sp::coordinates(envlayers)
+    suitRaster <- envlayers[[1]]
+    #toDF<- data.frame(raster::rasterToPoints(data))
+    #coordinates <- toDF[,c(1,2)]
+    #data <- toDF[,-c(1,2)]
 
   }
   else{
-    data <- data.frame(data)
+    env_vars <- data.frame(envlayers)
   }
-  suit <- function(data,medias,covMatrix){
+
+  # Calculating distance to the centroid
+  mahalanobisD <- stats::mahalanobis(env_vars,
+                                    center = centroid,
+                                    cov = covar)
+
+
+  ecucliedean <- sqrt(rowSums(centroid-env_vars)^2)
+
+
+  suit <- function( mahalanobisD){
     a <- 1
-    expo <- exp(-0.5*mahalanobis(data,medias,cov = covMatrix))
+    expo <- exp(-0.5* mahalanobisD)
     return(a*expo)
   }
   # Computing the suitabilities
-  suits <- suit(data,medias = centroid,covMatrix = covar)
-  suits[suits<threshold] <- 0
+  suits <- suit( mahalanobisD)
+  #suits[suits<threshold] <- 0
 
-  if(dim(data)[2]==2 && plot==TRUE){
+  if(dim(env_vars)[2]==2 && plot==TRUE){
 
-    x <- seq(from = centroid[1]/1.5,to =centroid[1]*1.25 ,length=60)
-    y <- seq(from = centroid[2]/1.5,to =centroid[2]*1.25 ,length=60)
-
-    suit1 <- function(x,y) suit(cbind(x,y),medias = centroid,covMatrix = covar)
-
-    z <- outer(x,y,suit1)
+    x <- seq(from = centroid[1]/2,to =centroid[1]*2 ,length=100)
+    x <- sort(x)
+    y <- seq(from = centroid[2]/2,to =centroid[2]*2 ,length=100)
+    y <- sort(y)
+    #maha1 <- stats::mahalanobis(cbind(x,y),
+    #                            center = centroid,
+    #                            cov = covar)
+    suit1 <- function(x,y) {
+      maha1 <- stats::mahalanobis(cbind(x,y),
+                                  center = centroid,
+                                  cov = covar)
+      expo <- exp(-0.5* maha1)
+      return(expo)
+    }
+    #z <- x %o% y
+    z <- outer(x,y,FUN = suit1)
 
     p1 <- graphics::persp(x,y,z, box=T,xlab=xlab1,
-                          ylab=ylab1,zlab="", col="blue",
+                          ylab=ylab1,zlab=zlab1, col="blue",
                           theta = 55, phi = 30,r = 40,
                           d = 0.1, expand = 0.5,
                           ticktype = "detailed", nticks=5,
@@ -100,9 +121,9 @@ ellipsoidfit <- function(data,centroid,covar,level=0.95,
 
   }
 
-  if(dim(data)[2]==3 && plot==TRUE){
+  if(dim(env_vars)[2]==3 && plot==TRUE){
 
-    data1 <- data[!is.na(suits),]
+    data1 <- env_vars[!is.na(suits),]
     dfd <- dim(data1)[1] - 1
     dfn <- dim(data1)[2] - 1
     # Ellipsoid radius
@@ -123,31 +144,22 @@ ellipsoidfit <- function(data,centroid,covar,level=0.95,
     rgl::plot3d(data1,size = size,col=grDevices::hsv(suits2[toSam]*.71,.95,.9),...)
     rgl::wire3d(ellips_E, col=4, lit=FALSE,alpha=.1)
   }
-  # Calculating distance to the centroid
-  mahalanobis <- stats::mahalanobis(data,
-                                    center = centroid,
-                                    cov = covar)
 
+  distances <- data.frame(mahalanobisD,ecucliedean)
 
-  ecucliedean <- sqrt(rowSums(centroid-data)^2)
+  data <- data.frame(env_vars,ncel=1:dim(env_vars)[1])
+  #data <- na.omit(data)
 
-  distances <- data.frame(mahalanobis,ecucliedean)
-
-  data <- data.frame(data,ncel=1:dim(data)[1])
   if(exists('coordinates')){
-    # Data Frame with coordinates and suitability values
-    sDataFrame <- data.frame(coordinates,suitability=suits)
-    rasterDF <- raster::raster(extention)
-    raster::res(rasterDF) <- resolution
-    cels <- raster::cellFromXY(rasterDF,sDataFrame[,1:2])
-    rasterDF[cels] <- sDataFrame[,3]
-    #crs(rasterDF) <- "+proj=lcc +lat_1=48 +lat_2=33 +lon_0=-100 +ellps=WGS84"
-    return(list(suits=cbind(sDataFrame,data),suitRaster=rasterDF,ncentedist=distances))
+    distances <- data.frame(coordinates,
+                            env_vars,
+                            distances,
+                            ncel=1:dim(env_vars)[1])
+    distances <- stats::na.omit(distances)
+    suitsDF <- stats::na.omit(data.frame(coordinates,suitability=suits,env_vars))
+    suitRaster[] <- suits
+    return(list(suits=suitsDF,suitRaster=suitRaster,ncentedist=distances))
   }
 
-
-
-
-
-  return(data.frame(suitability=suits,data,ncentedist=distances))
+  return(data.frame(suitability=suits,env_vars,ncentedist=distances))
 }

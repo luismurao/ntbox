@@ -173,10 +173,10 @@ output$kmeansmeta <- renderPrint({
   }
 })
 
-observe({
-  if(!is.null(kmeans_3d_plot()))
-    print(kmeans_3d_plot())
-})
+#observe({
+#  if(!is.null(kmeans_3d_plot()))
+#    print(kmeans_3d_plot())
+#})
 
 output$downloadKmetada <- downloadHandler(
   filename = "kmeans_metadata.txt",

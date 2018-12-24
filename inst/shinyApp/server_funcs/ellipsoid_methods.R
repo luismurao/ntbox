@@ -83,7 +83,7 @@ ellip_model_all_rast_all_train <- eventReactive(input$selectBios_all_all_train,{
     model <- ellipsoidfit(rasterLayers()[[input$biosEllip]],
                           cov_centroid$centroid,
                           cov_centroid$covariance,level = 0.95,
-                          threshold = 0.001,plot = FALSE)
+                          plot = FALSE)
 
     return(model)
   }
@@ -99,7 +99,7 @@ ellip_model_all_rast_m_train <- eventReactive(input$selectBios_all_m_train,{
     model <- ellipsoidfit(rasterLayers()[[input$biosEllip]],
                           cov_centroid$centroid,
                           cov_centroid$covariance,level = 0.95,
-                          threshold = 0.001,plot = FALSE)
+                          plot = FALSE)
 
 
     return(model)
@@ -110,6 +110,9 @@ ellip_model_all_rast_m_train <- eventReactive(input$selectBios_all_m_train,{
 
 
 # Plot the model in Enverionmental Space (All raster area)
+observe({
+  print(names(ellip_model_all_rast_all_train()$suits))
+})
 
 plot_ellipsoid_all_all_train <- eventReactive(input$selectBios_all_all_train,{
   if(!is.null(ellip_model_all_rast_all_train()) && input$selectM == 'wWorld' && input$selectShape == 'wWorld'){
@@ -224,7 +227,7 @@ ellip_model_m_rast_all_train <- eventReactive(input$selectBios_m_all_train,{
       model <- ellipsoidfit(define_M_raster()[[input$biosEllip]],
                             cov_centroid$centroid,
                             cov_centroid$covariance,level = 0.95,
-                            threshold = 0.000001,plot = FALSE)
+                            plot = FALSE)
       return(model)
     }
     return()
@@ -279,7 +282,7 @@ ellip_model_m_rast_m_train <- eventReactive(input$selectBios_m_m_train,{
     model <- ellipsoidfit(define_M_raster()[[input$biosEllip]],
                           cov_centroid$centroid,
                           cov_centroid$covariance,level = 0.95,
-                          threshold = 0.001,plot = FALSE)
+                          plot = FALSE)
     return(model)
   }
   else
