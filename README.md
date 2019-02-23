@@ -6,14 +6,17 @@
 
 **Windows users:** Before installation it is important to have installed [Rtools](https://cran.r-project.org/bin/windows/Rtools/).
 
+
+### Complete installation guide
+
+Complete installation guide for Windows, Linux, and MacOS users
+
+**[Click here](https://luismurao.github.io/ntbox_installation_notes.html)**
+
 ```r
 if (!require('devtools')) install.packages('devtools')
 devtools::install_github('luismurao/ntbox')
 ```
-## Compleate installation guide
-Compleate installation guide for Windows, Linux, and MacOS
-
-**[Click here](https://luismurao.github.io/ntbox_installation_notes.html)**
 
 ## Usage 
 
