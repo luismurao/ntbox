@@ -11,6 +11,8 @@ if (!require('devtools')) install.packages('devtools')
 devtools::install_github('luismurao/ntbox')
 ```
 
+**[Compleate installation guide](https://luismurao.github.io/ntbox_installation_notes.html)**
+
 ## Usage 
 
 ```r
