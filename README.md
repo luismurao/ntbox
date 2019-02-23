@@ -10,8 +10,10 @@
 if (!require('devtools')) install.packages('devtools')
 devtools::install_github('luismurao/ntbox')
 ```
+## Compleate installation guide
+Compleate installation guide for Windows, Linux, and MacOS
 
-**[Compleate installation guide](https://luismurao.github.io/ntbox_installation_notes.html)**
+**[Click here](https://luismurao.github.io/ntbox_installation_notes.html)**
 
 ## Usage 
 
