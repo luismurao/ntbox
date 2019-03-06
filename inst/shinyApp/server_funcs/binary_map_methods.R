@@ -66,14 +66,14 @@ threshold_search <- reactive({
           latitude <- 2
           pres_aus <- 3
           optim_by <- input$optim_by1
-          bestTH <- confu_mat_optim(sdm_raster = sdm_raster,
-                                    valData = dat_Val,
-                                    longitude = longitude,
-                                    latitude = latitude,
-                                    pres_aus = pres_aus,
-                                    optim_by = optim_by,
-                                    th_range = as.numeric(input$thRange),
-                                    step = as.numeric(input$partStep))
+          bestTH <- ntbox::confu_mat_optim(sdm_raster = sdm_raster,
+                                           valData = dat_Val,
+                                           longitude = longitude,
+                                           latitude = latitude,
+                                           pres_abs = pres_aus,
+                                           optim_by = optim_by,
+                                           th_range = as.numeric(input$thRange),
+                                           step = as.numeric(input$partStep))
           return(bestTH)
         }
       })
