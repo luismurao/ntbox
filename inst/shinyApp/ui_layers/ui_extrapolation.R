@@ -47,7 +47,7 @@ ui_extrapo <- sidebarLayout(position = 'left',
 
                                 conditionalPanel("input.extra_mod == 'mop'",
                                                  numericInput(inputId = "ref_percent",
-                                                              label = "Percent of points sampled from te reference region (G)",
+                                                              label = "Percent of points sampled from te reference region (M)",
                                                               value = 10,min = 1,max = 100,step = 1),
                                                  checkboxInput("normalized_mop",label = "Normalized",
                                                                value = TRUE),
