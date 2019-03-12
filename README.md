@@ -27,7 +27,7 @@ run_ntbox()
 ```
 
 ## Tutorial
-[nichetoolbox](https://luismurao.github.io/GSoC/gsoc_final_eval.html)
+[nichetoolbox](https://luismurao.github.io/ntbox_user_guide.html)
 
 ## Acknowledgements
 
