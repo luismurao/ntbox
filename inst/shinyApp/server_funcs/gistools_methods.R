@@ -200,7 +200,7 @@ output$dyMap_gis <- renderLeaflet({
 pcas_layers <- eventReactive(input$dopca,{
 
   pca_format <- input$pca_format
-  wf_directory <- file.path(workflowDir(),"pca_current")
+  wf_directory <- file.path(workflowDir(),"pca_referenceLayers")
   if(!dir.exists(wf_directory))
     dir.create(wf_directory)
   layers_selected <- input$layers2pc
