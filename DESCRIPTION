@@ -11,7 +11,7 @@ Authors@R: c(person("Luis", "Osorio-Olvera", email = "luismurao@gmail.com", role
 Description: NicheToolbox is an R package with a friendly Graphical User Interface (GUI)
              developed using shiny framework that aims to facilitate the process of building 
              niche models and estimate the species distributions.
-Maintainer: Luis Osorio-Olvera <luimurao@gmail.com>
+Maintainer: Luis Osorio-Olvera <luismurao@gmail.com>
 Depends:
  R (>= 3.3.0)
 Imports:
