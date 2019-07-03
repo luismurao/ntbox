@@ -8,7 +8,7 @@
 #' \dontrun{
 #' ## RasterStack with the niche variables
 #' nicheStack <- rlayers_ntb(list.files(system.file("extdata",
-#'                                      package = "nichetoolbox"),
+#'                                      package = "ntbox"),
 #'                                      pattern = ".asc$",full.names = TRUE))
 #' }
 
