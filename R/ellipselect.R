@@ -3,13 +3,16 @@
 #' @description Performs variable selection for ellipsoid models according to omission rates in the environmental space.
 #' @param env_train A data frame with the environmental training data.
 #' @param env_vars A vector with the names of environmental variables to be used in the selection process
-#' @param nvarstest A vector indicating the number of variables to fit the ellipsoids during model selection. It is allowed to test models with different number of variables (i.e. nvarstest=c(3,6)).
-#' @param level Proportion of points to be included in the ellipsoids. This paramter is equivalent to the error (E) proposed by Peterson et al. (2008).
-#' @param env_bg Environmental data to compute the aproximated prevalence of the model. The data should be a sample of the environmental layers of the calibrarion area.
-#' @return A data.frame with 3 columns: i) "fitted_vars" the names of variables that were fitted; ii) "om_rate" omission rates of the model; iii) "bg_prevalence" approximated prevalence of the model see details section.
-#' @details Model selection occurs in environmental space (E-space). For each variable combination the omission rate (omr) in E-space is computed using the function \code{\link[ntbox]{inEllipsoid}}. The results will be ordered by omr and if the user specified the environmental backgroud "env_bg" an estimated prevalence will be computed and the results will be ordered also by "bg_prevalence".
+#' @param nvarstest A vector indicating the number of variables to fit the ellipsoids during model selection. It is allowed to test models with a different number of variables (i.e. nvarstest=c(3,6)).
+#' @param level Proportion of points to be included in the ellipsoids. This parameter is equivalent to the error (E) proposed by Peterson et al. (2008).
+#' @param omr_criteria Omission rate criteria. Value of omission rate allowed for the selection process. Default NULL see details.
+#' @param env_bg Environmental data to compute the approximated prevalence of the model. The data should be a sample of the environmental layers of the calibration area.
+#' @return A data.frame with 5 columns: i) "fitted_vars" the names of variables that were fitted; ii) "om_rate" omission rates of the model; iii) "bg_prevalence" approximated prevalence of the model see details section; iv) The rank value of importance in model selection by omission rate; v) The rank value by prevalence after if the value of omr_criteria is passed.
+#' @details Model selection occurs in environmental space (E-space). For each variable combination the omission rate (omr) in E-space is computed using the function \code{\link[ntbox]{inEllipsoid}}. The results will be ordered by omr and if the user specified the environmental background "env_bg" an estimated prevalence will be computed and the results will be ordered also by "bg_prevalence".
 #'
-#' The number of variables to construct candidate models can be specified by the user in the parameter "nvarstest". Model selection will be run in parallel if the user specified more than one set of combinations and the total number of model to be tested is greater than 500.
+#' The number of variables to construct candidate models can be specified by the user in the parameter "nvarstest". Model selection will be run in parallel if the user specified more than one set of combinations and the total number of models to be tested is greater than 500.
+#'
+#' If given"omr_criteria" and "bg_prevalence", the results will be shown pondering those models that met the "omr_criteria" by the value of "bg_prevalence".
 #' @export
 #' @import future
 #' @author Luis Osorio-Olvera <luismurao@gmail.com>
@@ -58,7 +61,8 @@
 #'                                       env_vars = env_vars,
 #'                                       level = level,
 #'                                       nvarstest = nvarstest,
-#'                                       env_bg = env_bg)
+#'                                       env_bg = env_bg,
+#'                                       omr_criteria=0.07)
 #'
 #'
 #' bestvarcomb <- stringr::str_split(e_selct$fitted_vars,",")[[1]]
@@ -91,7 +95,7 @@
 #' print(pg_proc$pROC_summary)
 #' }
 
-ellipsoid_selection <- function(env_train,env_vars,nvarstest,level,env_bg=NULL){
+ellipsoid_selection <- function(env_train,env_vars,nvarstest,level,env_bg=NULL,omr_criteria){
   n_vars <- length(env_vars)
   ntest <- sapply(nvarstest, function(x) choose(n_vars,x))
   nmodels <- sum(ntest)
@@ -175,10 +179,23 @@ ellipsoid_selection <- function(env_train,env_vars,nvarstest,level,env_bg=NULL){
       purrr::map_df(~read.csv(.x,stringsAsFactors = F))
     unlink(dir1,recursive = T)
     #rfinal <- do.call("rbind.data.frame",as.list(model_select))
-    if("bg_prevalence" %in% names(rfinal))
+    if("bg_prevalence" %in% names(rfinal)){
       rfinal <- rfinal[order(rfinal$om_rate,
                              rfinal$bg_prevalence,
                              decreasing = F),]
+      rfinal <- data.frame(rfinal,rank_by_omr=1:nrow(rfinal))
+
+      met_criteriaID <- which(rfinal$om_rate<=omr_criteria)
+      if(length(met_criteriaID)==0L){
+        cat("\tNo model passed the omission cirteria ranking only by omission rates")
+        return(rfinal)
+      }
+
+      best_r <- rfinal[met_criteriaID,]
+      best_r <- best_r[order(best_r$bg_prevalence),]
+      rf1 <- rbind(best_r,rfinal[-met_criteriaID,])
+      rfinal <- data.frame(rf1,rank_by_omr_prevalence = 1:nrow(rfinal))
+    }
     else
       rfinal <- rfinal[order(rfinal$om_rate,decreasing = F),]
     rownames(rfinal) <- NULL
@@ -224,10 +241,26 @@ ellipsoid_selection <- function(env_train,env_vars,nvarstest,level,env_bg=NULL){
       return(results_df)
     })
     rfinal <- do.call("rbind.data.frame",results_L)
-    if("bg_prevalence" %in% names(rfinal))
+    if("bg_prevalence" %in% names(rfinal)){
       rfinal <- rfinal[order(rfinal$om_rate,
                              rfinal$bg_prevalence,
                              decreasing = F),]
+      rfinal <- data.frame(rfinal,rank_by_omr=1:nrow(rfinal))
+
+
+      met_criteriaID <- which(rfinal$om_rate<=omr_criteria)
+
+      if(length(met_criteriaID)==0L){
+        cat("\tNo model passed the omission cirteria ranking only by omission rates")
+        return(rfinal)
+      }
+
+
+      best_r <- rfinal[met_criteriaID,]
+      best_r <- best_r[order(best_r$bg_prevalence),]
+      rf1 <- rbind(best_r,rfinal[-met_criteriaID,])
+      rfinal <- data.frame(rf1,rank_by_omr_prevalence = 1:nrow(rfinal))
+    }
     else
       rfinal <- rfinal[order(rfinal$om_rate,decreasing = F),]
 

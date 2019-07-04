@@ -4,29 +4,34 @@
 \alias{ellipsoid_selection}
 \title{ellipsoid_selection: Performs variable selection for ellipsoid models}
 \usage{
-ellipsoid_selection(env_train, env_vars, nvarstest, level, env_bg = NULL)
+ellipsoid_selection(env_train, env_vars, nvarstest, level, env_bg = NULL,
+  omr_criteria)
 }
 \arguments{
 \item{env_train}{A data frame with the environmental training data.}
 
 \item{env_vars}{A vector with the names of environmental variables to be used in the selection process}
 
-\item{nvarstest}{A vector indicating the number of variables to fit the ellipsoids during model selection. It is allowed to test models with different number of variables (i.e. nvarstest=c(3,6)).}
+\item{nvarstest}{A vector indicating the number of variables to fit the ellipsoids during model selection. It is allowed to test models with a different number of variables (i.e. nvarstest=c(3,6)).}
 
-\item{level}{Proportion of points to be included in the ellipsoids. This paramter is equivalent to the error (E) proposed by Peterson et al. (2008).}
+\item{level}{Proportion of points to be included in the ellipsoids. This parameter is equivalent to the error (E) proposed by Peterson et al. (2008).}
 
-\item{env_bg}{Environmental data to compute the aproximated prevalence of the model. The data should be a sample of the environmental layers of the calibrarion area.}
+\item{env_bg}{Environmental data to compute the approximated prevalence of the model. The data should be a sample of the environmental layers of the calibration area.}
+
+\item{omr_criteria}{Omission rate criteria. Value of omission rate allowed for the selection process. Default NULL see details.}
 }
 \value{
-A data.frame with 3 columns: i) "fitted_vars" the names of variables that were fitted; ii) "om_rate" omission rates of the model; iii) "bg_prevalence" approximated prevalence of the model see details section.
+A data.frame with 5 columns: i) "fitted_vars" the names of variables that were fitted; ii) "om_rate" omission rates of the model; iii) "bg_prevalence" approximated prevalence of the model see details section; iv) The rank value of importance in model selection by omission rate; v) The rank value by prevalence after if the value of omr_criteria is passed.
 }
 \description{
 Performs variable selection for ellipsoid models according to omission rates in the environmental space.
 }
 \details{
-Model selection occurs in environmental space (E-space). For each variable combination the omission rate (omr) in E-space is computed using the function \code{\link[ntbox]{inEllipsoid}}. The results will be ordered by omr and if the user specified the environmental backgroud "env_bg" an estimated prevalence will be computed and the results will be ordered also by "bg_prevalence".
+Model selection occurs in environmental space (E-space). For each variable combination the omission rate (omr) in E-space is computed using the function \code{\link[ntbox]{inEllipsoid}}. The results will be ordered by omr and if the user specified the environmental background "env_bg" an estimated prevalence will be computed and the results will be ordered also by "bg_prevalence".
 
-The number of variables to construct candidate models can be specified by the user in the parameter "nvarstest". Model selection will be run in parallel if the user specified more than one set of combinations and the total number of model to be tested is greater than 500.
+The number of variables to construct candidate models can be specified by the user in the parameter "nvarstest". Model selection will be run in parallel if the user specified more than one set of combinations and the total number of models to be tested is greater than 500.
+
+If given"omr_criteria" and "bg_prevalence", the results will be shown pondering those models that met the "omr_criteria" by the value of "bg_prevalence".
 }
 \examples{
 \dontrun{
@@ -71,7 +76,8 @@ e_selct <- ntbox::ellipsoid_selection(env_train = pg_etrain,
                                       env_vars = env_vars,
                                       level = level,
                                       nvarstest = nvarstest,
-                                      env_bg = env_bg)
+                                      env_bg = env_bg,
+                                      omr_criteria=0.07)
 
 
 bestvarcomb <- stringr::str_split(e_selct$fitted_vars,",")[[1]]
