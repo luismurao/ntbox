@@ -64,10 +64,10 @@
 #'                                       env_bg = env_bg,
 #'                                       omr_criteria=0.07)
 #'
-#'
+#'# Best ellipsoid model for "omr_criteria" and prevalence
 #' bestvarcomb <- stringr::str_split(e_selct$fitted_vars,",")[[1]]
 #'
-#' # Best ellipsoid model
+#' # Ellipsoid model projection
 #'
 #' best_mod <- ntbox::cov_center(pg_etrain[,bestvarcomb],
 #'                               mve = T,
@@ -270,25 +270,3 @@ ellipsoid_selection <- function(env_train,env_vars,nvarstest,level,env_bg=NULL,o
 
 }
 
-
-#' ellipsoid_selection: Performs variable selection for ellipsoid models
-#'
-#' @description Performs variable selection for ellipsoid models according to omission rates in the environmental space.
-#' @param centroid A numeric vector of centroids for each environmental variable
-#' @param eShape Shape matrix of the ellipsoid (can be a covariance matrix or a minimum volume ellipsoid).
-#' @param env_data A data frame with the environmental training data.
-#' @param level Proportion of points to be included in the ellipsoids. This paramter is equivalent to the error (E) proposed by Peterson et al. (2008).
-#' @export
-
-inEllipsoid <- function(centroid,eShape,env_data,level){
-
-  mh_dist <- stats::mahalanobis(env_data,
-                                center = centroid,
-                                cov =eShape)
-  in_Ellipsoid <- mh_dist <= stats::qchisq(level,
-                                           length(centroid))
-  in_Ellipsoid <- in_Ellipsoid*1
-  in_Ellipsoid_mh <- data.frame(in_Ellipsoid,mh_dist )
-
-  return(in_Ellipsoid_mh)
-}
