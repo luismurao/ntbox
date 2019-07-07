@@ -187,7 +187,7 @@ ellipsoid_selection <- function(env_train,env_vars,nvarstest,level,env_bg=NULL,o
 
       met_criteriaID <- which(rfinal$om_rate<=omr_criteria)
       if(length(met_criteriaID)==0L){
-        cat("\tNo model passed the omission cirteria ranking only by omission rates")
+        cat("\tNo model passed the omission criteria ranking only by omission rates")
         return(rfinal)
       }
 
@@ -251,7 +251,7 @@ ellipsoid_selection <- function(env_train,env_vars,nvarstest,level,env_bg=NULL,o
       met_criteriaID <- which(rfinal$om_rate<=omr_criteria)
 
       if(length(met_criteriaID)==0L){
-        cat("\tNo model passed the omission cirteria ranking only by omission rates")
+        cat("\tNo model passed the omission criteria ranking only by omission rates")
         return(rfinal)
       }
 
