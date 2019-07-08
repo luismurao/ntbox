@@ -7,6 +7,7 @@
 #' @param level Proportion of points to be included in the ellipsoids. This parameter is equivalent to the error (E) proposed by Peterson et al. (2008).
 #' @param omr_criteria Omission rate criteria. Value of omission rate allowed for the selection process. Default NULL see details.
 #' @param env_bg Environmental data to compute the approximated prevalence of the model. The data should be a sample of the environmental layers of the calibration area.
+#' @param parallel The computations will be run in parallel. Deafault FALSE
 #' @return A data.frame with 5 columns: i) "fitted_vars" the names of variables that were fitted; ii) "om_rate" omission rates of the model; iii) "bg_prevalence" approximated prevalence of the model see details section; iv) The rank value of importance in model selection by omission rate; v) The rank value by prevalence after if the value of omr_criteria is passed.
 #' @details Model selection occurs in environmental space (E-space). For each variable combination the omission rate (omr) in E-space is computed using the function \code{\link[ntbox]{inEllipsoid}}. The results will be ordered by omr and if the user specified the environmental background "env_bg" an estimated prevalence will be computed and the results will be ordered also by "bg_prevalence".
 #'
@@ -95,7 +96,7 @@
 #' print(pg_proc$pROC_summary)
 #' }
 
-ellipsoid_selection <- function(env_train,env_vars,nvarstest,level,env_bg=NULL,omr_criteria){
+ellipsoid_selection <- function(env_train,env_vars,nvarstest,level,env_bg=NULL,omr_criteria,parallel=F){
   n_vars <- length(env_vars)
   ntest <- sapply(nvarstest, function(x) choose(n_vars,x))
   nmodels <- sum(ntest)
@@ -114,7 +115,7 @@ ellipsoid_selection <- function(env_train,env_vars,nvarstest,level,env_bg=NULL,o
   cvars <- lapply(nvarstest, function(x) utils::combn(env_vars,x))
 
 
-  if(length(cvars) >1L && nmodels >500){
+  if(length(cvars) >1L && nmodels >500 && parallel){
     dir1 <- file.path(getwd(),"ellipsoid_select")
     dir.create(dir1)
     future::plan(multiprocess)
@@ -124,38 +125,11 @@ ellipsoid_selection <- function(env_train,env_vars,nvarstest,level,env_bg=NULL,o
       x <- as.numeric(paso)
       model_select[[paso]] %<-% {
         combs_v <- cvars[[x]]
-        results_L <- lapply(1:ncol(combs_v), function(x_comb,env_bg1=env_bg){
-          emd <- try(ntbox::cov_center(env_train[,combs_v [,x_comb]],
-                                       level = 0.95,
-                                       vars = 1:nrow(combs_v)),silent = TRUE)
-          message1 <- attr(emd,"class")== "try-error"
-          if(length(message1)>0L)
-            return()
-
-          in_e <-  inEllipsoid(centroid = emd$centroid,
-                               eShape = emd$covariance,
-                               env_data = env_train[,combs_v [,x_comb]],
-                               level = level)
-          a <- length(which(in_e$in_Ellipsoid==0))
-          omrate <- a /nrow( in_e)
-
-          d_results <- data.frame(fitted_vars =paste(combs_v [,x_comb],
-                                                     collapse =  ","),
-                                  nvars=nvarstest[x],
-                                  om_rate=omrate)
-
-          if(!is.null(env_bg1)){
-            if(!is.data.frame(env_bg1))
-              env_bg1 <- data.frame(env_bg1)
-            in_ebg <-  inEllipsoid(centroid = emd$centroid,
-                                   eShape = emd$covariance,
-                                   env_data = env_bg1[,combs_v [,x_comb]],
-                                   level = level)
-            prevBG <- length(which(in_ebg$in_Ellipsoid==1))/nrow(in_ebg)
-            d_results <-data.frame( d_results,bg_prevalence= prevBG)
-          }
-          return(d_results)
-
+        results_L <- lapply(1:ncol(combs_v),function(x_comb) {
+          r1 <- ellipsoid_omr(env_data =env_train[,combs_v[,x_comb]],
+                              env_bg = env_bg[,combs_v[,x_comb]],
+                              cf_level = 0.95)
+          return(r1)
         })
         results_df <- do.call("rbind.data.frame",results_L)
         fname <- file.path(dir1,paste0("eselection_",x,".csv"))
@@ -204,39 +178,12 @@ ellipsoid_selection <- function(env_train,env_vars,nvarstest,level,env_bg=NULL,o
   } else{
     results_L <- lapply(1:length(cvars), function(x) {
       combs_v <- cvars[[x]]
-      results_L <- lapply(1:ncol(combs_v), function(x_comb){
-        emd <- try(ntbox::cov_center(env_train[,combs_v [,x_comb]],
-                                     level = 0.95,
-                                     vars = 1:nrow(combs_v)),silent = TRUE)
-        message1 <- attr(emd,"class")== "try-error"
-        if(length(message1)>0L)
-          return()
-
-        in_e <-  inEllipsoid(centroid = emd$centroid,
-                             eShape = emd$covariance,
-                             env_data = env_train[,combs_v [,x_comb]],
-                             level = level)
-        a <- length(which(in_e$in_Ellipsoid==0))
-        omrate <- a /nrow( in_e)
-
-        d_results <- data.frame(fitted_vars =paste(combs_v [,x_comb],
-                                                   collapse =  ","),
-                                nvars=nvarstest[x],
-                                om_rate=omrate)
-
-        if(!is.null(env_bg)){
-          if(!is.data.frame(env_bg))
-            env_bg <- data.frame(env_bg)
-          in_ebg <-  inEllipsoid(centroid = emd$centroid,
-                                 eShape = emd$covariance,
-                                 env_data = env_bg[,combs_v [,x_comb]],
-                                 level = level)
-          prevBG <- length(which(in_ebg$in_Ellipsoid==1))/nrow(in_ebg)
-          d_results <-data.frame( d_results,bg_prevalence= prevBG)
-        }
-        return(d_results)
-
-      })
+      results_L <- lapply(1:ncol(combs_v),function(x_comb) {
+        r1 <- ellipsoid_omr(env_data =env_train[,combs_v[,x_comb]],
+                            env_bg = env_bg[,combs_v[,x_comb]],
+                            cf_level = 0.95)
+        return(r1)
+        })
       results_df <- do.call("rbind.data.frame",results_L)
       return(results_df)
     })
@@ -270,3 +217,49 @@ ellipsoid_selection <- function(env_train,env_vars,nvarstest,level,env_bg=NULL,o
 
 }
 
+
+#' ellipsoid_omr
+#'
+#' @description Compute the omission rate of ellipspoid models
+#' @param env_data A data frame with the environmental data.
+#' @param env_bg Environmental data to compute the approximated prevalence of the model. The data should be a sample of the environmental layers of the calibration area.
+#' @param cf_level Proportion of points to be included in the ellipsoids. This parameter is equivalent to the error (E) proposed by Peterson et al. (2008).
+#' @return A data.frame with 5 columns: i) "fitted_vars" the names of variables that were fitted; ii) "om_rate" omission rates of the model; iii) "bg_prevalence" approximated prevalence of the model see details section.
+#' @export
+ellipsoid_omr <- function(env_data,env_bg,cf_level){
+  emd <- try(ntbox::cov_center(data = env_data,
+                               mve = TRUE,
+                               level = cf_level,
+                               vars = 1:ncol(env_data)),
+                               silent = TRUE)
+
+  message1 <- attr(emd,"class")== "try-error"
+  if(length(message1)>0L)
+    return()
+
+  in_e <-  inEllipsoid(centroid = emd$centroid,
+                       eShape = emd$covariance,
+                       env_data = env_data,
+                       level = cf_level)
+
+
+  a <- length(which(in_e$in_Ellipsoid==0))
+  omrate <- a /nrow( in_e)
+
+  d_results <- data.frame(fitted_vars =paste(names(emd$centroid),
+                                             collapse =  ","),
+                          nvars=length(emd$centroid),
+                          om_rate=omrate)
+
+  if(!is.null(env_bg)){
+    if(!is.data.frame(env_bg))
+      env_bg1 <- data.frame(env_bg)
+    in_ebg <-  inEllipsoid(centroid = emd$centroid,
+                           eShape = emd$covariance,
+                           env_data = env_bg,
+                           level = cf_level)
+    prevBG <- length(which(in_ebg$in_Ellipsoid==1))/nrow(in_ebg)
+    d_results <-data.frame( d_results,bg_prevalence= prevBG)
+  }
+  return(d_results)
+}

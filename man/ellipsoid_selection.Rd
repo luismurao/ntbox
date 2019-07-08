@@ -5,7 +5,7 @@
 \title{ellipsoid_selection: Performs variable selection for ellipsoid models}
 \usage{
 ellipsoid_selection(env_train, env_vars, nvarstest, level, env_bg = NULL,
-  omr_criteria)
+  omr_criteria, parallel = F)
 }
 \arguments{
 \item{env_train}{A data frame with the environmental training data.}
@@ -19,6 +19,8 @@ ellipsoid_selection(env_train, env_vars, nvarstest, level, env_bg = NULL,
 \item{env_bg}{Environmental data to compute the approximated prevalence of the model. The data should be a sample of the environmental layers of the calibration area.}
 
 \item{omr_criteria}{Omission rate criteria. Value of omission rate allowed for the selection process. Default NULL see details.}
+
+\item{parallel}{The computations will be run in parallel. Deafault FALSE}
 }
 \value{
 A data.frame with 5 columns: i) "fitted_vars" the names of variables that were fitted; ii) "om_rate" omission rates of the model; iii) "bg_prevalence" approximated prevalence of the model see details section; iv) The rank value of importance in model selection by omission rate; v) The rank value by prevalence after if the value of omr_criteria is passed.
