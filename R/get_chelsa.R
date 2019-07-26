@@ -36,9 +36,9 @@ get_chelsa <- function(period,model=NULL,rcp=NULL,sv_dir=getwd(),load2r=T){
   }
   if(period %in% c("2041-2060","2061-2080") && rcp %in% c("rcp26","rcp45","rcp85")){
 
-    chelsa <- readRDS(file.path(system.file("extdata",
-                                            package = "ntbox"),
-                                "chelsa_vars.rds"))
+    chelsa <- base::readRDS(file.path(system.file("extdata",
+                                                  package = "ntbox"),
+                                      "chelsa_vars.rds"))
     if(period == "2041-2060")
       url <- "https://www.wsl.ch/lud/chelsa/data/cmip5/2041-2060/bio/"
     if(period == "2061-2080")
@@ -56,13 +56,13 @@ get_chelsa <- function(period,model=NULL,rcp=NULL,sv_dir=getwd(),load2r=T){
     warning(paste("No spatial information for",
                   model,period,rcp))
   else{
-    dir_name <- file.path(sv_dir, m_ab)
+    dir_name <- base::file.path(sv_dir, m_ab)
     if(!dir.exists(dir_name )) dir.create(dir_name )
-    fnames <- file.path(dir_name,chelsa_names)
+    fnames <- base::file.path(dir_name,chelsa_names)
     ch_down <- seq_along(fnames) %>%
-      purrr::map(~download.file(chelsa_urls[.x],
-                                fnames[.x],
-                                method = "curl"))
+      purrr::map(~utils::download.file(chelsa_urls[.x],
+                                       fnames[.x],
+                                       method = "curl"))
     if(load2r)
       chelsa_urls <- raster::stack(list.files(dir_name,
                                               pattern = ".tif$",
