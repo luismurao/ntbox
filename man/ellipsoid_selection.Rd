@@ -4,13 +4,15 @@
 \alias{ellipsoid_selection}
 \title{ellipsoid_selection: Performs variable selection for ellipsoid models}
 \usage{
-ellipsoid_selection(env_train, env_vars, nvarstest, level, env_bg = NULL,
-  omr_criteria, parallel = F)
+ellipsoid_selection(env_train, env_test = NULL, env_vars, nvarstest,
+  level, env_bg = NULL, omr_criteria, parallel = F)
 }
 \arguments{
 \item{env_train}{A data frame with the environmental training data.}
 
-\item{env_vars}{A vector with the names of environmental variables to be used in the selection process}
+\item{env_test}{A data frame with the environmental testing data. Default is NULL, if given the selection process will show the p-value of a binomial test.}
+
+\item{env_vars}{A vector with the names of environmental variables to be used in the selection process.}
 
 \item{nvarstest}{A vector indicating the number of variables to fit the ellipsoids during model selection. It is allowed to test models with a different number of variables (i.e. nvarstest=c(3,6)).}
 
@@ -75,6 +77,7 @@ env_bg <- raster::sampleRandom(wc,10000)
 # Selection process
 
 e_selct <- ntbox::ellipsoid_selection(env_train = pg_etrain,
+                                      env_test = pg_etest,
                                       env_vars = env_vars,
                                       level = level,
                                       nvarstest = nvarstest,

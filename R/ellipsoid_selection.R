@@ -2,7 +2,8 @@
 #'
 #' @description Performs variable selection for ellipsoid models according to omission rates in the environmental space.
 #' @param env_train A data frame with the environmental training data.
-#' @param env_vars A vector with the names of environmental variables to be used in the selection process
+#' @param env_test A data frame with the environmental testing data. Default is NULL, if given the selection process will show the p-value of a binomial test.
+#' @param env_vars A vector with the names of environmental variables to be used in the selection process.
 #' @param nvarstest A vector indicating the number of variables to fit the ellipsoids during model selection. It is allowed to test models with a different number of variables (i.e. nvarstest=c(3,6)).
 #' @param level Proportion of points to be included in the ellipsoids. This parameter is equivalent to the error (E) proposed by Peterson et al. (2008).
 #' @param omr_criteria Omission rate criteria. Value of omission rate allowed for the selection process. Default NULL see details.
@@ -59,6 +60,7 @@
 #' # Selection process
 #'
 #' e_selct <- ntbox::ellipsoid_selection(env_train = pg_etrain,
+#'                                       env_test = pg_etest,
 #'                                       env_vars = env_vars,
 #'                                       level = level,
 #'                                       nvarstest = nvarstest,
@@ -96,7 +98,7 @@
 #' print(pg_proc$pROC_summary)
 #' }
 
-ellipsoid_selection <- function(env_train,env_vars,nvarstest,level,env_bg=NULL,omr_criteria,parallel=F){
+ellipsoid_selection <- function(env_train,env_test=NULL,env_vars,nvarstest,level,env_bg=NULL,omr_criteria,parallel=F){
   n_vars <- length(env_vars)
   ntest <- sapply(nvarstest, function(x) choose(n_vars,x))
   nmodels <- sum(ntest)
@@ -127,6 +129,7 @@ ellipsoid_selection <- function(env_train,env_vars,nvarstest,level,env_bg=NULL,o
         combs_v <- cvars[[x]]
         results_L <- lapply(1:ncol(combs_v),function(x_comb) {
           r1 <- ellipsoid_omr(env_data =env_train[,combs_v[,x_comb]],
+                              env_test = env_test[,combs_v[,x_comb]],
                               env_bg = env_bg[,combs_v[,x_comb]],
                               cf_level = 0.95)
           return(r1)
@@ -180,6 +183,7 @@ ellipsoid_selection <- function(env_train,env_vars,nvarstest,level,env_bg=NULL,o
       combs_v <- cvars[[x]]
       results_L <- lapply(1:ncol(combs_v),function(x_comb) {
         r1 <- ellipsoid_omr(env_data =env_train[,combs_v[,x_comb]],
+                            env_test = env_test[,combs_v[,x_comb]],
                             env_bg = env_bg[,combs_v[,x_comb]],
                             cf_level = 0.95)
         return(r1)
@@ -222,11 +226,12 @@ ellipsoid_selection <- function(env_train,env_vars,nvarstest,level,env_bg=NULL,o
 #'
 #' @description Compute the omission rate of ellipspoid models
 #' @param env_data A data frame with the environmental data.
+#' @param env_test A data frame with the environmental testing data. Default is NULL, if given the selection process will show the p-value of a binomial test.
 #' @param env_bg Environmental data to compute the approximated prevalence of the model. The data should be a sample of the environmental layers of the calibration area.
 #' @param cf_level Proportion of points to be included in the ellipsoids. This parameter is equivalent to the error (E) proposed by Peterson et al. (2008).
 #' @return A data.frame with 5 columns: i) "fitted_vars" the names of variables that were fitted; ii) "om_rate" omission rates of the model; iii) "bg_prevalence" approximated prevalence of the model see details section.
 #' @export
-ellipsoid_omr <- function(env_data,env_bg,cf_level){
+ellipsoid_omr <- function(env_data,env_test=NULL,env_bg,cf_level){
   emd <- try(ntbox::cov_center(data = env_data,
                                mve = TRUE,
                                level = cf_level,
@@ -242,8 +247,12 @@ ellipsoid_omr <- function(env_data,env_bg,cf_level){
                        env_data = env_data,
                        level = cf_level)
 
+  occs_table <- table( in_e$in_Ellipsoid)
 
-  a <- length(which(in_e$in_Ellipsoid==0))
+  occs_fail <-  occs_table[[1]]
+  occs_succs <- occs_table[[2]]
+
+  a <-  occs_fail
   omrate <- a /nrow( in_e)
 
   d_results <- data.frame(fitted_vars =paste(names(emd$centroid),
@@ -258,8 +267,29 @@ ellipsoid_omr <- function(env_data,env_bg,cf_level){
                            eShape = emd$covariance,
                            env_data = env_bg,
                            level = cf_level)
-    prevBG <- length(which(in_ebg$in_Ellipsoid==1))/nrow(in_ebg)
-    d_results <-data.frame( d_results,bg_prevalence= prevBG)
+
+    bg_table <- table(c(in_ebg$in_Ellipsoid,in_e$in_Ellipsoid))
+    prevBG <- bg_table[[2]]/(bg_table[[1]]+bg_table[[2]])
+
+    if(is.data.frame(env_test) || is.matrix(env_test)){
+      in_etest <-  inEllipsoid(centroid = emd$centroid,
+                               eShape = emd$covariance,
+                               env_data = env_test,
+                               level = cf_level)
+      bin_table <- table(c(in_ebg$in_Ellipsoid,
+                           in_etest$in_Ellipsoid))
+      test_fail <-  occs_table[[1]]
+      test_succs <- occs_table[[2]]
+      binBG <- bin_table[[2]]/(bin_table[[1]]+bin_table[[2]])
+      p_bin <- 1 - stats::pbinom(test_succs,
+                                 size=test_succs+test_fail,
+                                 prob = prevBG)
+
+    }
+
+
+    d_results <-data.frame( d_results,bg_prevalence= prevBG,
+                            pval=p_bin)
   }
   return(d_results)
 }

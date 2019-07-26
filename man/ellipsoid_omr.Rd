@@ -4,10 +4,12 @@
 \alias{ellipsoid_omr}
 \title{ellipsoid_omr}
 \usage{
-ellipsoid_omr(env_data, env_bg, cf_level)
+ellipsoid_omr(env_data, env_test = NULL, env_bg, cf_level)
 }
 \arguments{
 \item{env_data}{A data frame with the environmental data.}
+
+\item{env_test}{A data frame with the environmental testing data. Default is NULL, if given the selection process will show the p-value of a binomial test.}
 
 \item{env_bg}{Environmental data to compute the approximated prevalence of the model. The data should be a sample of the environmental layers of the calibration area.}
 
