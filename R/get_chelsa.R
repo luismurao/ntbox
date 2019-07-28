@@ -12,12 +12,14 @@
 #' @param rcp Representative Concentration Pathway. Posible values are "rcp26","rcp45","rcp85".
 #' @param sv_dir Path to the directory where the layers will be saved. Default is the working directory of R session.
 #' @param load2r Logical. Load layers into R?
+#' @seealso \code{\link[ntbox]{get_envirem_elev}}
+#' @references Karger, D.N., Conrad, O., Bohner, J., Kawohl, T., Kreft, H., Soria-Auza, R.W., Zimmermann, N.E., Linder, H.P. & Kessler, M. (2017) Climatologies at high resolution for the earth's land surface areas. Scientific Data 4, 170122.
 #' @export
 #' @examples
 #' \dontrun{
 #' chelsa_biocurrent <- get_chelsa(period = "current",
 #'                                 sv_dir = "~/Desktop")
-#' chelsa_bioCCSM4 <- get_chelsa(period = "current",
+#' chelsa_bioCCSM4 <- get_chelsa(period = "2041-2060",
 #'                               model="CCSM4",
 #'                               rcp="rcp85",
 #'                               sv_dir = "~/Desktop")
@@ -27,9 +29,9 @@ get_chelsa <- function(period,model=NULL,rcp=NULL,sv_dir=getwd(),load2r=T){
   if(period == "current"){
     url <- "https://www.wsl.ch/lud/chelsa/data/bioclim/integer/"
     m_ab <- "chelsa_current"
-    bionames <- c(paste0("CHELSA_bio10_0",1:9,".tif"),
+    chelsa_names <- c(paste0("CHELSA_bio10_0",1:9,".tif"),
                   paste0("CHELSA_bio10_",10:19,".tif"))
-    chelsa_urls <- paste0(url ,bionames)
+    chelsa_urls <- paste0(url , chelsa_names)
 
 
 
@@ -64,9 +66,7 @@ get_chelsa <- function(period,model=NULL,rcp=NULL,sv_dir=getwd(),load2r=T){
                                        fnames[.x],
                                        method = "curl"))
     if(load2r)
-      chelsa_urls <- raster::stack(list.files(dir_name,
-                                              pattern = ".tif$",
-                                              full.names = T))
+      chelsa_urls <- ntbox::rlayers_ntb(dir_name)
     cite_chelsa <- "Karger, D.N., Conrad, O., Bohner, J., Kawohl, T., Kreft, H., Soria-Auza, R.W., Zimmermann, N.E., Linder, H.P. & Kessler, M. (2017) Climatologies at high resolution for the earth's land surface areas. Scientific Data 4, 170122."
     warning(paste("Please cite as",cite_chelsa))
   }

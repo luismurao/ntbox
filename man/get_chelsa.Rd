@@ -32,9 +32,15 @@ Get bioclimatic layers from CHELSA for present and future scenarios
 \dontrun{
 chelsa_biocurrent <- get_chelsa(period = "current",
                                 sv_dir = "~/Desktop")
-chelsa_bioCCSM4 <- get_chelsa(period = "current",
+chelsa_bioCCSM4 <- get_chelsa(period = "2041-2060",
                               model="CCSM4",
                               rcp="rcp85",
                               sv_dir = "~/Desktop")
 }
+}
+\references{
+Karger, D.N., Conrad, O., Bohner, J., Kawohl, T., Kreft, H., Soria-Auza, R.W., Zimmermann, N.E., Linder, H.P. & Kessler, M. (2017) Climatologies at high resolution for the earth's land surface areas. Scientific Data 4, 170122.
+}
+\seealso{
+\code{\link[ntbox]{get_envirem_elev}}
 }
