@@ -61,6 +61,7 @@ Imports:
     stringi (>= 1.1),
     purrr (>= 0.2.5),
     spocc (>= 0.7.0),
+    sdmpredictors (>= 0.2.8),
     Rcpp (>= 0.12.18),
 URL: https://luismurao.github.io/
 BugReports: https://github.com/luismurao/ntbox/issues
