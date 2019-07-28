@@ -12,6 +12,7 @@
 #' @param rcp Representative Concentration Pathway. Posible values are "rcp26","rcp45","rcp85".
 #' @param sv_dir Path to the directory where the layers will be saved. Default is the working directory of R session.
 #' @param load2r Logical. Load layers into R?
+#' @param parallel Download layers in parallel.
 #' @seealso \code{\link[ntbox]{get_envirem_elev}}, \code{\link[ntbox]{get_envirem_clim}}
 #' @details For more details visit \url{http://chelsa-climate.org/}
 #' @references Karger, D.N., Conrad, O., Bohner, J., Kawohl, T., Kreft, H., Soria-Auza, R.W., Zimmermann, N.E., Linder, H.P. & Kessler, M. (2017) Climatologies at high resolution for the earth's land surface areas. Scientific Data 4, 170122.
@@ -25,7 +26,7 @@
 #'                               rcp="rcp85",
 #'                               sv_dir = "~/Desktop")
 #' }
-get_chelsa <- function(period,model=NULL,rcp=NULL,sv_dir=getwd(),load2r=T){
+get_chelsa <- function(period,model=NULL,rcp=NULL,sv_dir=getwd(),load2r=TRUE,parallel=TRUE){
   chelsa_urls <- NULL
   if(period == "current"){
     url <- "https://www.wsl.ch/lud/chelsa/data/bioclim/integer/"
@@ -62,7 +63,21 @@ get_chelsa <- function(period,model=NULL,rcp=NULL,sv_dir=getwd(),load2r=T){
     dir_name <- base::file.path(sv_dir, m_ab)
     if(!dir.exists(dir_name )) dir.create(dir_name )
     fnames <- base::file.path(dir_name,chelsa_names)
-    ch_down <- seq_along(fnames) %>%
+    if(parallel){
+      ncores <- parallel::detectCores() -1
+      cl <- parallel::makeCluster(ncores)
+      parallel::clusterExport(cl,c("chelsa_urls",
+                                   "fnames"))
+      ch_down <- parallel::clusterApply(cl, seq_along(fnames),
+                                        function(x){
+        r1 <- utils::download.file(chelsa_urls[x],
+                                   fnames[x],
+                                   method = "curl")
+      })
+      parallel::stopCluster(cl)
+    }
+    else
+      ch_down <- seq_along(fnames) %>%
       purrr::map(~utils::download.file(chelsa_urls[.x],
                                        fnames[.x],
                                        method = "curl"))

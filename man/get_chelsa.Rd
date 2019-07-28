@@ -5,7 +5,7 @@
 \title{get_chelsa: Get bioclimatic layers from CHELSA}
 \usage{
 get_chelsa(period, model = NULL, rcp = NULL, sv_dir = getwd(),
-  load2r = T)
+  load2r = TRUE, parallel = TRUE)
 }
 \arguments{
 \item{period}{Time period. Posible values are: "current","2041-2060","2061-2080"}
@@ -24,6 +24,8 @@ get_chelsa(period, model = NULL, rcp = NULL, sv_dir = getwd(),
 \item{sv_dir}{Path to the directory where the layers will be saved. Default is the working directory of R session.}
 
 \item{load2r}{Logical. Load layers into R?}
+
+\item{parallel}{Download layers in parallel.}
 }
 \description{
 Get bioclimatic layers from CHELSA for present and future scenarios
