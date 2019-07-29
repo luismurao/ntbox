@@ -64,7 +64,7 @@ get_envirem_elev <- function(period,region,resolution,fmt,sv_dir=getwd(),load2r)
     warning(paste("No elevation data for:",
                   period,region,resolution,fmt))
   if(!is.null(citation_inf))
-    warnings(paste("Please cite as:\n",citation_inf))
+    message(paste("Please cite as:\n",citation_inf))
   return(elev_stack)
 }
 

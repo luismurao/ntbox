@@ -56,9 +56,10 @@ get_chelsa <- function(period,model=NULL,rcp=NULL,sv_dir=getwd(),load2r=TRUE,par
     }
 
   }
-  if(is.null(chelsa_urls))
+  if(is.null(chelsa_urls)){
     warning(paste("No spatial information for",
                   model,period,rcp))
+  }
   else{
     dir_name <- base::file.path(sv_dir, m_ab)
     if(!dir.exists(dir_name )) dir.create(dir_name )
@@ -66,8 +67,9 @@ get_chelsa <- function(period,model=NULL,rcp=NULL,sv_dir=getwd(),load2r=TRUE,par
     if(parallel){
       ncores <- parallel::detectCores() -1
       cl <- parallel::makeCluster(ncores)
-      parallel::clusterExport(cl,c("chelsa_urls",
-                                   "fnames"))
+      parallel::clusterExport(cl,varlist = c("chelsa_urls",
+                                   "fnames"),
+                              envir = environment())
       ch_down <- parallel::clusterApply(cl, seq_along(fnames),
                                         function(x){
         r1 <- utils::download.file(chelsa_urls[x],
@@ -76,15 +78,17 @@ get_chelsa <- function(period,model=NULL,rcp=NULL,sv_dir=getwd(),load2r=TRUE,par
       })
       parallel::stopCluster(cl)
     }
-    else
+    else{
       ch_down <- seq_along(fnames) %>%
-      purrr::map(~utils::download.file(chelsa_urls[.x],
-                                       fnames[.x],
-                                       method = "curl"))
+        purrr::map(~utils::download.file(chelsa_urls[.x],
+                                         fnames[.x],
+                                         method = "curl"))
+    }
+
     if(load2r)
       chelsa_urls <- ntbox::rlayers_ntb(dir_name)
     cite_chelsa <- "Karger, D.N., Conrad, O., Bohner, J., Kawohl, T., Kreft, H., Soria-Auza, R.W., Zimmermann, N.E., Linder, H.P. & Kessler, M. (2017) Climatologies at high resolution for the earth's land surface areas. Scientific Data 4, 170122."
-    warning(paste("Please cite as",cite_chelsa))
+    base::message(paste("Please cite as",cite_chelsa))
   }
   return(chelsa_urls)
 }

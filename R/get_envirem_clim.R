@@ -88,7 +88,7 @@ get_envirem_clim <- function(period,gcm=NULL,region,resolution,fmt,sv_dir=getwd(
     warning(paste("No climate data for:",
                   period,gcm,region,resolution,fmt))
   if(!is.null(citation_inf))
-    warnings(paste("Please cite as:\n",citation_inf))
+    message(paste("Please cite as:\n",citation_inf))
   return(clim_stack)
 }
 
