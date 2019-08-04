@@ -343,8 +343,6 @@ materials <- sidebarLayout(position = "left",
 
                              ),
 
-                             #shiny::selectInput(inputId = )
-                             #selectInput(inputId = 'res',label = 'Select a grid resolution for the bioclimatic vars',choices = c('10 Arc-minutes'='tenArcs','5 Arc-minutes'='fiveArcs','2.5 Arc-minutes'='twoArcs'),selected = 'tenArcs'),
                              bsButton("loadNicheLayers",
                                       "Load niche layers",
                                       icon = icon("upload",
