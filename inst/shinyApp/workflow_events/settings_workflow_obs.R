@@ -312,6 +312,8 @@ if(osSystem %in% c("Windows")){
 }
 
 
+
+
 getEnvData <- eventReactive(input$get_now,{
 
   variable <- input$wc_var
@@ -344,6 +346,43 @@ getEnvData <- eventReactive(input$get_now,{
 
     return(wc)
   }
+  if(input$env_data=="ch_pre" && input$getEnvData){
+    chelsa_biocurrent <- get_chelsa(period = "current",
+                                    sv_dir =layers_dir,
+                                    load2r = TRUE,
+                                    parallel = input$ch_parallel)
+    return(chelsa_biocurrent)
+  }
+  if(input$env_data=="env_pres" && input$getEnvData){
+    envirem_pass <-  get_envirem_clim(period= "current",
+                                      gcm = NULL,
+                                      region = input$env_reg,
+                                      resolution = input$env_res,
+                                      fmt= input$env_fmt,
+                                      sv_dir = layers_dir,
+                                      load2r = TRUE)
+    return(envirem_pass)
+  }
+  if(input$env_data=="env_elev_pres" && input$getEnvData){
+    envirem_pass <-  get_envirem_elev(period= "current",
+                                      region = input$env_reg,
+                                      resolution = input$env_res,
+                                      fmt= input$env_fmt,
+                                      sv_dir = layers_dir,
+                                      load2r = TRUE)
+    return(envirem_pass)
+  }
+  if(input$env_data=="bio_pre" && input$getEnvData){
+    bio_oracle <-  get_bio_oracle(period= "current",
+                                    var_type = input$bio_type,
+                                    model = NULL,
+                                    scenario = NULL,
+                                    sv_dir = layers_dir,
+                                    load2r = TRUE,
+                                    parallel = input$ch_parallel)
+    return(bio_oracle)
+  }
+
   return()
 })
 
@@ -385,23 +424,153 @@ getEnvData_future <- eventReactive(input$get_now_future,{
     return(wc)
 
   }
+  if(input$env_data=="ch_fut" && input$getEnvData){
+    chelsa_biofuture <- get_chelsa(period = input$ch_period,
+                                   model = input$ch_model,
+                                   rcp = input$ch_rcp,
+                                   sv_dir =layers_dir,
+                                   load2r = TRUE,
+                                   parallel = input$ch_parallel)
+    return(chelsa_biofuture)
+  }
+
+  if(input$env_data=="env_pass" && input$getEnvData){
+    envirem_pass <-  get_envirem_clim(period= input$env_period,
+                                      gcm = input$env_gcm,
+                                      region = input$env_reg,
+                                      resolution = input$env_res,
+                                      fmt= input$env_fmt,
+                                      sv_dir = layers_dir,
+                                      load2r = TRUE)
+    return(envirem_pass)
+  }
+  if(input$env_data=="env_elev_pass" && input$getEnvData){
+    envirem_pass <-  get_envirem_elev(period= input$env_period,
+                                      region = input$env_reg,
+                                      resolution = input$env_res,
+                                      fmt= input$env_fmt,
+                                      sv_dir = layers_dir,
+                                      load2r = TRUE)
+    return(envirem_pass)
+  }
+  if(input$env_data=="bio_fut" && input$getEnvData){
+
+
+    bio_oracle_fut <-  get_bio_oracle( period= input$bio_year,
+                                       var_type = input$bio_type_fut,
+                                       model = input$bio_model,
+                                       scenario = tolower(input$bio_scenario),
+                                       sv_dir = layers_dir,
+                                       load2r = TRUE,
+                                       parallel = input$ch_parallel)
+    return(bio_oracle_fut)
+  }
+
   return()
-
-
 })
-
 
 observe({
   if(!is.null(getEnvData()) || !is.null(getEnvData_future())){
-    cat("Climate data downloaded from:\n")
-    cat("http://worldclim.org/\n")
-    cat("Please cite as:\n")
-    cat("   Hijmans RJ, Cameron SE., Parra JL, Jones Peter G., Jarvis Andy. (2005)\n
-        Very high resolution interpolated climate surfaces for global land areas.\n
-        Int J Climatol 25:1965–1978 . doi: 10.1002/joc.1276\n")
+    if(input$env_data=="wc" ||
+       input$env_data=="wc_future"){
+      cat("Climate data downloaded from:\n")
+      cat("http://worldclim.org/\n")
+      cat("Please cite as:\n")
+      cat("   Hijmans RJ, Cameron SE., Parra JL, Jones Peter G., Jarvis Andy. (2005)\n
+          Very high resolution interpolated climate surfaces for global land areas.\n
+          Int J Climatol 25:1965–1978 . doi: 10.1002/joc.1276\n")
+    }
+    if(input$env_data=="ch_pre" ||
+       input$env_data=="ch_fut"){
+      cat("Climate data downloaded from:\n")
+      cat("http://chelsa-climate.org/\n")
+      cat("Please cite as:\n")
+      cat(" Karger, D.N., Conrad, O., Bohner, J., Kawohl, T., Kreft, H., Soria-Auza,\n
+          R.W., Zimmermann, N.E., Linder, H.P. & Kessler, M. (2017) Climatologies at\n
+          high resolution for the earth's land surface areas. Scientific Data 4, 170122.")
+
+    }
+    if(input$env_data=="bio_pre" ||
+       input$env_data=="bio_fut"){
+      cat("Climate data downloaded from:\n")
+      cat("http://www.bio-oracle.org/index.php\n")
+      cat("Please cite as:\n")
+      cat(" Assis, J., Tyberghein, L., Bosh, S., Verbruggen, H., Serrao, E. A.,&\n
+          De Clerck, O. (2017). Bio-ORACLE v2.0: Extending marine data layers for\n
+          bioclimatic modelling. Global Ecology and Biogeography.")
+
+    }
+    if(input$env_data=="env_pres" ||
+       input$env_data=="env_pass" ||
+       input$env_data=="env_elev_pres" ||
+       input$env_data=="env_elev_pass"){
+      cat("Climate data downloaded from:\n")
+      cat("https://envirem.github.io/\n")
+      cat("Please cite as:\n")
+      cat(" Title P.O., Bemmels J.B. 2018. ENVIREM: an expanded set of\n
+          bioclimatic and topographic variables increases flexibility\n
+          and improves performance of ecological niche modeling. \n
+          Ecography. 41:291-307.")
+    }
+
   }
   })
 
+bio_oracle <- reactive({
+  if(input$getEnvData && input$env_data=='bio_fut'){
+    bio_oracle <- base::readRDS(file.path(system.file("extdata",
+                                                      package = "ntbox"),
+                                          "bio_oracle.rds"))
+
+
+    nbio <- unique(bio_oracle[,c('year','model',
+                                 'scenario',"type")])
+
+    years <- nbio %>% split(.$year)
+    biobd <- years[[input$bio_year]]
+    return(biobd)
+  }
+})
+
+observe({
+  biobd <- bio_oracle()
+  if(is.data.frame(biobd)){
+    models <- unique(biobd$model)
+    updateRadioButtons(session,"bio_model",
+                       choices = models)
+  }
+})
+
+biomodels_bd <- reactive({
+  biobd <- bio_oracle()
+  if(is.data.frame(biobd)){
+    models_bd <- biobd %>% split(.$model)
+    return(models_bd)
+  }
+  return()
+})
+
+observe({
+  if(!is.null(biomodels_bd())){
+    scenarios <- biomodels_bd()[[input$bio_model]]
+    updateRadioButtons(session,"bio_scenario",
+                       choices = unique(scenarios$scenario))
+  }
+})
+
+bio_types_bd <- reactive({
+  if(input$bio_scenario != "a"){
+    scenarios <- biomodels_bd()[[input$bio_model]]
+    return(scenarios)
+  }
+  return()
+})
+observe({
+  if(is.data.frame(bio_types_bd())){
+    updateSelectInput(session, "bio_type_fut",
+                      choices = bio_types_bd()$type)
+  }
+})
 # Shape layers in directory
 
 layers_shp <- reactive({
