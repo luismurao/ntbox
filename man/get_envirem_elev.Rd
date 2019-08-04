@@ -45,5 +45,5 @@ elev_eu_lgm_10min <- get_envirem_elev(period="lgm",
 Title P.O., Bemmels J.B. 2018. ENVIREM: an expanded set of bioclimatic and topographic variables increases flexibility and improves performance of ecological niche modeling. Ecography. 41:291-307.
 }
 \seealso{
-\code{\link[ntbox]{get_chelsa}}, \code{\link[ntbox]{get_envirem_clim}}
+\code{\link[ntbox]{get_chelsa}}, \code{\link[ntbox]{get_envirem_clim}},\code{\link[ntbox]{get_bio_oracle}}.
 }

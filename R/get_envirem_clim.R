@@ -7,7 +7,7 @@
 #' @param fmt File format. Posible values are "bil" and "geotiff".
 #' @param sv_dir Path to the directory where the layers will be saved. Default is the working directory of R session.
 #' @param load2r Logical. Load layers into R?
-#' @seealso \code{\link[ntbox]{get_chelsa}}, \code{\link[ntbox]{get_envirem_elev}}
+#' @seealso \code{\link[ntbox]{get_chelsa}}, \code{\link[ntbox]{get_envirem_elev}},\code{\link[ntbox]{get_bio_oracle}}
 #' @details For more details visit \url{https://envirem.github.io/}
 #' @references Title P.O., Bemmels J.B. 2018. ENVIREM: an expanded set of bioclimatic and topographic variables increases flexibility and improves performance of ecological niche modeling. Ecography. 41:291-307.
 #' @export
@@ -69,7 +69,7 @@ get_envirem_clim <- function(period,gcm=NULL,region,resolution,fmt,sv_dir=getwd(
       stop("No such a file or directory...")
 
 
-    fname <- layer_code
+    fname <- paste0("envirem_",layer_code)
     dirname <- file.path(sv_dir,fname)
 
     if(!dir.exists(dirname))
