@@ -112,12 +112,12 @@ materials <- sidebarLayout(position = "left",
                                               selectInput("env_data",label = "Select a source",
                                                           choices = c("WorldClim current"="wc",
                                                                       "CMIP5 future"="wc_future",
-                                                                      "Bio-CHELSA current (1 km)" = "ch_pre",
-                                                                      "Bio-CHELSA future (1 km)" = "ch_fut",
+                                                                      "CHELSA current (1 km)" = "ch_pre",
+                                                                      "CHELSA future (1 km)" = "ch_fut",
                                                                       "ENVIREM current" ="env_pres",
-                                                                      "ENVIREM pass" = "env_pass",
+                                                                      "ENVIREM past" = "env_pass",
                                                                       "ENVIREM elevation current" ="env_elev_pres",
-                                                                      "ENVIREM elevation pass" ="env_elev_pass",
+                                                                      "ENVIREM elevation past" ="env_elev_pass",
                                                                       "Bio-Oracle present
                                                                       (via sdmpredictors)"="bio_pre",
                                                                       "Bio-Oracle future
@@ -235,9 +235,9 @@ materials <- sidebarLayout(position = "left",
                                                                ),
 
                                               conditionalPanel("input.env_data=='ch_pre' ||
-                                                               input.env_data=='ch_fut' ||
-                                                               input.env_data=='bio_pre' ||
-                                                               input.env_data=='bio_fut'",
+                                                                input.env_data=='ch_fut' ||
+                                                                input.env_data=='bio_pre' ||
+                                                                input.env_data=='bio_fut'",
                                                                #p(paste0("Get bioclimatic data",
                                                                #          "from CHELSA")),
                                                                checkboxInput("ch_parallel",
