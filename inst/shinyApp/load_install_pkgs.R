@@ -13,8 +13,6 @@ pkg_check <- c("shiny","rgeos","rgdal",
                "RColorBrewer","ade4","V8","shinyFiles",
                "spocc","leaflet.extras")
 
-packageVersion("dygraphs")
-
 pkgs_ntb_miss <- pkg_check[!(pkg_check %in% installed.packages())]
 ifelse("animation" %in% pkgs_ntb_miss,
        pkgs_ntb_miss <- pkgs_ntb_miss[-which(pkgs_ntb_miss=="animation")],
