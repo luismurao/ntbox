@@ -8,10 +8,9 @@ pROC(continuous_mod, test_data, n_iter = 1000, E_percent = 5,
   boost_percent = 50, parallel = FALSE, ncores = 4)
 }
 \arguments{
-\item{continuous_mod}{a RasterLayer of the ecological niche model to be evaluated.}
+\item{continuous_mod}{a RasterLayer or a numeric vector of the ecological niche model to be evaluated. If a numeric vector is provided it should contain the values of the predicted suitability.}
 
-\item{test_data}{a numerical matrix containing coordinates of the occurrences used to test
-the ecological niche model to be evaluated; columns must be: longitude and latitude.}
+\item{test_data}{A numerical matrix, data.frame or numeric vector. If is data.frame or matrix it should contain coordinates of the occurrences used to test the ecological niche model to be evaluated; columns must be: longitude and latitude. If numeric vector it should contain the values of the predicted suitability.}
 
 \item{n_iter}{(numeric) number of bootstrap iterations to be performed;
 default = 1000.}
@@ -48,7 +47,7 @@ test_data <- read.csv(system.file("extdata",
                                   "ambystoma_validation.csv",
                                   package = "ntbox"))
 
-# Filter only presences as the Partial ROC just need occurrence data
+# Filter only presences as the Partial ROC only needs occurrence data
 test_data <- dplyr::filter(test_data, presence_absence==1)
 test_data <- test_data[,c("longitude","latitude")]
 

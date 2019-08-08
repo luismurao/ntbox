@@ -2,9 +2,8 @@
 #'
 #' @description pROC applies partial ROC tests to continues niche models.
 #'
-#' @param test_data a numerical matrix containing coordinates of the occurrences used to test
-#' the ecological niche model to be evaluated; columns must be: longitude and latitude.
-#' @param continuous_mod a RasterLayer of the ecological niche model to be evaluated.
+#' @param continuous_mod a RasterLayer or a numeric vector of the ecological niche model to be evaluated. If a numeric vector is provided it should contain the values of the predicted suitability.
+#' @param test_data A numerical matrix, data.frame or numeric vector. If is data.frame or matrix it should contain coordinates of the occurrences used to test the ecological niche model to be evaluated; columns must be: longitude and latitude. If numeric vector it should contain the values of the predicted suitability.
 #' @param E_percent (numeric) value from 0 to 100 that will be used as threshold (E);
 #' default = 5.
 #' @param boost_percent (numeric) value from 0 to 100 representing the percent of testing data
@@ -29,7 +28,7 @@
 #'                                   "ambystoma_validation.csv",
 #'                                   package = "ntbox"))
 #'
-#' # Filter only presences as the Partial ROC just need occurrence data
+#' # Filter only presences as the Partial ROC only needs occurrence data
 #' test_data <- dplyr::filter(test_data, presence_absence==1)
 #' test_data <- test_data[,c("longitude","latitude")]
 #'
@@ -46,23 +45,61 @@
 
 pROC <- function(continuous_mod,test_data,n_iter=1000,E_percent=5,boost_percent=50,parallel=FALSE,ncores=4){
 
-  if(continuous_mod@data@min == continuous_mod@data@max){
-    stop("\nModel with no variability.\n")
+  if(class(continuous_mod)=="RasterLayer"){
+    if(continuous_mod@data@min == continuous_mod@data@max){
+      stop("\nModel with no variability.\n")
+    }
+
+    vals <- continuous_mod[!is.na(continuous_mod[])]
+    #ndigits <- ceiling(base::nchar(stats::median(vals)))
+    mediana <- stats::median(vals)
+    if(stringr::str_detect(mediana,"e")){
+      ndigits <- stringr::str_split(mediana,"e-")[[1]]
+      ndigits <- as.numeric(ndigits)[2]+1
+    } else{
+      med <-  stringr::str_extract_all(mediana,
+                                       pattern = "[0-9]|[.]")
+      med <- unlist(med)
+      med <- med[-(1:which(med=="."))]
+      med1 <- which(med !=0)
+      ndigits <-ifelse(med1[1]==1, 3,
+                       med1[1])
+
+    }
+
+    vals2 <- round(vals,ndigits)
+    classpixels <- as.data.frame(base::table(vals2))
+    names(classpixels) <- c("value","count")
+
+    if(is.data.frame(test_data) || is.matrix(test_data)){
+      test_value <- stats::na.omit(raster::extract(continuous_mod,test_data))
+      test_value <- round(test_value,ndigits)
+      test_value <- as.vector(test_value )
+    }
+
+    if(is.numeric(test_data)){
+      test_value <- round(test_data,ndigits)
+    }
+    classpixels <- data.frame(stats::na.omit(classpixels))
+  }
+  if(is.numeric(continuous_mod)){
+    ndigits <- ceiling(base::nchar(stats::median(continuous_mod))/4)
+    vals2 <- round(continuous_mod,ndigits)
+    classpixels <- as.data.frame(table(vals2))
+    names(classpixels) <- c("value","count")
+    if(!is.numeric(test_data))
+      stop("If continuous_mod is of class numeric, test_data must be numeric...")
+    else
+      test_value <- test_data
   }
 
-  continuous_mod <-round((continuous_mod/raster::cellStats(continuous_mod,
-                                                         max)) * 1000)
-  test_value <- stats::na.omit(raster::extract(continuous_mod,test_data))
 
-  classpixels <- data.frame(raster::freq(continuous_mod))
-  classpixels <- data.frame(stats::na.omit(classpixels))
 
   classpixels <- classpixels  %>% dplyr::mutate_(value= ~rev(value),
                                                  count= ~rev(count),
                                                  totpixperclass = ~cumsum(count),
                                                  percentpixels= ~ totpixperclass/sum(count)) %>%
     dplyr::arrange(value)
-
 
   error_sens <- 1-(E_percent/100)
   models_thresholds <- classpixels[,"value"]
@@ -142,7 +179,8 @@ pROC <- function(continuous_mod,test_data,n_iter=1000,E_percent=5,boost_percent=
   }
   #return(partial_AUC)
   mauc <- mean(partial_AUC$auc_ratio,na.rm = TRUE)
-  proc <- sum(partial_AUC$auc_ratio <= 1,na.rm = TRUE) / length(partial_AUC$auc_ratio[!is.na(partial_AUC$auc_ratio)])
+  proc <- sum(partial_AUC$auc_ratio <= 1,na.rm = TRUE) /
+    length(partial_AUC$auc_ratio[!is.na(partial_AUC$auc_ratio)])
   p_roc <- c(mauc, proc)
   names(p_roc) <- c(paste("Mean_AUC_ratio_at_", E_percent, "%", sep = ""), "P_value")
 
