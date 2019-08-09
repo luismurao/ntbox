@@ -68,8 +68,10 @@ pROC <- function(continuous_mod,test_data,n_iter=1000,E_percent=5,boost_percent=
     }
 
     vals2 <- round(vals,ndigits)
-    classpixels <- as.data.frame(base::table(vals2))
+    classpixels <- as.data.frame(base::table(vals2),
+                                 stringsAsFactors=F )
     names(classpixels) <- c("value","count")
+    classpixels$value <- as.numeric(classpixels$value)
 
     if(is.data.frame(test_data) || is.matrix(test_data)){
       test_value <- stats::na.omit(raster::extract(continuous_mod,test_data))
