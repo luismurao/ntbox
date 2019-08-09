@@ -131,7 +131,7 @@ ellipsoid_selection <- function(env_train,env_test=NULL,env_vars,nvarstest,level
           r1 <- ellipsoid_omr(env_data =env_train[,combs_v[,x_comb]],
                               env_test = env_test[,combs_v[,x_comb]],
                               env_bg = env_bg[,combs_v[,x_comb]],
-                              cf_level = 0.95)
+                              cf_level = level)
           return(r1)
         })
         results_df <- do.call("rbind.data.frame",results_L)
@@ -156,29 +156,35 @@ ellipsoid_selection <- function(env_train,env_test=NULL,env_vars,nvarstest,level
       purrr::map_df(~read.csv(.x,stringsAsFactors = F))
     unlink(dir1,recursive = T)
     #rfinal <- do.call("rbind.data.frame",as.list(model_select))
-    if("bg_prevalence" %in% names(rfinal)){
-      rfinal <- rfinal[order(rfinal$om_rate,
+    bg_omr <- c("bg_prevalence","om_rate_test") %in% names(rfinal)
+    bg_omr_in <- all(bg_omr)
+    if( bg_omr_in){
+      mean_omr <- rowMeans(rfinal[,c("om_rate_train",
+                                     "om_rate_test")])
+
+      rfinal <- rfinal[order(mean_omr,
                              rfinal$bg_prevalence,
                              decreasing = F),]
-      rfinal <- data.frame(rfinal,rank_by_omr=1:nrow(rfinal))
+      rfinal <- data.frame(rfinal,rank_by_omr_test=1:nrow(rfinal))
 
-      met_criteriaID <- which(rfinal$om_rate<=omr_criteria)
+      met_criteriaID <- which(rfinal$om_rate_test<=omr_criteria)
       if(length(met_criteriaID)==0L){
         cat("\tNo model passed the omission criteria ranking only by omission rates")
         return(rfinal)
       }
 
       best_r <- rfinal[met_criteriaID,]
-      best_r <- best_r[order(best_r$bg_prevalence),]
+      #best_r <- best_r[order(best_r$bg_prevalence),]
       rf1 <- rbind(best_r,rfinal[-met_criteriaID,])
       rfinal <- data.frame(rf1,rank_by_omr_prevalence = 1:nrow(rfinal))
     }
     else
-      rfinal <- rfinal[order(rfinal$om_rate,decreasing = F),]
+      rfinal <- rfinal[order(rfinal$om_rate_train,decreasing = F),]
     rownames(rfinal) <- NULL
     future::plan(sequential)
     return(rfinal)
-  } else{
+  }
+  else{
     results_L <- lapply(1:length(cvars), function(x) {
       combs_v <- cvars[[x]]
       results_L <- lapply(1:ncol(combs_v),function(x_comb) {
@@ -192,29 +198,29 @@ ellipsoid_selection <- function(env_train,env_test=NULL,env_vars,nvarstest,level
       return(results_df)
     })
     rfinal <- do.call("rbind.data.frame",results_L)
-    if("bg_prevalence" %in% names(rfinal)){
-      rfinal <- rfinal[order(rfinal$om_rate,
+    bg_omr <- c("bg_prevalence","om_rate_test") %in% names(rfinal)
+    bg_omr_in <- all(bg_omr)
+    if( bg_omr_in){
+      mean_omr <- rowMeans(rfinal[,c("om_rate_train",
+                                     "om_rate_test")])
+      rfinal <- rfinal[order(mean_omr,
                              rfinal$bg_prevalence,
                              decreasing = F),]
-      rfinal <- data.frame(rfinal,rank_by_omr=1:nrow(rfinal))
+      rfinal <- data.frame(rfinal,rank_by_omr_test=1:nrow(rfinal))
 
-
-      met_criteriaID <- which(rfinal$om_rate<=omr_criteria)
-
+      met_criteriaID <- which(rfinal$om_rate_test<=omr_criteria)
       if(length(met_criteriaID)==0L){
         cat("\tNo model passed the omission criteria ranking only by omission rates")
         return(rfinal)
       }
 
-
       best_r <- rfinal[met_criteriaID,]
-      best_r <- best_r[order(best_r$bg_prevalence),]
+      #best_r <- best_r[order(best_r$bg_prevalence),]
       rf1 <- rbind(best_r,rfinal[-met_criteriaID,])
       rfinal <- data.frame(rf1,rank_by_omr_prevalence = 1:nrow(rfinal))
     }
     else
-      rfinal <- rfinal[order(rfinal$om_rate,decreasing = F),]
-
+      rfinal <- rfinal[order(rfinal$om_rate_train,decreasing = F),]
     rownames(rfinal) <- NULL
     return(rfinal)
   }
@@ -258,11 +264,25 @@ ellipsoid_omr <- function(env_data,env_test=NULL,env_bg,cf_level){
   d_results <- data.frame(fitted_vars =paste(names(emd$centroid),
                                              collapse =  ","),
                           nvars=length(emd$centroid),
-                          om_rate=omrate)
+                          om_rate_train=omrate)
+  if(is.data.frame(env_test) || is.matrix(env_test)){
+    in_etest <-  inEllipsoid(centroid = emd$centroid,
+                             eShape = emd$covariance,
+                             env_data = env_test,
+                             level = cf_level)
+    occs_table_test <- table(in_etest$in_Ellipsoid)
+    occs_fail_test <-  occs_table_test[[1]]
+    occs_succs_test <- occs_table_test[[2]]
+
+    a <-  occs_fail_test
+    omrate_test <- a /nrow( in_etest)
+    d_results <- data.frame(d_results,
+                            om_rate_test=omrate_test)
+  }
 
   if(!is.null(env_bg)){
-    if(!is.data.frame(env_bg))
-      env_bg1 <- data.frame(env_bg)
+
+    env_bg <- data.frame(env_bg)
     in_ebg <-  inEllipsoid(centroid = emd$centroid,
                            eShape = emd$covariance,
                            env_data = env_bg,
@@ -271,11 +291,7 @@ ellipsoid_omr <- function(env_data,env_test=NULL,env_bg,cf_level){
     bg_table <- table(c(in_ebg$in_Ellipsoid,in_e$in_Ellipsoid))
     prevBG <- bg_table[[2]]/(bg_table[[1]]+bg_table[[2]])
 
-    if(is.data.frame(env_test) || is.matrix(env_test)){
-      in_etest <-  inEllipsoid(centroid = emd$centroid,
-                               eShape = emd$covariance,
-                               env_data = env_test,
-                               level = cf_level)
+    if(exists("in_etest")){
       bin_table <- table(c(in_ebg$in_Ellipsoid,
                            in_etest$in_Ellipsoid))
       test_fail <-  occs_table[[1]]
