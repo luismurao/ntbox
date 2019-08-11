@@ -326,10 +326,11 @@ ellipsoid_omr <- function(env_data,env_test=NULL,env_bg,cf_level){
       proc <- ntbox::pROC(suits_bg,test_data = suits_val,
                   n_iter = 500)
       pval_proc <- proc$pROC_summary[2]
+      mean_auratio <- proc$pROC_summary[1]
       d_results <-data.frame( d_results,
                               pval_bin=p_bin,
                               pval_proc,
-                              env_aucratio= proc$pROC_summary[1])
+                              env_bg_aucratio= mean_auratio)
     }
 
   }
