@@ -43,150 +43,164 @@
 #' @export
 
 
-pROC <- function(continuous_mod,test_data,n_iter=1000,E_percent=5,boost_percent=50,parallel=FALSE,ncores=4){
+pROC <- function(continuous_mod,test_data,
+                 n_iter=1000,E_percent=5,
+                 boost_percent=50,
+                 parallel=FALSE,ncores=4){
 
-  if(class(continuous_mod)=="RasterLayer"){
-    if(continuous_mod@data@min == continuous_mod@data@max){
+  if (class(continuous_mod) == "RasterLayer") {
+    if (continuous_mod@data@min == continuous_mod@data@max) {
       stop("\nModel with no variability.\n")
     }
+    if (is.data.frame(test_data) || is.matrix(test_data)) {
+      test_data <- stats::na.omit(raster::extract(continuous_mod,
+                                                  test_data))
 
+    }
     vals <- continuous_mod[!is.na(continuous_mod[])]
-    #ndigits <- ceiling(base::nchar(stats::median(vals)))
-    mediana <- stats::median(vals)
-    if(stringr::str_detect(mediana,"e")){
-      ndigits <- stringr::str_split(mediana,"e-")[[1]]
-      ndigits <- as.numeric(ndigits)[2]+1
-    } else{
-      med <-  stringr::str_extract_all(mediana,
-                                       pattern = "[0-9]|[.]")
-      med <- unlist(med)
-      med <- med[-(1:which(med=="."))]
-      med1 <- which(med !=0)
-      ndigits <-ifelse(med1[1]==1, 3,
-                       med1[1])
-
-    }
-
-    vals2 <- round(vals,ndigits)
-    classpixels <- as.data.frame(base::table(vals2),
-                                 stringsAsFactors=F )
-    names(classpixels) <- c("value","count")
-    classpixels$value <- as.numeric(classpixels$value)
-
-    if(is.data.frame(test_data) || is.matrix(test_data)){
-      test_value <- stats::na.omit(raster::extract(continuous_mod,test_data))
-      test_value <- round(test_value,ndigits)
-      test_value <- as.vector(test_value )
-    }
-
-    if(is.numeric(test_data)){
-      test_value <- round(test_data,ndigits)
-    }
-    classpixels <- data.frame(stats::na.omit(classpixels))
   }
   if(is.numeric(continuous_mod)){
-    ndigits <- ceiling(base::nchar(stats::median(continuous_mod))/4)
-    vals2 <- round(continuous_mod,ndigits)
-    classpixels <- as.data.frame(table(vals2))
-    names(classpixels) <- c("value","count")
-    if(!is.numeric(test_data))
-      stop("If continuous_mod is of class numeric, test_data must be numeric...")
-    else
-      test_value <- test_data
+    vals <- continuous_mod
+    if (!is.numeric(test_data))
+      stop("If continuous_mod is of class numeric,
+           test_data must be numeric...")
   }
+  ndigits <- proc_precision(mod_vals = vals,
+                            test_data = test_data)
 
+  test_value <- round(test_data,
+                      ndigits)
+  test_value <- as.vector(test_value)
 
+  vals2 <- round(vals, ndigits)
+  classpixels <- as.data.frame(base::table(vals2),
+                               stringsAsFactors = F)
+  names(classpixels) <- c("value",
+                          "count")
+  classpixels$value <- as.numeric(classpixels$value)
+  classpixels <- data.frame(stats::na.omit(classpixels))
 
-  classpixels <- classpixels  %>% dplyr::mutate_(value= ~rev(value),
-                                                 count= ~rev(count),
-                                                 totpixperclass = ~cumsum(count),
-                                                 percentpixels= ~ totpixperclass/sum(count)) %>%
+  classpixels <- classpixels %>%
+    dplyr::mutate_(value = ~rev(value),
+                   count = ~rev(count),
+                   totpixperclass = ~cumsum(count),
+                   percentpixels = ~totpixperclass/sum(count)) %>%
     dplyr::arrange(value)
 
-  error_sens <- 1-(E_percent/100)
-  models_thresholds <- classpixels[,"value"]
-  fractional_area <- classpixels[,"percentpixels"]
+  error_sens <- 1 - (E_percent/100)
+  models_thresholds <- classpixels[, "value"]
+  fractional_area <- classpixels[, "percentpixels"]
   n_data <- length(test_value)
-  n_samp <- ceiling((boost_percent/100)*(n_data))
+  n_samp <- ceiling((boost_percent/100) * (n_data))
 
-  big_classpixels <- matrix(rep(models_thresholds,each=n_samp),
-                            ncol=length(models_thresholds))
+  big_classpixels <- matrix(rep(models_thresholds,
+                                each = n_samp),
+                            ncol = length(models_thresholds))
 
 
-  calc_aucDF <- function(big_classpixels,fractional_area,
-                         test_value,n_data,n_samp,error_sens){
+  calc_aucDF <- function(big_classpixels,
+                         fractional_area,
+                         test_value,
+                         n_data, n_samp,
+                         error_sens) {
 
     rowsID <- sample(x = n_data,
                      size = n_samp,
-                     replace=TRUE)
-    test_value1 <- test_value[rowsID]
-    omssion_matrix <-   big_classpixels >  test_value1
-    sensibility <- 1 - colSums(omssion_matrix)/n_samp
-    xyTable <- data.frame(fractional_area,sensibility)
-    less_ID <- which(xyTable$sensibility<=error_sens)
-    xyTable <- xyTable[-less_ID,]
+                     replace = TRUE)
 
+    test_value1 <- test_value[rowsID]
+    omssion_matrix <- big_classpixels > test_value1
+    sensibility <- 1 - colSums(omssion_matrix)/n_samp
+    xyTable <- data.frame(fractional_area, sensibility)
+    less_ID <- which(xyTable$sensibility <= error_sens)
+    xyTable <- xyTable[-less_ID, ]
     xyTable <- xyTable[order(xyTable$fractional_area,
                              decreasing = F),]
 
     auc_pmodel <- trapozoid_roc(xyTable$fractional_area,
-                           xyTable$sensibility)
+                                xyTable$sensibility)
 
     auc_prand <- trapozoid_roc(xyTable$fractional_area,
-                          xyTable$fractional_area)
-    auc_ratio <- auc_pmodel/auc_prand
+                               xyTable$fractional_area)
 
+    auc_ratio <- auc_pmodel/auc_prand
     auc_table <- data.frame(auc_pmodel,
                             auc_prand,
-                            auc_ratio =auc_ratio )
+                            auc_ratio)
     return(auc_table)
-
   }
 
-
-  if(parallel){
+  if (parallel) {
     n_cores <- ntbox::nc(ncores)
-    future::plan(tweak(multiprocess, workers =n_cores))
+    future::plan(tweak(multiprocess,
+                       workers = n_cores))
     roc_env <- new.env()
     niter_big <- floor(n_iter/n_cores)
-    n_runs <- rep(niter_big,n_cores)
+    n_runs <- rep(niter_big, n_cores)
     sum_n_runs <- sum(n_runs)
     n_runs[1] <- n_runs[1] + (n_iter - sum_n_runs)
-    for(i in 1:length(n_runs)){
+
+    for (i in 1:length(n_runs)) {
       x <- as.character(i)
       roc_env[[x]] %<-% {
         x1 <- 1:n_runs[i]
         auc_matrix1 <- x1 %>%
           purrr::map_df(~calc_aucDF(big_classpixels,
                                     fractional_area,
-                                    test_value,n_data,n_samp,
+                                    test_value,
+                                    n_data, n_samp,
                                     error_sens))
       }
     }
     partial_AUC <- as.list(roc_env)
     rm(roc_env)
-    partial_AUC <- do.call(rbind.data.frame,partial_AUC)
+    partial_AUC <- do.call(rbind.data.frame,
+                           partial_AUC)
     rownames(partial_AUC) <- NULL
     future::plan(future::sequential)
-
   }
-  else{
-
+  else {
     partial_AUC <- 1:n_iter %>%
       purrr::map_df(~calc_aucDF(big_classpixels,
                                 fractional_area,
-                                test_value,n_data,n_samp,
+                                test_value,
+                                n_data,
+                                n_samp,
                                 error_sens))
-
   }
-  #return(partial_AUC)
-  mauc <- mean(partial_AUC$auc_ratio,na.rm = TRUE)
-  proc <- sum(partial_AUC$auc_ratio <= 1,na.rm = TRUE) /
+  mauc <- mean(partial_AUC$auc_ratio, na.rm = TRUE)
+  proc <- sum(partial_AUC$auc_ratio <= 1, na.rm = TRUE)/
     length(partial_AUC$auc_ratio[!is.na(partial_AUC$auc_ratio)])
+
   p_roc <- c(mauc, proc)
-  names(p_roc) <- c(paste("Mean_AUC_ratio_at_", E_percent, "%", sep = ""), "P_value")
-
-  p_roc_res <- list(pROC_summary=p_roc, pROC_results=partial_AUC)
+  names(p_roc) <- c(paste("Mean_AUC_ratio_at_",
+                          E_percent,
+                          "%", sep = ""),
+                    "P_value")
+  p_roc_res <- list(pROC_summary = p_roc,
+                    pROC_results = partial_AUC)
   return(p_roc_res)
+  }
 
+
+proc_precision <- function(mod_vals,test_data){
+
+  min_vals <- min(mod_vals,na.rm = TRUE)
+  percentil_test <- stats::quantile(test_data,
+                                    probs=0.01)
+  partition_flag <- mean(c(min_vals,
+                           percentil_test))
+
+  if (stringr::str_detect(partition_flag, "e")) {
+    ndigits <- stringr::str_split(partition_flag, "e-")[[1]]
+    ndigits <- as.numeric(ndigits)[2] + 1
+  }
+  else {
+    med <- stringr::str_extract_all(partition_flag, pattern = "[0-9]|[.]")
+    med <- unlist(med)
+    med <- med[-(1:which(med == "."))]
+    med1 <- which(med != 0)
+    ndigits <- ifelse(med1[1] == 1, 3, med1[1])
+  }
+  return(ndigits)
 }
