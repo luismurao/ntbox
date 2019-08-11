@@ -70,7 +70,7 @@ env_vars <- env_varsL$descriptors
 nvarstest <- c(3,5,6)
 # Level
 level <- 0.95
-# Environmental bagraund to compute the appoximated
+# Environmental background to compute the appoximated
 # prevalence in the prediction
 env_bg <- raster::sampleRandom(wc,10000)
 

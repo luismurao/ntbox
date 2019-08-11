@@ -53,7 +53,7 @@
 #' nvarstest <- c(3,5,6)
 #' # Level
 #' level <- 0.95
-#' # Environmental bagraund to compute the appoximated
+#' # Environmental background to compute the appoximated
 #' # prevalence in the prediction
 #' env_bg <- raster::sampleRandom(wc,10000)
 #'
@@ -114,28 +114,50 @@ ellipsoid_selection <- function(env_train,env_test=NULL,env_vars,nvarstest,level
   cat("\t **A total number of",nmodels ,"models will be tested **\n\n")
   cat("-----------------------------------------------------------------------------------------\n")
 
-  cvars <- lapply(nvarstest, function(x) utils::combn(env_vars,x))
 
 
-  if(length(cvars) >1L && nmodels >500 && parallel){
-    dir1 <- file.path(getwd(),"ellipsoid_select")
+  if(nmodels >100 && parallel){
+    max_var <- max(nvarstest)
+    cvars <- lapply(nvarstest, function(x) {
+
+      cb <- utils::combn(env_vars,x)
+      if(x < max_var){
+        nrowNA <-max_var-nrow(cb)
+        na_mat <- matrix(nrow = nrowNA,ncol=ncol(cb))
+        cb <- rbind(cb,na_mat)
+      }
+      return(cb)
+      })
+    big_vars <- do.call(cbind,cvars)
+
+    dir1 <- file.path(tempdir(),"ellipsoid_select")
     dir.create(dir1)
+    n_cores <- future::availableCores() -1
+    niter_big <- floor(nmodels/n_cores)
+    steps <- seq(1, nmodels, niter_big)
+    kkk <- c(steps,  nmodels + 1)
+    long_k <- length(kkk)
+    pasos <- 1:(length(kkk) - 1)
+    pasosChar <- paste0(pasos)
     future::plan(multiprocess)
     model_select <- new.env()
-    pasosChar <- paste(1:length(nvarstest))
+
     for (paso in pasosChar) {
       x <- as.numeric(paso)
+      fname <- file.path(dir1,paste0("eselection_",x,".csv"))
       model_select[[paso]] %<-% {
-        combs_v <- cvars[[x]]
+        seq_model <- kkk[x]:(kkk[x + 1] - 1)
+        combs_v <- big_vars[,seq_model]
         results_L <- lapply(1:ncol(combs_v),function(x_comb) {
-          r1 <- ellipsoid_omr(env_data =env_train[,combs_v[,x_comb]],
-                              env_test = env_test[,combs_v[,x_comb]],
-                              env_bg = env_bg[,combs_v[,x_comb]],
+          var_comb <- stats::na.omit(combs_v[,x_comb])
+
+          r1 <- ellipsoid_omr(env_data =env_train[, var_comb],
+                              env_test = env_test[, var_comb],
+                              env_bg = env_bg[, var_comb],
                               cf_level = level)
           return(r1)
         })
         results_df <- do.call("rbind.data.frame",results_L)
-        fname <- file.path(dir1,paste0("eselection_",x,".csv"))
         utils::write.csv(results_df,fname,row.names = F)
         return()
       }
@@ -155,36 +177,11 @@ ellipsoid_selection <- function(env_train,env_test=NULL,env_vars,nvarstest,level
     rfinal <- rfinal_p %>%
       purrr::map_df(~read.csv(.x,stringsAsFactors = F))
     unlink(dir1,recursive = T)
-    #rfinal <- do.call("rbind.data.frame",as.list(model_select))
-    bg_omr <- c("bg_prevalence","om_rate_test") %in% names(rfinal)
-    bg_omr_in <- all(bg_omr)
-    if( bg_omr_in){
-      mean_omr <- rowMeans(rfinal[,c("om_rate_train",
-                                     "om_rate_test")])
-
-      rfinal <- rfinal[order(mean_omr,
-                             rfinal$bg_prevalence,
-                             decreasing = F),]
-      rfinal <- data.frame(rfinal,rank_by_omr_test=1:nrow(rfinal))
-
-      met_criteriaID <- which(rfinal$om_rate_test<=omr_criteria)
-      if(length(met_criteriaID)==0L){
-        cat("\tNo model passed the omission criteria ranking only by omission rates")
-        return(rfinal)
-      }
-
-      best_r <- rfinal[met_criteriaID,]
-      #best_r <- best_r[order(best_r$bg_prevalence),]
-      rf1 <- rbind(best_r,rfinal[-met_criteriaID,])
-      rfinal <- data.frame(rf1,rank_by_omr_prevalence = 1:nrow(rfinal))
-    }
-    else
-      rfinal <- rfinal[order(rfinal$om_rate_train,decreasing = F),]
-    rownames(rfinal) <- NULL
     future::plan(sequential)
-    return(rfinal)
   }
   else{
+    cvars <- lapply(nvarstest, function(x) utils::combn(env_vars,x))
+
     results_L <- lapply(1:length(cvars), function(x) {
       combs_v <- cvars[[x]]
       results_L <- lapply(1:ncol(combs_v),function(x_comb) {
@@ -198,33 +195,53 @@ ellipsoid_selection <- function(env_train,env_test=NULL,env_vars,nvarstest,level
       return(results_df)
     })
     rfinal <- do.call("rbind.data.frame",results_L)
-    bg_omr <- c("bg_prevalence","om_rate_test") %in% names(rfinal)
-    bg_omr_in <- all(bg_omr)
-    if( bg_omr_in){
-      mean_omr <- rowMeans(rfinal[,c("om_rate_train",
-                                     "om_rate_test")])
-      rfinal <- rfinal[order(mean_omr,
-                             rfinal$bg_prevalence,
-                             decreasing = F),]
-      rfinal <- data.frame(rfinal,rank_by_omr_test=1:nrow(rfinal))
-
-      met_criteriaID <- which(rfinal$om_rate_test<=omr_criteria)
-      if(length(met_criteriaID)==0L){
-        cat("\tNo model passed the omission criteria ranking only by omission rates")
-        return(rfinal)
-      }
-
-      best_r <- rfinal[met_criteriaID,]
-      #best_r <- best_r[order(best_r$bg_prevalence),]
-      rf1 <- rbind(best_r,rfinal[-met_criteriaID,])
-      rfinal <- data.frame(rf1,rank_by_omr_prevalence = 1:nrow(rfinal))
-    }
-    else
-      rfinal <- rfinal[order(rfinal$om_rate_train,decreasing = F),]
-    rownames(rfinal) <- NULL
-    return(rfinal)
   }
+  bg_omr <- c("bg_prevalence","om_rate_test") %in% names(rfinal)
+  bg_omr_in <- all(bg_omr)
+  if( bg_omr_in){
+    mean_omr <- rowMeans(rfinal[,c("om_rate_train",
+                                   "om_rate_test")])
+    rfinal$mean_omr_train_test <- mean_omr
+    rfinal <- rfinal[order(rfinal$mean_omr_train_tes,
+                           rfinal$bg_prevalence,
+                           decreasing = F),]
 
+    rfinal <- data.frame(rfinal,rank_by_omr_train_test=1:nrow(rfinal))
+    met_criteriaID_train <- which(rfinal$om_rate_train <= omr_criteria)
+    met_criteriaID_test <- which(rfinal$om_rate_test <= omr_criteria)
+    met_criteriaID_both <- intersect(met_criteriaID_train,
+                                     met_criteriaID_test)
+
+    if(length(met_criteriaID_train) > 0L){
+      cat("\t",length(met_criteriaID_train),
+          "models passed omr_criteria for train data\n")
+    }
+    if(length(met_criteriaID_test) > 0L){
+      cat("\t",length(met_criteriaID_test),
+          "models passed omr_criteria for test data\n")
+
+    }
+    if(length(met_criteriaID_both) > 0L){
+      cat("\t",length(met_criteriaID_both),
+          "models passed omr_criteria for train and test data\n")
+    }
+    else{
+      cat("\tNo model passed the omission criteria ranking by mean omission rates\n")
+      return(rfinal)
+    }
+    best_r <- rfinal[met_criteriaID_both,]
+    best_r <- best_r[order(best_r$rank_by_omr_train_test,
+                           best_r$env_aucratio),]
+    rfinal <- rbind(best_r,
+                    rfinal[-met_criteriaID_both,])
+    rfinal <- data.frame(rfinal,
+                         rank_omr_aucratio=1:nrow(rfinal))
+  }
+  else
+    rfinal <- rfinal[order(rfinal$om_rate_train,
+                           decreasing = F),]
+  rownames(rfinal) <- NULL
+  return(rfinal)
 }
 
 
@@ -270,6 +287,8 @@ ellipsoid_omr <- function(env_data,env_test=NULL,env_bg,cf_level){
                              eShape = emd$covariance,
                              env_data = env_test,
                              level = cf_level)
+    suits_val <- exp(-0.5*( in_etest$mh_dist))
+
     occs_table_test <- table(in_etest$in_Ellipsoid)
     occs_fail_test <-  occs_table_test[[1]]
     occs_succs_test <- occs_table_test[[2]]
@@ -287,9 +306,12 @@ ellipsoid_omr <- function(env_data,env_test=NULL,env_bg,cf_level){
                            eShape = emd$covariance,
                            env_data = env_bg,
                            level = cf_level)
+    suits_bg <- exp(-0.5*in_ebg$mh_dist)
 
     bg_table <- table(c(in_ebg$in_Ellipsoid,in_e$in_Ellipsoid))
     prevBG <- bg_table[[2]]/(bg_table[[1]]+bg_table[[2]])
+    d_results <-data.frame( d_results,
+                            bg_prevalence= prevBG)
 
     if(exists("in_etest")){
       bin_table <- table(c(in_ebg$in_Ellipsoid,
@@ -301,11 +323,15 @@ ellipsoid_omr <- function(env_data,env_test=NULL,env_bg,cf_level){
                                  size=test_succs+test_fail,
                                  prob = prevBG)
 
+      proc <- ntbox::pROC(suits_bg,test_data = suits_val,
+                  n_iter = 500)
+      pval_proc <- proc$pROC_summary[2]
+      d_results <-data.frame( d_results,
+                              pval_bin=p_bin,
+                              pval_proc,
+                              env_aucratio= proc$pROC_summary[1])
     }
 
-
-    d_results <-data.frame( d_results,bg_prevalence= prevBG,
-                            pval=p_bin)
   }
   return(d_results)
 }
