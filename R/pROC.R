@@ -187,20 +187,20 @@ proc_precision <- function(mod_vals,test_data){
 
   min_vals <- min(mod_vals,na.rm = TRUE)
   percentil_test <- stats::quantile(test_data,
-                                    probs=0.01)
+                                    probs=.05)
   partition_flag <- mean(c(min_vals,
                            percentil_test))
 
   if (stringr::str_detect(partition_flag, "e")) {
     ndigits <- stringr::str_split(partition_flag, "e-")[[1]]
-    ndigits <- as.numeric(ndigits)[2] + 1
+    ndigits <- as.numeric(ndigits)[2] - 1
   }
   else {
     med <- stringr::str_extract_all(partition_flag, pattern = "[0-9]|[.]")
     med <- unlist(med)
     med <- med[-(1:which(med == "."))]
     med1 <- which(med != 0)
-    ndigits <- ifelse(med1[1] == 1, 3, med1[1])
+    ndigits <- ifelse(med1[1] <= 2, 3, 4)
   }
   return(ndigits)
 }
