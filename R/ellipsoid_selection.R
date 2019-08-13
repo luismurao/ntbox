@@ -9,6 +9,7 @@
 #' @param omr_criteria Omission rate criteria. Value of omission rate allowed for the selection process. Default NULL see details.
 #' @param env_bg Environmental data to compute the approximated prevalence of the model. The data should be a sample of the environmental layers of the calibration area.
 #' @param parallel The computations will be run in parallel. Deafault FALSE
+#' @param comp_each Number of models to run in each job in the parallel computation. Default 100
 #' @return A data.frame with 5 columns: i) "fitted_vars" the names of variables that were fitted; ii) "om_rate" omission rates of the model; iii) "bg_prevalence" approximated prevalence of the model see details section; iv) The rank value of importance in model selection by omission rate; v) The rank value by prevalence after if the value of omr_criteria is passed.
 #' @details Model selection occurs in environmental space (E-space). For each variable combination the omission rate (omr) in E-space is computed using the function \code{\link[ntbox]{inEllipsoid}}. The results will be ordered by omr and if the user specified the environmental background "env_bg" an estimated prevalence will be computed and the results will be ordered also by "bg_prevalence".
 #'
@@ -98,7 +99,7 @@
 #' print(pg_proc$pROC_summary)
 #' }
 
-ellipsoid_selection <- function(env_train,env_test=NULL,env_vars,nvarstest,level,env_bg=NULL,omr_criteria,parallel=F){
+ellipsoid_selection <- function(env_train,env_test=NULL,env_vars,nvarstest,level,env_bg=NULL,omr_criteria,parallel=F,comp_each=100){
   n_vars <- length(env_vars)
   ntest <- sapply(nvarstest, function(x) choose(n_vars,x))
   nmodels <- sum(ntest)
@@ -130,12 +131,19 @@ ellipsoid_selection <- function(env_train,env_test=NULL,env_vars,nvarstest,level
       })
     big_vars <- do.call(cbind,cvars)
 
-    dir1 <- file.path(tempdir(),"ellipsoid_select")
-    dir.create(dir1)
     n_cores <- future::availableCores() -1
     niter_big <- floor(nmodels/n_cores)
+    if(niter_big>comp_each)
+      niter_big <- comp_each
     steps <- seq(1, nmodels, niter_big)
-    kkk <- c(steps,  nmodels + 1)
+    nsteps <- length(steps)
+    if(steps[nsteps]<nmodels){
+      kkk <- c(steps,  nmodels + 1)
+    } else {
+      kkk <- steps
+      kkk[nsteps] <- kkk[nsteps] + 1
+    }
+
     long_k <- length(kkk)
     pasos <- 1:(length(kkk) - 1)
     pasosChar <- paste0(pasos)
@@ -144,39 +152,39 @@ ellipsoid_selection <- function(env_train,env_test=NULL,env_vars,nvarstest,level
 
     for (paso in pasosChar) {
       x <- as.numeric(paso)
-      fname <- file.path(dir1,paste0("eselection_",x,".csv"))
+      #fname <- file.path(dir1,paste0("eselection_",x,".txt"))
+      #if(x>n_cores) core <- 1
+      cat("Doing calibration from model ",kkk[x],"to ",kkk[x + 1] - 1,
+          "in process ",x,"\n\n")
       model_select[[paso]] %<-% {
         seq_model <- kkk[x]:(kkk[x + 1] - 1)
-        combs_v <- big_vars[,seq_model]
+        combs_v <- as.matrix(big_vars[,seq_model])
+
         results_L <- lapply(1:ncol(combs_v),function(x_comb) {
           var_comb <- stats::na.omit(combs_v[,x_comb])
 
-          r1 <- ellipsoid_omr(env_data =env_train[, var_comb],
-                              env_test = env_test[, var_comb],
-                              env_bg = env_bg[, var_comb],
-                              cf_level = level)
+          r1 <- ntbox::ellipsoid_omr(env_data =env_train[, var_comb],
+                                     env_test = env_test[, var_comb],
+                                     env_bg = env_bg[, var_comb],
+                                     cf_level = level)
           return(r1)
         })
+
         results_df <- do.call("rbind.data.frame",results_L)
-        utils::write.csv(results_df,fname,row.names = F)
-        return()
+        cat("Finishing calibration of models ",kkk[x],"to ",kkk[x + 1] - 1,
+            "\n\n")
+        return(results_df)
       }
+
     }
+    mres <- as.list(model_select)
 
     cat("Finishing...\n\n")
     cat("-----------------------------------------------------------------------------------------\n")
-    rfinal_p <- list.files(dir1,
-                           pattern = "*.csv$",
-                           full.names = TRUE)
-    while (length(rfinal_p) != length(pasosChar)) {
-      rfinal_p <- list.files(dir1,
-                             pattern = "*.csv$",
-                             full.names = TRUE)
-    }
 
-    rfinal <- rfinal_p %>%
-      purrr::map_df(~read.csv(.x,stringsAsFactors = F))
-    unlink(dir1,recursive = T)
+
+    rfinal <- do.call("rbind.data.frame", mres )
+
     future::plan(sequential)
   }
   else{
@@ -231,7 +239,7 @@ ellipsoid_selection <- function(env_train,env_test=NULL,env_vars,nvarstest,level
     }
     best_r <- rfinal[met_criteriaID_both,]
     best_r <- best_r[order(best_r$rank_by_omr_train_test,
-                           best_r$env_aucratio),]
+                           best_r$env_bg_aucratio),]
     rfinal <- rbind(best_r,
                     rfinal[-met_criteriaID_both,])
     rfinal <- data.frame(rfinal,
