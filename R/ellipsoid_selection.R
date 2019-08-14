@@ -162,14 +162,15 @@ ellipsoid_selection <- function(env_train,env_test=NULL,env_vars,nvarstest,level
 
         results_L <- lapply(1:ncol(combs_v),function(x_comb) {
           var_comb <- stats::na.omit(combs_v[,x_comb])
-
-          r1 <- ntbox::ellipsoid_omr(env_data =env_train[, var_comb],
-                                     env_test = env_test[, var_comb],
-                                     env_bg = env_bg[, var_comb],
-                                     cf_level = level)
+          env_data <- stats::na.omit(env_train[,combs_v[,x_comb]])
+          env_test <- stats::na.omit(env_test[,combs_v[,x_comb]])
+          env_bg <-   stats::na.omit(env_bg[,combs_v[,x_comb]])
+          r1 <- ellipsoid_omr(env_data = env_data,
+                              env_test = env_test,
+                              env_bg = env_bg,
+                              cf_level = 0.95)
           return(r1)
         })
-
         results_df <- do.call("rbind.data.frame",results_L)
         cat("Finishing calibration of models ",kkk[x],"to ",kkk[x + 1] - 1,
             "\n\n")
@@ -193,9 +194,13 @@ ellipsoid_selection <- function(env_train,env_test=NULL,env_vars,nvarstest,level
     results_L <- lapply(1:length(cvars), function(x) {
       combs_v <- cvars[[x]]
       results_L <- lapply(1:ncol(combs_v),function(x_comb) {
-        r1 <- ellipsoid_omr(env_data =env_train[,combs_v[,x_comb]],
-                            env_test = env_test[,combs_v[,x_comb]],
-                            env_bg = env_bg[,combs_v[,x_comb]],
+        var_comb <- stats::na.omit(combs_v[,x_comb])
+        env_data <- stats::na.omit(env_train[,combs_v[,x_comb]])
+        env_test <- stats::na.omit(env_test[,combs_v[,x_comb]])
+        env_bg <-   stats::na.omit(env_bg[,combs_v[,x_comb]])
+        r1 <- ellipsoid_omr(env_data = env_data,
+                            env_test = env_test,
+                            env_bg = env_bg,
                             cf_level = 0.95)
         return(r1)
         })
@@ -238,8 +243,9 @@ ellipsoid_selection <- function(env_train,env_test=NULL,env_vars,nvarstest,level
       return(rfinal)
     }
     best_r <- rfinal[met_criteriaID_both,]
-    best_r <- best_r[order(best_r$rank_by_omr_train_test,
-                           best_r$env_bg_aucratio),]
+    best_r <- best_r[order(#best_r$rank_by_omr_train_test,
+                           best_r$env_bg_aucratio,
+                           decreasing = TRUE),]
     rfinal <- rbind(best_r,
                     rfinal[-met_criteriaID_both,])
     rfinal <- data.frame(rfinal,
