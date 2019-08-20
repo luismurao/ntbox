@@ -9,6 +9,7 @@
 #' @param omr_criteria Omission rate criteria. Value of omission rate allowed for the selection process. Default NULL see details.
 #' @param env_bg Environmental data to compute the approximated prevalence of the model. The data should be a sample of the environmental layers of the calibration area.
 #' @param parallel The computations will be run in parallel. Deafault FALSE
+#' @param proc Logical, if TRUE a partial roc test will be run.
 #' @param comp_each Number of models to run in each job in the parallel computation. Default 100
 #' @return A data.frame with 5 columns: i) "fitted_vars" the names of variables that were fitted; ii) "om_rate" omission rates of the model; iii) "bg_prevalence" approximated prevalence of the model see details section; iv) The rank value of importance in model selection by omission rate; v) The rank value by prevalence after if the value of omr_criteria is passed.
 #' @details Model selection occurs in environmental space (E-space). For each variable combination the omission rate (omr) in E-space is computed using the function \code{\link[ntbox]{inEllipsoid}}. The results will be ordered by omr and if the user specified the environmental background "env_bg" an estimated prevalence will be computed and the results will be ordered also by "bg_prevalence".
@@ -99,7 +100,7 @@
 #' print(pg_proc$pROC_summary)
 #' }
 
-ellipsoid_selection <- function(env_train,env_test=NULL,env_vars,nvarstest,level,env_bg=NULL,omr_criteria,parallel=F,comp_each=100){
+ellipsoid_selection <- function(env_train,env_test=NULL,env_vars,nvarstest,level,env_bg=NULL,omr_criteria,parallel=F,comp_each=100,proc=FALSE){
   n_vars <- length(env_vars)
   ntest <- sapply(nvarstest, function(x) choose(n_vars,x))
   nmodels <- sum(ntest)
@@ -168,7 +169,8 @@ ellipsoid_selection <- function(env_train,env_test=NULL,env_vars,nvarstest,level
           r1 <- ellipsoid_omr(env_data = env_data,
                               env_test = env_test,
                               env_bg = env_bg,
-                              cf_level = 0.95)
+                              cf_level = 0.95,
+                              proc = proc)
           return(r1)
         })
         results_df <- do.call("rbind.data.frame",results_L)
@@ -201,7 +203,8 @@ ellipsoid_selection <- function(env_train,env_test=NULL,env_vars,nvarstest,level
         r1 <- ellipsoid_omr(env_data = env_data,
                             env_test = env_test,
                             env_bg = env_bg,
-                            cf_level = 0.95)
+                            cf_level = 0.95,
+                            proc = proc)
         return(r1)
         })
       results_df <- do.call("rbind.data.frame",results_L)
@@ -243,13 +246,17 @@ ellipsoid_selection <- function(env_train,env_test=NULL,env_vars,nvarstest,level
       return(rfinal)
     }
     best_r <- rfinal[met_criteriaID_both,]
-    best_r <- best_r[order(#best_r$rank_by_omr_train_test,
-                           best_r$env_bg_aucratio,
-                           decreasing = TRUE),]
+    if(proc){
+      best_r <- best_r[order(best_r$env_bg_aucratio,
+                             decreasing = TRUE),]
+    }
+
     rfinal <- rbind(best_r,
                     rfinal[-met_criteriaID_both,])
-    rfinal <- data.frame(rfinal,
-                         rank_omr_aucratio=1:nrow(rfinal))
+    if(proc){
+      rfinal <- data.frame(rfinal,
+                           rank_omr_aucratio=1:nrow(rfinal))
+    }
   }
   else
     rfinal <- rfinal[order(rfinal$om_rate_train,
@@ -266,9 +273,10 @@ ellipsoid_selection <- function(env_train,env_test=NULL,env_vars,nvarstest,level
 #' @param env_test A data frame with the environmental testing data. Default is NULL, if given the selection process will show the p-value of a binomial test.
 #' @param env_bg Environmental data to compute the approximated prevalence of the model. The data should be a sample of the environmental layers of the calibration area.
 #' @param cf_level Proportion of points to be included in the ellipsoids. This parameter is equivalent to the error (E) proposed by Peterson et al. (2008).
+#' @param proc Logical, if TRUE a partial roc test will be run.
 #' @return A data.frame with 5 columns: i) "fitted_vars" the names of variables that were fitted; ii) "om_rate" omission rates of the model; iii) "bg_prevalence" approximated prevalence of the model see details section.
 #' @export
-ellipsoid_omr <- function(env_data,env_test=NULL,env_bg,cf_level){
+ellipsoid_omr <- function(env_data,env_test=NULL,env_bg,cf_level,proc=FALSE){
   emd <- try(ntbox::cov_center(data = env_data,
                                mve = TRUE,
                                level = cf_level,
@@ -286,8 +294,13 @@ ellipsoid_omr <- function(env_data,env_test=NULL,env_bg,cf_level){
 
   occs_table <- table( in_e$in_Ellipsoid)
 
-  occs_fail <-  occs_table[[1]]
-  occs_succs <- occs_table[[2]]
+  succsID <- which(names(occs_table) %in% "1")
+  failsID <- which(names(occs_table) %in% "0")
+
+  occs_succs <-  ifelse(length(succsID)>0L,
+                             occs_table[[succsID]],0)
+  occs_fail <-  ifelse(length(failsID)>0L,
+                            occs_table[[failsID]],0)
 
   a <-  occs_fail
   omrate <- a /nrow( in_e)
@@ -301,12 +314,17 @@ ellipsoid_omr <- function(env_data,env_test=NULL,env_bg,cf_level){
                              eShape = emd$covariance,
                              env_data = env_test,
                              level = cf_level)
+
     suits_val <- exp(-0.5*( in_etest$mh_dist))
 
     occs_table_test <- table(in_etest$in_Ellipsoid)
-    occs_fail_test <-  occs_table_test[[1]]
-    occs_succs_test <- occs_table_test[[2]]
+    succsID <- which(names(occs_table_test) %in% "1")
+    failsID <- which(names(occs_table_test) %in% "0")
 
+    occs_succs_test <-  ifelse(length(succsID)>0L,
+                               occs_table_test[[succsID]],0)
+    occs_fail_test <-  ifelse(length(failsID)>0L,
+                              occs_table_test[[failsID]],0)
     a <-  occs_fail_test
     omrate_test <- a /nrow( in_etest)
     d_results <- data.frame(d_results,
@@ -336,15 +354,19 @@ ellipsoid_omr <- function(env_data,env_test=NULL,env_bg,cf_level){
       p_bin <- 1 - stats::pbinom(test_succs,
                                  size=test_succs+test_fail,
                                  prob = prevBG)
-
-      proc <- ntbox::pROC(suits_bg,test_data = suits_val,
-                  n_iter = 500)
-      pval_proc <- proc$pROC_summary[2]
-      mean_auratio <- proc$pROC_summary[1]
       d_results <-data.frame( d_results,
-                              pval_bin=p_bin,
-                              pval_proc,
-                              env_bg_aucratio= mean_auratio)
+                              pval_bin=p_bin)
+      if(proc){
+        proc <- ntbox::pROC(suits_bg,test_data = suits_val,
+                            n_iter = 500)
+        pval_proc <- proc$pROC_summary[2]
+        mean_auratio <- proc$pROC_summary[1]
+        d_results <-data.frame( d_results,
+                                pval_proc,
+                                env_bg_aucratio= mean_auratio)
+      }
+
+
     }
 
   }

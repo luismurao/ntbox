@@ -4,7 +4,8 @@
 \alias{ellipsoid_omr}
 \title{ellipsoid_omr}
 \usage{
-ellipsoid_omr(env_data, env_test = NULL, env_bg, cf_level)
+ellipsoid_omr(env_data, env_test = NULL, env_bg, cf_level,
+  proc = FALSE)
 }
 \arguments{
 \item{env_data}{A data frame with the environmental data.}
@@ -14,6 +15,8 @@ ellipsoid_omr(env_data, env_test = NULL, env_bg, cf_level)
 \item{env_bg}{Environmental data to compute the approximated prevalence of the model. The data should be a sample of the environmental layers of the calibration area.}
 
 \item{cf_level}{Proportion of points to be included in the ellipsoids. This parameter is equivalent to the error (E) proposed by Peterson et al. (2008).}
+
+\item{proc}{Logical, if TRUE a partial roc test will be run.}
 }
 \value{
 A data.frame with 5 columns: i) "fitted_vars" the names of variables that were fitted; ii) "om_rate" omission rates of the model; iii) "bg_prevalence" approximated prevalence of the model see details section.
