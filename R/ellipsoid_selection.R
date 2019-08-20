@@ -319,7 +319,9 @@ ellipsoid_omr <- function(env_data,env_test=NULL,env_bg,cf_level,proc=FALSE){
 
     occs_table_test <- table(in_etest$in_Ellipsoid)
     succsID <- which(names(occs_table_test) %in% "1")
+
     failsID <- which(names(occs_table_test) %in% "0")
+    failsID <- which(names(occs_table_test) %in% "2")
 
     occs_succs_test <-  ifelse(length(succsID)>0L,
                                occs_table_test[[succsID]],0)
