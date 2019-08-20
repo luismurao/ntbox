@@ -301,12 +301,17 @@ ellipsoid_omr <- function(env_data,env_test=NULL,env_bg,cf_level){
                              eShape = emd$covariance,
                              env_data = env_test,
                              level = cf_level)
+
     suits_val <- exp(-0.5*( in_etest$mh_dist))
 
     occs_table_test <- table(in_etest$in_Ellipsoid)
-    occs_fail_test <-  occs_table_test[[1]]
-    occs_succs_test <- occs_table_test[[2]]
+    succsID <- which(names(occs_table_test) %in% "1")
+    failsID <- which(names(occs_table_test) %in% "2")
 
+    occs_succs_test <-  ifelse(length(succsID)>0L,
+                               occs_table_test[[succsID]],0)
+    occs_fail_test <-  ifelse(length(failsID)>0L,
+                              occs_table_test[[failsID]],0)
     a <-  occs_fail_test
     omrate_test <- a /nrow( in_etest)
     d_results <- data.frame(d_results,
