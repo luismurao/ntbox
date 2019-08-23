@@ -197,9 +197,9 @@ ellipsoid_selection <- function(env_train,env_test=NULL,env_vars,nvarstest,level
       combs_v <- cvars[[x]]
       results_L <- lapply(1:ncol(combs_v),function(x_comb) {
         var_comb <- stats::na.omit(combs_v[,x_comb])
-        env_data <- stats::na.omit(env_train[,combs_v[,x_comb]])
-        env_test <- stats::na.omit(env_test[,combs_v[,x_comb]])
-        env_bg <-   stats::na.omit(env_bg[,combs_v[,x_comb]])
+        env_data <- stats::na.omit(env_train[,var_comb])
+        env_test <- stats::na.omit(env_test[,var_comb])
+        env_bg <-   stats::na.omit(env_bg[,var_comb])
         r1 <- ellipsoid_omr(env_data = env_data,
                             env_test = env_test,
                             env_bg = env_bg,
