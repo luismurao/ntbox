@@ -349,8 +349,8 @@ ellipsoid_omr <- function(env_data,env_test=NULL,env_bg,cf_level,proc=FALSE){
     if(exists("in_etest")){
       bin_table <- table(c(in_ebg$in_Ellipsoid,
                            in_etest$in_Ellipsoid))
-      test_fail <-  occs_table[[1]]
-      test_succs <- occs_table[[2]]
+      test_fail <-  occs_fail_test
+      test_succs <- occs_succs_test
       binBG <- bin_table[[2]]/(bin_table[[1]]+bin_table[[2]])
       p_bin <- 1 - stats::pbinom(test_succs,
                                  size=test_succs+test_fail,
