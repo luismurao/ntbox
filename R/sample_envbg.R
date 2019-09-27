@@ -49,7 +49,7 @@ sample_envbg <- function(envlayers,nbg,nprop=NULL){
         if(length(fnames) == 1)
           r1 <- raster::raster(fnames,band=x)
         else
-          r1 <- raster(fnames[x])
+          r1 <- raster::raster(fnames[x])
         d1 <- data.frame(r1[toSamp])
         names(d1) <- names(r1)
         return(d1)
