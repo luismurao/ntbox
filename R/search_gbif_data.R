@@ -5,8 +5,10 @@
 #' @param occlim Occurrence data search limit.
 #' @param writeFile Write gibif data into a csv
 #' @param leafletplot Logical, if TRUE the records will be plotted on a leaflet map.
+#' @param showCluster Logical. Display geographic cluster on the leaflet map.
 #' @return Returns a data.frame with coordinate data from species
 #' @export
+#' @import leaflet
 #' @importFrom magrittr %>%
 #'
 #' @examples
@@ -22,7 +24,9 @@
 #' head(ambystoma_tigrinum[,1:5])
 #' }
 #'
-searh_gbif_data <- function(genus,species,occlim=10000,writeFile=FALSE,leafletplot=FALSE){
+searh_gbif_data <- function(genus,species,occlim=10000,
+                            writeFile=FALSE,leafletplot=FALSE,
+                            showCluster=FALSE){
 
   # Check if species data is on working directory
   file_name <- tolower(paste0(genus,"_",
@@ -80,8 +84,11 @@ searh_gbif_data <- function(genus,species,occlim=10000,writeFile=FALSE,leafletpl
       m <- m  %>%
         leaflet::addCircleMarkers(lng=~longitude, lat=~latitude,
                                   popup= ~leaflet_info,
-                                  fillOpacity = 0.75,
-                                  clusterOptions = leaflet::markerClusterOptions())
+                                  fillOpacity = 0.25,
+                                  radius = 7,
+                                  clusterOptions = ifelse(showCluster,
+                                                          leaflet::markerClusterOptions(),
+                                                          NA))
 
       print(m)
     }
