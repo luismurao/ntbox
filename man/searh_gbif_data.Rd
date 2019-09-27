@@ -5,7 +5,7 @@
 \title{Function to search and download gbif data}
 \usage{
 searh_gbif_data(genus, species, occlim = 10000, writeFile = FALSE,
-  leafletplot = FALSE)
+  leafletplot = FALSE, showCluster = FALSE)
 }
 \arguments{
 \item{genus}{Species genus}
@@ -17,6 +17,8 @@ searh_gbif_data(genus, species, occlim = 10000, writeFile = FALSE,
 \item{writeFile}{Write gibif data into a csv}
 
 \item{leafletplot}{Logical, if TRUE the records will be plotted on a leaflet map.}
+
+\item{showCluster}{Logical. Display geographic cluster on the leaflet map.}
 }
 \value{
 Returns a data.frame with coordinate data from species
