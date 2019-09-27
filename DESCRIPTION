@@ -58,6 +58,7 @@ Imports:
     ade4 (>= 1.7-11),
     V8 (>= 1.5),
     future (>= 1.7.0),
+    furrr (>= 0.1.0),
     stringi (>= 1.1),
     purrr (>= 0.2.5),
     spocc (>= 0.7.0),
