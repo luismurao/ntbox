@@ -6,7 +6,6 @@
 #' @param envlayers A raster stack or brick.
 #' @param nbg Number of points for the background data
 #' @param nprop Proportion of environmental data to be sampled. Default NULL
-#' @export
 #' @examples
 #' \dontrun{
 #' wcpath <- list.files(system.file("extdata/bios",
@@ -19,10 +18,11 @@
 #' # Using a proportion of data
 #' vals <- envbg(envlayers,nprop = 0.20)
 #' }
-
+#' @export
 sample_envbg <- function(envlayers,nbg,nprop=NULL){
   if(class(envlayers) == "RasterStack" ||
      class(envlayers) == "RasterBrick"){
+    envlayers <- raster::stack(envlayers)
     l1 <- envlayers[[1]]
     #nona <- raster::Which(!is.na(l1),cells=TRUE)
     nona <- which(!is.na(as.vector(l1)))
@@ -43,8 +43,13 @@ sample_envbg <- function(envlayers,nbg,nprop=NULL){
     else{
       future::plan(future::multiprocess)
       fnames <- sapply(envlayers@layers, function(x) x@file@name)
-      env_bg <- furrr::future_map_dfc(fnames, function(x){
-        r1 <- raster::raster(x)
+      fnames <- unique(fnames)
+      indexL <- 1:raster::nlayers(envlayers)
+      env_bg <- furrr::future_map_dfc(indexL, function(x){
+        if(length(fnames) == 1)
+          r1 <- raster::raster(fnames,band=x)
+        else
+          r1 <- raster(fnames[x])
         d1 <- data.frame(r1[toSamp])
         names(d1) <- names(r1)
         return(d1)
