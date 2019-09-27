@@ -6,7 +6,6 @@
 #' @param envlayers A raster stack or brick.
 #' @param nbg Number of points for the background data
 #' @param nprop Proportion of environmental data to be sampled. Default NULL
-#' @export
 #' @examples
 #' \dontrun{
 #' wcpath <- list.files(system.file("extdata/bios",
@@ -19,7 +18,7 @@
 #' # Using a proportion of data
 #' vals <- envbg(envlayers,nprop = 0.20)
 #' }
-
+#' @export
 sample_envbg <- function(envlayers,nbg,nprop=NULL){
   if(class(envlayers) == "RasterStack" ||
      class(envlayers) == "RasterBrick"){
