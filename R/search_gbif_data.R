@@ -74,10 +74,15 @@ searh_gbif_data <- function(genus,species,occlim=10000,writeFile=FALSE,leafletpl
                                       "<br/><b>Record url: </b><a href='",
                                       data_gbif$references,
                                       "'>click</a>")
-      m <- leaflet::leaflet(data_gbif) %>%
-        leaflet::addTiles() %>%  # Add default OpenStreetMap map tiles
+      m <- leaflet::leaflet(data_gbif)
+      m <- m %>%
+        leaflet::addTiles()
+      m <- m  %>%
         leaflet::addCircleMarkers(lng=~longitude, lat=~latitude,
-                            popup= ~leaflet_info);
+                                  popup= ~leaflet_info,
+                                  fillOpacity = 0.75,
+                                  clusterOptions = leaflet::markerClusterOptions())
+
       print(m)
     }
   }
