@@ -4,9 +4,11 @@
 #' @param species Species name
 #' @param occlim Occurrence data search limit.
 #' @param writeFile Write gibif data into a csv
+#' @param leafletplot Logical, if TRUE the records will be plotted on a leaflet map.
 #' @return Returns a data.frame with coordinate data from species
 #' @export
-#' @import stringi
+#' @importFrom magrittr %>%
+#'
 #' @examples
 #' \dontrun{
 #' # Species genus
@@ -19,8 +21,8 @@
 #'                                       writeFile=FALSE)
 #' head(ambystoma_tigrinum[,1:5])
 #' }
-
-searh_gbif_data <- function(genus,species,occlim=10000,writeFile=FALSE){
+#'
+searh_gbif_data <- function(genus,species,occlim=10000,writeFile=FALSE,leafletplot=FALSE){
 
   # Check if species data is on working directory
   file_name <- tolower(paste0(genus,"_",
@@ -62,7 +64,22 @@ searh_gbif_data <- function(genus,species,occlim=10000,writeFile=FALSE){
     else if(writeFile){
       utils::write.csv(data_gbif,file_name,row.names = FALSE)
     }
+    if(is.data.frame(data_gbif) && leafletplot){
+      data_gbif$leaflet_info <- paste("<b>Species: </b>",
+                                      data_gbif$species,"</a><br/>",
+                                      "<b>rowID:</b>",1:nrow(data_gbif),
+                                      "<br/><b>Record key:</b>",data_gbif$key,
+                                      "<br/><b>Identified on: </b>",
+                                      data_gbif$dateIdentified,
+                                      "<br/><b>Record url: </b><a href='",
+                                      data_gbif$references,
+                                      "'>click</a>")
+      m <- leaflet::leaflet(data_gbif) %>%
+        leaflet::addTiles() %>%  # Add default OpenStreetMap map tiles
+        leaflet::addCircleMarkers(lng=~longitude, lat=~latitude,
+                            popup= ~leaflet_info);
+      print(m)
+    }
   }
   return(data_gbif)
 }
-

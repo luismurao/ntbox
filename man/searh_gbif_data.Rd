@@ -4,7 +4,8 @@
 \alias{searh_gbif_data}
 \title{Function to search and download gbif data}
 \usage{
-searh_gbif_data(genus, species, occlim = 10000, writeFile = FALSE)
+searh_gbif_data(genus, species, occlim = 10000, writeFile = FALSE,
+  leafletplot = FALSE)
 }
 \arguments{
 \item{genus}{Species genus}
@@ -14,6 +15,8 @@ searh_gbif_data(genus, species, occlim = 10000, writeFile = FALSE)
 \item{occlim}{Occurrence data search limit.}
 
 \item{writeFile}{Write gibif data into a csv}
+
+\item{leafletplot}{Logical, if TRUE the records will be plotted on a leaflet map.}
 }
 \value{
 Returns a data.frame with coordinate data from species
@@ -33,4 +36,5 @@ ambystoma_tigrinum <- searh_gbif_data(genus,species,
                                       writeFile=FALSE)
 head(ambystoma_tigrinum[,1:5])
 }
+
 }
