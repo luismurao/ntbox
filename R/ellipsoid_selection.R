@@ -342,7 +342,15 @@ ellipsoid_omr <- function(env_data,env_test=NULL,env_bg,cf_level,proc=FALSE){
     suits_bg <- exp(-0.5*in_ebg$mh_dist)
 
     bg_table <- table(c(in_ebg$in_Ellipsoid,in_e$in_Ellipsoid))
-    prevBG <- bg_table[[2]]/(bg_table[[1]]+bg_table[[2]])
+    succs_bg_ID <- which(names(bg_table) %in% "1")
+    fails_bg_ID <- which(names(bg_table) %in% "0")
+
+    bg_succs <-  ifelse(length(succs_bg_ID)>0L,
+                          bg_table[[succs_bg_ID]],0)
+    bg_fails <-  ifelse(length(fails_bg_ID)>0L,
+                         occs_table[[fails_bg_ID]],0)
+
+    prevBG <- bg_succs/(bg_fails+bg_succs)
     d_results <-data.frame( d_results,
                             bg_prevalence= prevBG)
 
