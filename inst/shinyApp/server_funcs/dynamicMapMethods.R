@@ -71,9 +71,9 @@ leafMapDynamic <- reactive({
 
 
     map <- map %>%
-      addMarkers(lng = dataDynamic()[,data_set()$longitude],
-                 lat = dataDynamic()[,data_set()$latitude],
-                 popup = dataDynamic()$dataID)
+      addCircleMarkers(lng = dataDynamic()[,data_set()$longitude],
+                       lat = dataDynamic()[,data_set()$latitude],
+                       popup = dataDynamic()$dataID)
 
     if(class(myPolygon()) == "SpatialPolygonsDataFrame" && input$define_M){
       map <- map %>% addPolygons(data=myPolygon(),col="darkgreen")
