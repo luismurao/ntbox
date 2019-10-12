@@ -158,6 +158,7 @@ ellipsoidfit <- function(envlayers,centroid,covar,level=0.95,
     distances <- stats::na.omit(distances)
     suitsDF <- stats::na.omit(data.frame(coordinates,suitability=suits,env_vars))
     suitRaster[] <- suits
+    names(suitRaster) <- "suitability"
     return(list(suits=suitsDF,suitRaster=suitRaster,ncentedist=distances))
   }
 
