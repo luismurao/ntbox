@@ -3,10 +3,14 @@ Type: Package
 Title: From Getting Biodiversity Data to Evaluating Species Distribution Models in a Friendly GUI Environment
 Version: 0.4.5.4
 Date: 2019-08-27
-Authors@R: c(person("Luis", "Osorio-Olvera", email = "luismurao@gmail.com", role = c("aut", "cre")),
-             person("Jorge", "Soberón", email = "soberon@ku.edu", role = "aut"),
-             person("Vijay", "Barve", email = "vijay.barve@gmail.com", role = "aut"),
-             person("Narayani", "Barve", email = "narayani.ku@gmail.com", role = "aut"),
+Authors@R: c(person("Luis", "Osorio-Olvera", email = "luismurao@gmail.com", 
+                    role = c("aut", "cre"), comment = c(ORCID = "0000-0003-0701-5398")),
+             person("Jorge", "Soberón", email = "soberon@ku.edu", role = "aut", 
+                    comment = c(ORCID = "0000-0003-2160-4148"),
+             person("Vijay", "Barve", email = "vijay.barve@gmail.com", role = "aut", 
+                    comment = c(ORCID = "0000-0002-4852-2567")),
+             person("Narayani", "Barve", email = "narayani.ku@gmail.com", 
+                    role = "aut", comment = c(ORCID = "0000-0002-7893-8774")),
              person("Manuel", "Falconi", email = "mjfalconi@gmail.com", role = "aut"))
 Description: NicheToolbox is an R package with a friendly Graphical User Interface (GUI)
              developed using shiny framework that aims to facilitate the process of building 
