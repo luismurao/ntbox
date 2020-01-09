@@ -4,8 +4,18 @@
 \alias{ellipsoidfit}
 \title{Function fit an ellipsoid model}
 \usage{
-ellipsoidfit(envlayers, centroid, covar, level = 0.95, plot = T, size,
-  xlab1 = "niche var 1", ylab1 = "niche var 2", zlab1 = "S", ...)
+ellipsoidfit(
+  envlayers,
+  centroid,
+  covar,
+  level = 0.95,
+  plot = T,
+  size,
+  xlab1 = "niche var 1",
+  ylab1 = "niche var 2",
+  zlab1 = "S",
+  ...
+)
 }
 \arguments{
 \item{envlayers}{A RasterStack or RasterBrick objet of the niche varibles.}

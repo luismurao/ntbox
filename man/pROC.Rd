@@ -4,8 +4,15 @@
 \alias{pROC}
 \title{Partial ROC calculation for Niche Models}
 \usage{
-pROC(continuous_mod, test_data, n_iter = 1000, E_percent = 5,
-  boost_percent = 50, parallel = FALSE, ncores = 4)
+pROC(
+  continuous_mod,
+  test_data,
+  n_iter = 1000,
+  E_percent = 5,
+  boost_percent = 50,
+  parallel = FALSE,
+  ncores = 4
+)
 }
 \arguments{
 \item{continuous_mod}{a RasterLayer or a numeric vector of the ecological niche model to be evaluated. If a numeric vector is provided it should contain the values of the predicted suitability.}

@@ -4,8 +4,14 @@
 \alias{searh_gbif_data}
 \title{Function to search and download gbif data}
 \usage{
-searh_gbif_data(genus, species, occlim = 10000, writeFile = FALSE,
-  leafletplot = FALSE, showCluster = FALSE)
+searh_gbif_data(
+  genus,
+  species,
+  occlim = 10000,
+  writeFile = FALSE,
+  leafletplot = FALSE,
+  showCluster = FALSE
+)
 }
 \arguments{
 \item{genus}{Species genus}

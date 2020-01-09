@@ -4,8 +4,14 @@
 \alias{spca}
 \title{spca: Principal Component Analysis for Spatial Data}
 \usage{
-spca(layers_stack, layers_to_proj = NULL, pca_obj = NULL,
-  sv_dir = NULL, layers_format = ".asc", sv_proj_dir = NULL)
+spca(
+  layers_stack,
+  layers_to_proj = NULL,
+  pca_obj = NULL,
+  sv_dir = NULL,
+  layers_format = ".asc",
+  sv_proj_dir = NULL
+)
 }
 \arguments{
 \item{layers_stack}{A RasterStack of envrionmental variables}

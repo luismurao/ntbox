@@ -4,8 +4,15 @@
 \alias{get_bio_oracle}
 \title{get_bio_oracle: Get environmental layers from Bio-Oracle.}
 \usage{
-get_bio_oracle(period, var_type, model = NULL, scenario = NULL,
-  sv_dir = getwd(), load2r = TRUE, parallel = TRUE)
+get_bio_oracle(
+  period,
+  var_type,
+  model = NULL,
+  scenario = NULL,
+  sv_dir = getwd(),
+  load2r = TRUE,
+  parallel = TRUE
+)
 }
 \arguments{
 \item{period}{Time period. Posible values are: "current","2050","2100","2200".}

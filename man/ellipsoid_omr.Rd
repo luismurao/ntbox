@@ -4,8 +4,14 @@
 \alias{ellipsoid_omr}
 \title{ellipsoid_omr}
 \usage{
-ellipsoid_omr(env_data, env_test = NULL, env_bg, cf_level,
-  proc = FALSE)
+ellipsoid_omr(
+  env_data,
+  env_test = NULL,
+  env_bg,
+  cf_level,
+  mve = TRUE,
+  proc = FALSE
+)
 }
 \arguments{
 \item{env_data}{A data frame with the environmental data.}
@@ -15,6 +21,9 @@ ellipsoid_omr(env_data, env_test = NULL, env_bg, cf_level,
 \item{env_bg}{Environmental data to compute the approximated prevalence of the model. The data should be a sample of the environmental layers of the calibration area.}
 
 \item{cf_level}{Proportion of points to be included in the ellipsoids. This parameter is equivalent to the error (E) proposed by Peterson et al. (2008).}
+
+\item{mve}{A logical value. If TRUE a minimum volume ellipsoid will be computed using
+the function \code{\link[MASS]{cov.rob}} of the \pkg{MASS} package. If False the covariance matrix of the input data will be used.}
 
 \item{proc}{Logical, if TRUE a partial roc test will be run.}
 }

@@ -4,8 +4,14 @@
 \alias{get_chelsa}
 \title{get_chelsa: Get bioclimatic layers from CHELSA}
 \usage{
-get_chelsa(period, model = NULL, rcp = NULL, sv_dir = getwd(),
-  load2r = TRUE, parallel = TRUE)
+get_chelsa(
+  period,
+  model = NULL,
+  rcp = NULL,
+  sv_dir = getwd(),
+  load2r = TRUE,
+  parallel = TRUE
+)
 }
 \arguments{
 \item{period}{Time period. Posible values are: "current","2041-2060","2061-2080"}

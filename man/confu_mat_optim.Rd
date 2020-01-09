@@ -4,8 +4,16 @@
 \alias{confu_mat_optim}
 \title{Function to find the cut-off threshold that optimizes the confusion matrix}
 \usage{
-confu_mat_optim(sdm_raster, valData, longitude, latitude, pres_abs,
-  optim_by = "kappa", th_range = c(0, 1), step = 0.005)
+confu_mat_optim(
+  sdm_raster,
+  valData,
+  longitude,
+  latitude,
+  pres_abs,
+  optim_by = "kappa",
+  th_range = c(0, 1),
+  step = 0.005
+)
 }
 \arguments{
 \item{sdm_raster}{Continuos predicition raster.}

@@ -4,8 +4,15 @@
 \alias{get_envirem_clim}
 \title{get_envirem_clim: Get bioclimatic data from envirem}
 \usage{
-get_envirem_clim(period, gcm = NULL, region, resolution, fmt,
-  sv_dir = getwd(), load2r)
+get_envirem_clim(
+  period,
+  gcm = NULL,
+  region,
+  resolution,
+  fmt,
+  sv_dir = getwd(),
+  load2r
+)
 }
 \arguments{
 \item{period}{Time period. Posible values are: "current" ( 1960 - 1990),"holo" (Mid-Holocene ~ 6000 years ago),"lgm" (Last Glacial Maximum ~ 22000 years ago).}

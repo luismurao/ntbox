@@ -4,9 +4,19 @@
 \alias{ellipsoid_selection}
 \title{ellipsoid_selection: Performs variable selection for ellipsoid models}
 \usage{
-ellipsoid_selection(env_train, env_test = NULL, env_vars, nvarstest,
-  level, env_bg = NULL, omr_criteria, parallel = F, comp_each = 100,
-  proc = FALSE)
+ellipsoid_selection(
+  env_train,
+  env_test = NULL,
+  env_vars,
+  nvarstest,
+  level = 0.95,
+  mve = TRUE,
+  env_bg = NULL,
+  omr_criteria,
+  parallel = F,
+  comp_each = 100,
+  proc = FALSE
+)
 }
 \arguments{
 \item{env_train}{A data frame with the environmental training data.}
@@ -18,6 +28,9 @@ ellipsoid_selection(env_train, env_test = NULL, env_vars, nvarstest,
 \item{nvarstest}{A vector indicating the number of variables to fit the ellipsoids during model selection. It is allowed to test models with a different number of variables (i.e. nvarstest=c(3,6)).}
 
 \item{level}{Proportion of points to be included in the ellipsoids. This parameter is equivalent to the error (E) proposed by Peterson et al. (2008).}
+
+\item{mve}{A logical value. If TRUE a minimum volume ellipsoid will be computed using
+the function \code{\link[MASS]{cov.rob}} of the \pkg{MASS} package. If False the covariance matrix of the input data will be used.}
 
 \item{env_bg}{Environmental data to compute the approximated prevalence of the model. The data should be a sample of the environmental layers of the calibration area.}
 

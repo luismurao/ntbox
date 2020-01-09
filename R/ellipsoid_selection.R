@@ -6,6 +6,8 @@
 #' @param env_vars A vector with the names of environmental variables to be used in the selection process.
 #' @param nvarstest A vector indicating the number of variables to fit the ellipsoids during model selection. It is allowed to test models with a different number of variables (i.e. nvarstest=c(3,6)).
 #' @param level Proportion of points to be included in the ellipsoids. This parameter is equivalent to the error (E) proposed by Peterson et al. (2008).
+#' @param mve A logical value. If TRUE a minimum volume ellipsoid will be computed using
+#' the function \code{\link[MASS]{cov.rob}} of the \pkg{MASS} package. If False the covariance matrix of the input data will be used.
 #' @param omr_criteria Omission rate criteria. Value of omission rate allowed for the selection process. Default NULL see details.
 #' @param env_bg Environmental data to compute the approximated prevalence of the model. The data should be a sample of the environmental layers of the calibration area.
 #' @param parallel The computations will be run in parallel. Deafault FALSE
@@ -100,7 +102,8 @@
 #' print(pg_proc$pROC_summary)
 #' }
 
-ellipsoid_selection <- function(env_train,env_test=NULL,env_vars,nvarstest,level,env_bg=NULL,omr_criteria,parallel=F,comp_each=100,proc=FALSE){
+ellipsoid_selection <- function(env_train,env_test=NULL,env_vars,nvarstest,level=0.95,
+                                mve=TRUE,env_bg=NULL,omr_criteria,parallel=F,comp_each=100,proc=FALSE){
   n_vars <- length(env_vars)
   ntest <- sapply(nvarstest, function(x) choose(n_vars,x))
   nmodels <- sum(ntest)
@@ -273,12 +276,14 @@ ellipsoid_selection <- function(env_train,env_test=NULL,env_vars,nvarstest,level
 #' @param env_test A data frame with the environmental testing data. Default is NULL, if given the selection process will show the p-value of a binomial test.
 #' @param env_bg Environmental data to compute the approximated prevalence of the model. The data should be a sample of the environmental layers of the calibration area.
 #' @param cf_level Proportion of points to be included in the ellipsoids. This parameter is equivalent to the error (E) proposed by Peterson et al. (2008).
+#' @param mve A logical value. If TRUE a minimum volume ellipsoid will be computed using
+#' the function \code{\link[MASS]{cov.rob}} of the \pkg{MASS} package. If False the covariance matrix of the input data will be used.
 #' @param proc Logical, if TRUE a partial roc test will be run.
 #' @return A data.frame with 5 columns: i) "fitted_vars" the names of variables that were fitted; ii) "om_rate" omission rates of the model; iii) "bg_prevalence" approximated prevalence of the model see details section.
 #' @export
-ellipsoid_omr <- function(env_data,env_test=NULL,env_bg,cf_level,proc=FALSE){
+ellipsoid_omr <- function(env_data,env_test=NULL,env_bg,cf_level,mve=TRUE,proc=FALSE){
   emd <- try(ntbox::cov_center(data = env_data,
-                               mve = TRUE,
+                               mve = mve,
                                level = cf_level,
                                vars = 1:ncol(env_data)),
                                silent = TRUE)

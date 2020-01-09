@@ -16,7 +16,6 @@ data_gbif_search <- eventReactive(input$search_gbif_data,{
                                  occlim = input$occlim,
                                  writeFile = FALSE)
 
-
   if(is.null(data))
     return("No occurrences found")
   return(data)
@@ -95,6 +94,17 @@ observe({
 
 data_gbif_sp <- shiny::eventReactive(input$clean_dup_gbif,{
   data <- data_gbif_search()
+  data$leaflet_info <- paste("<b>Species: </b>",
+                             data$species,
+                             "</a><br/>", "<b>rowID:</b>",
+                             1:nrow(data),
+                             "<br/><b>Record key:</b>",
+                             data$key,
+                             "<br/><b>Identified on: </b>",
+                             data$dateIdentified,
+                             "<br/><b>Record url: </b><a href='",
+                             data$references,
+                             "'>click</a>")
   if(is.data.frame(data)){
     longitude <- input$xLongitudeGBIF
     latitude <-  input$yLatitudeGBIF
@@ -104,6 +114,17 @@ data_gbif_sp <- shiny::eventReactive(input$clean_dup_gbif,{
                                    threshold= threshold)
     data_clean <- data.frame(ID_ntb= 1:nrow(data_clean),
                              data_clean)
+    data_clean$leaflet_info <- paste("<b>Species: </b>",
+                                     data_clean$species,
+                                     "</a><br/>", "<b>rowID:</b>",
+                                     data_clean$ID_ntb,
+                                     "<br/><b>Record key:</b>",
+                                     data_clean$key,
+                                     "<br/><b>Identified on: </b>",
+                                     data_clean$dateIdentified,
+                                     "<br/><b>Record url: </b><a href='",
+                                     data_clean$references,
+                                     "'>click</a>")
     return(data_clean)
   }
 })

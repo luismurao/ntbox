@@ -4,8 +4,20 @@
 \alias{ellipsoid_cluster_plot_3d}
 \title{Function to plot clusters in 3-dimsensions.}
 \usage{
-ellipsoid_cluster_plot_3d(niche_data, cluster_ids, x, y, z, mve = FALSE,
-  ellips = TRUE, level = 0.975, alpha, grupos, vgrupo, cex1 = 0.25)
+ellipsoid_cluster_plot_3d(
+  niche_data,
+  cluster_ids,
+  x,
+  y,
+  z,
+  mve = FALSE,
+  ellips = TRUE,
+  level = 0.975,
+  alpha,
+  grupos,
+  vgrupo,
+  cex1 = 0.25
+)
 }
 \arguments{
 \item{niche_data}{A data.frame or matrix containing niche variables}
