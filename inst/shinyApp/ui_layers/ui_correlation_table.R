@@ -9,5 +9,5 @@ corre_table_1 <- sidebarLayout(position = "left",
                                downloadButton(outputId="download_cor_table",label="Download table")
                              ),
                              mainPanel(
-                               dataTableOutput("corr_table1")
+                               DT::dataTableOutput("corr_table1")
                              ))

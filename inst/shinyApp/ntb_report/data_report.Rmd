@@ -8,7 +8,7 @@ This is **NicheToolBox data report** here you can find a quick view of the think
 
 ```{r results="asis",echo=FALSE}
 library(knitr)
-if(is.data.frame(data_gbif())){
+if(input$search_gbif_data && is.data.frame(data_gbif())){
   occ_data <- data_gbif()
 
   cat("## GBIF data")

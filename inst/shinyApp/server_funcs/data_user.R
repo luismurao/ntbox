@@ -5,11 +5,11 @@ data_user <- reactive({
   if (is.null(input$fileUser))
     return(NULL)
   else if (identical(input$format, 'CSV'))
-    dat <- read.csv(input$fileUser$datapath,fill = T)
+    dat <- rio::import(input$fileUser$datapath)
   #else if (identical(input$format, 'XLSX'))
   #  dat <- read.xls(input$fileUser$datapath, input$sheet)
   else
-    dat <- read.delim(input$fileUser$datapath,fill = TRUE)
+    dat <- rio::import(input$fileUser$datapath)
 
   if(class(dat) == "data.frame")
     return(dat)
@@ -146,7 +146,7 @@ data_user_clean <- reactive({
 
 # Display gbif data
 
-output$user_table <- renderDataTable({
+output$user_table <- DT::renderDataTable({
   df1 <- data_user_clean()
   if(!is.null(df1))
     return(df1)
@@ -157,10 +157,7 @@ output$user_table <- renderDataTable({
     data_null <- data.frame(Data=data_null)
     return(data_null)
   }
-},
-options = list(aLengthMenu = c(5, 10, 25,
-                               50, 100, 500),
-               iDisplayLength = 10))
+})
 
 # Show the dimension of species data (number of rows and columns)
 

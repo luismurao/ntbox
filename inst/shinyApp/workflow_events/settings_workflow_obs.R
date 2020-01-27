@@ -650,15 +650,17 @@ observeEvent(input$saveState, {
   if(length(workflowDir())>0L){
     if(nchar(workflowDir()) > 0L){
 
+
       # Create a directory for OCC data.
-      data_dir_path <- paste0(workflowDir(),"NicheToolBox_OccData")
+      data_dir_path <- file.path(workflowDir(),
+                                 "NicheToolBox_OccData")
       if(!dir.exists(data_dir_path))
         dir.create(data_dir_path)
       # Create a directory for workflow report
-      wf_dir_path <- paste0(workflowDir(),"NicheToolBox_workflowReport")
+      wf_dir_path <- file.path(workflowDir(),
+                               "NicheToolBox_workflowReport")
       if(!dir.exists(wf_dir_path))
         dir.create(wf_dir_path)
-
       # Animated map of GBIF records
 
       anifile <- paste0(tempdir(),"/",temGBIF())
@@ -692,7 +694,12 @@ observeEvent(input$saveState, {
         #if(poly_name_ext %in% list.files(file_dir)){
         #  poly_name <- paste0(poly_name,"B_RandNUM",sample(1:1000,1))
         #}
-        rgdal::writeOGR(myPolygon(), file_dir, poly_name,"_",input$dataset_dynMap, driver="ESRI Shapefile",overwrite_layer = T)
+        rgdal::writeOGR(myPolygon(),
+                        file_dir,
+                        poly_name,"_",
+                        input$dataset_dynMap,
+                        driver="ESRI Shapefile",
+                        overwrite_layer = T)
 
       }
 
@@ -722,7 +729,8 @@ observeEvent(input$saveState, {
 
 
       # Save raw GBIF data (from GBIF data search)
-      if(!is.null(data_gbif_search())){
+
+      if(input$search_gbif_data && !is.null(data_gbif_search())){
 
 
 
@@ -734,7 +742,7 @@ observeEvent(input$saveState, {
 
       }
       # Save cleaned GBIF data (from GBIF data search)
-      if(!is.null(data_gbif_search())){
+      if(input$search_gbif_data && !is.null(data_gbif_search())){
         gbif_file_clean <- paste0(data_dir_path,"/",
                                   input$genus,"_",
                                   input$species,
@@ -743,7 +751,9 @@ observeEvent(input$saveState, {
       }
 
       # Save GBIF data from dynamic map (no polygon)
-      if(!is.null(dataDynamic()) && input$dataset_dynMap == "gbif_dataset"){
+      if(input$search_gbif_data &&
+         !is.null(dataDynamic()) &&
+         input$dataset_dynMap == "gbif_dataset"){
         gbif_file_clean_dynamic <- paste0(data_dir_path,"/",
                                           input$genus,"_",
                                           input$species,
@@ -751,7 +761,9 @@ observeEvent(input$saveState, {
         write.csv(dataDynamic(),file = gbif_file_clean_dynamic,row.names = FALSE)
       }
       # Save GBIF data from dynamic map (in polygon)
-      if(!is.null(data_poly()) && input$dataset_dynMap == "gbif_dataset"){
+      if(input$search_gbif_data &&
+         !is.null(data_poly()) &&
+         input$dataset_dynMap == "gbif_dataset"){
         gbif_file_clean_dynamic_poly <- paste0(data_dir_path,"/",
                                                input$genus,"_",
                                                input$species,
@@ -761,11 +773,11 @@ observeEvent(input$saveState, {
       }
 
 
-
-
       # Save raw user data (from user data)
 
+
       if(!is.null(data_user())){
+
         user_file_raw <- paste0(data_dir_path,"/",
                                 "user_raw_data",".csv")
         write.csv(data_user(),user_file_raw,row.names = FALSE)
@@ -805,13 +817,16 @@ observeEvent(input$saveState, {
 
 observeEvent(input$saveState, {
   niche_data <- data_extraction()
-  if(nchar(workflowDir()) > 0L && !is.null(niche_data) && length(workflowDir())>0L){
+  if(nchar(workflowDir()) > 0L &&
+     !is.null(niche_data) && length(workflowDir())>0L){
     # Create a directory for niche data.
-    niche_dir_path <- paste0(workflowDir(),"NicheToolBox_NicheData")
+    niche_dir_path <- file.path(workflowDir(),
+                                "NicheToolBox_NicheData")
     if(!dir.exists(niche_dir_path))
       dir.create(niche_dir_path)
     # Create a directory for workflow report
-    wf_dir_path <- paste0(workflowDir(),"NicheToolBox_workflowReport")
+    wf_dir_path <- file.path(workflowDir(),
+                             "NicheToolBox_workflowReport")
     if(!dir.exists(wf_dir_path))
       dir.create(wf_dir_path)
 

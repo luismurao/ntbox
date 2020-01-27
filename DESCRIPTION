@@ -1,19 +1,33 @@
 Package: ntbox
 Type: Package
 Title: From Getting Biodiversity Data to Evaluating Species Distribution Models in a Friendly GUI Environment
-Version: 0.4.5.4
-Date: 2019-08-27
-Authors@R: c(person("Luis", "Osorio-Olvera", email = "luismurao@gmail.com", role = c("aut", "cre")),
-             person("Jorge", "Soberón", email = "soberon@ku.edu", role = "aut"),
-             person("Vijay", "Barve", email = "vijay.barve@gmail.com", role = "aut"),
-             person("Narayani", "Barve", email = "narayani.ku@gmail.com", role = "aut"),
-             person("Manuel", "Falconi", email = "mjfalconi@gmail.com", role = "aut"))
+Version: 0.4.6.0
+Date: 2020-01-26
+Authors@R: c(person("Luis", "Osorio-Olvera", 
+                     email = "luismurao@gmail.com",
+                     role = c("aut", "cre"),
+                     comment = c(ORCID = "0000-0003-0701-5398")),
+             person("Jorge", "Soberón", 
+                     email = "soberon@ku.edu",
+                     role = "aut",
+                     comment = c(ORCID = "0000-0003-2160-4148")),
+             person("Vijay", "Barve", email = "vijay.barve@gmail.com", 
+                     role = "aut",
+                     comment = c(ORCID = "0000-0002-4852-2567")),
+             person("Narayani", "Barve", 
+                    email = "narayani.ku@gmail.com", 
+                    role = "aut",
+                    comment = c(ORCID = "0000-0002-7893-8774")),
+             person("Manuel", "Falconi", 
+                    email = "mjfalconi@gmail.com", 
+                    role = "aut",
+                    comment = c(ORCID = "0000-0002-4296-7258")))
 Description: NicheToolbox is an R package with a friendly Graphical User Interface (GUI)
              developed using shiny framework that aims to facilitate the process of building 
              niche models and estimate the species distributions.
 Maintainer: Luis Osorio-Olvera <luismurao@gmail.com>
 Depends:
- R (>= 3.3.0)
+ R (>= 3.4.0)
 Imports:
     shiny (>= 1.1.0),
     shinyFiles (>= 0.7.0),
@@ -57,6 +71,7 @@ Imports:
     scales (>= 1.0.0),
     ade4 (>= 1.7-11),
     V8 (>= 1.5),
+    rio (>= 0.5),
     future (>= 1.7.0),
     furrr (>= 0.1.0),
     stringi (>= 1.1),

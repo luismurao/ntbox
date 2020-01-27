@@ -36,7 +36,7 @@ corr_table <- reactive({
 })
 
 
-output$corr_table1 <- renderDataTable({
+output$corr_table1 <- DT::renderDataTable({
   withProgress(message = 'Doing Computations', value = 0, {
     if(!is.null(corr_table())){
       niche_bivar_corr <- corr_table()

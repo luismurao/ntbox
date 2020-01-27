@@ -232,8 +232,13 @@ print(kable(head(kmeans_df())))
 ```
 
 ```{r results="asis",echo=FALSE,eval=TRUE}
-k_means_plot <- kmeans_3d_plot_data()
-ifelse(!is.null(k_means_plot), printKmeansPlot <- 1 ,printKmeansPlot <- 0)
+if(input$load_kmeas_vars){
+  k_means_plot <- kmeans_3d_plot_data()
+  ifelse(!is.null(k_means_plot), 
+         printKmeansPlot <- 1 ,
+         printKmeansPlot <- 0)
+}
+
 ```
 
 

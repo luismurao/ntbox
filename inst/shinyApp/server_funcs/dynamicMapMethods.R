@@ -39,11 +39,15 @@ leafMapDynamic <- reactive({
 
   map <- leafMapDynamic_base()
 
-  if(!is.null(myPolygon()) && !is.null(poly_dir()) &&  !is.null(input$poly_files)){
-    map <- map %>% addPolygons(data=myPolygon(),col="darkgreen")
+  if(!is.null(myPolygon()) &&
+     !is.null(poly_dir()) &&
+     !is.null(input$poly_files)){
+    map <- map %>% addPolygons(data=myPolygon(),
+                               col="darkgreen")
   }
 
-  if(input$dataset_dynMap == "gbif_dataset" && input$search_gbif_data == 0)
+  if(input$dataset_dynMap == "gbif_dataset" &&
+     input$search_gbif_data == 0)
     return(map)
   if(is.null(data_set()))
     return(map)
@@ -85,20 +89,21 @@ leafMapDynamic <- reactive({
   if(input$define_M == 1 && input$points_in_poly > 0L && is.data.frame(data_poly())){
 
     if(dim(data_poly())[1] > 0L){
-      map <- leafMapDynamic_base() %>%
-        addMarkers(lng = data_poly()[,data_set()$longitude],
-                   lat = data_poly()[,data_set()$latitude],
-                   popup = data_poly()$dataID)
+      map <- leafMapDynamic_base()
       if(class(myPolygon()) == "SpatialPolygonsDataFrame" && input$define_M){
         map <- map %>% addPolygons(data=myPolygon(),col="darkgreen")
       }
+      map <- map %>%
+        addCircleMarkers(lng = data_poly()[,data_set()$longitude],
+                         lat = data_poly()[,data_set()$latitude],
+                         popup = data_poly()$dataID)
 
     }
     return(map)
   }
   if(input$define_M == 1 && is.data.frame(dataDynamic()) && input$points_in_poly==0){
     map <- map %>%
-      addMarkers(lng = dataDynamic()[,data_set()$longitude],
+      addCircleMarkers(lng = dataDynamic()[,data_set()$longitude],
                  lat = dataDynamic()[,data_set()$latitude],
                  popup = dataDynamic()$dataID)
     if(class(myPolygon()) == "SpatialPolygonsDataFrame" && input$define_M){
@@ -352,7 +357,9 @@ observeEvent(input$save_poly,{
     #if(poly %in% list.files(file_dir)){
     #  poly_name <- paste0(poly_name,"B_RandNUM",sample(1:1000,1))
     #}
-    writeOGR(myPolygon(), file_dir, poly_name, driver="ESRI Shapefile",overwrite_layer = T)
+    writeOGR(myPolygon(), file_dir,
+             poly_name,
+             driver="ESRI Shapefile",overwrite_layer = T)
 
   }
 

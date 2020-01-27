@@ -197,7 +197,7 @@ output$nRcordsGBIF <- renderPrint({
 
 # Display gbif data
 
-output$gbif_table <- renderDataTable({
+output$gbif_table <- DT::renderDataTable({
   df0 <- data_gbif_search()
   df1 <- data_gbif()
 
@@ -229,10 +229,7 @@ output$gbif_table <- renderDataTable({
     return(no_occ)
   }
 
-},
-options = list(aLengthMenu = c(5, 10, 25,
-                               50, 100, 500),
-               iDisplayLength = 10))
+})
 
 
 # Download GBIF data

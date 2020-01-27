@@ -1,17 +1,20 @@
 datasetGBIF <- list('Search for a species'=c(1))
 # GUI for searching GBIF data
+mjax <-'https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML'
 gbif_data <- sidebarLayout(position = "left",
                            sidebarPanel(
                              tags$head(
-                               tags$script(src = 'https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML', type = 'text/javascript')
+                               tags$script(
+                                 src = mjax,
+                                 type = 'text/javascript')
                              ),
                              titlePanel("NicheToolBox"),
                              h3("GBIF data"),
-                             #p("Here you can request data to the", a(href="http://www.gbif.org/",target='_blank',"GBIF"),
-                             #   "API using the",  a(href="http://cran.r-project.org/web/packages/spocc/vignettes/spocc_vignette.html",
-                             #                       target='_blank',"spocc"),"package"),
-                             HTML("<p align ='justify'>Here you can request data to the</p>"),
-                             a(href="http://www.gbif.org/",target='_blank',"GBIF"),
+                             HTML(
+                               "<p align ='justify'>Here you can request data to the</p>"
+                               ),
+                             a(href="http://www.gbif.org/",
+                               target='_blank',"GBIF"),
                              HTML("API using the"),
                              a(href="http://cran.r-project.org/web/packages/spocc/vignettes/spocc_vignette.html",
                                target='_blank',"spocc"),
@@ -19,23 +22,34 @@ gbif_data <- sidebarLayout(position = "left",
                              br(),
                              textInput(inputId= "genus",
                                        label="Enter the species genus:",
-                                       value="",placeholder = HTML("i.e. Anolis")),
+                                       value="",
+                                       placeholder = HTML("i.e. Anolis")),
                              textInput(inputId= "species",
                                        label="Enter the name of species:",
-                                       value="",placeholder = "i.e. trinitatis"),
-                             numericInput("occlim","Enter a occ search limit",value = 500,min = 1,max = 10000000),
+                                       value="",
+                                       placeholder = "i.e. trinitatis"),
+                             numericInput("occlim","Enter a occ search limit",
+                                          value = 500,min = 1,max = 10000000),
                              br(),
-                             actionButton(input="search_gbif_data",label="Search GBIF",styleclass="primary"),
+                             actionButton(input="search_gbif_data",
+                                          label="Search GBIF",styleclass="primary"),
                              busyIndicator("Loading...",wait = 0),
                              br(),
                              br(),
                              h3("Cleaning duplicates"),
-                             helpText("In this section you can clean your longitude and latitude data using a threshold distance between points to be considered as duplicates."),
-                             tags$div(title="Coordinate data must be in decimal degrees",
-                                      selectInput('xLongitudeGBIF', 'Select longitude', names(datasetGBIF)[1])
+                             helpText("In this section you can clean your
+                                      longitude and latitude data using a
+                                      threshold distance between points to
+                                      be considered as duplicates."),
+                             tags$div(title="Coordinate data must be in
+                                      decimal degrees",
+                                      selectInput('xLongitudeGBIF',
+                                                  'Select longitude',
+                                                  names(datasetGBIF)[1])
                              ),
                              tags$div(title="Coordinate data must be in decimal degrees",
-                                      selectInput('yLatitudeGBIF', 'Selct latitude', names(datasetGBIF)[1])
+                                      selectInput('yLatitudeGBIF',
+                                                  'Selct latitude', names(datasetGBIF)[1])
                              ),
                              tags$div(tile="Here you can see the dimensions of your data set",
                                       p('The data set has'),
@@ -50,7 +64,9 @@ gbif_data <- sidebarLayout(position = "left",
                              ),
 
                              tags$div(title="Cleans the duplicates on your dataset according to the threshold distance",
-                                      actionButton(input="clean_dup_gbif",label="Clean duplicates",styleclass="primary")
+                                      actionButton(input="clean_dup_gbif",
+                                                   label="Clean duplicates",
+                                                   styleclass="primary")
                              ),
                              br(),
 
@@ -65,4 +81,4 @@ gbif_data <- sidebarLayout(position = "left",
                              br(),
                              h4("Download your clean data"),
                              downloadButton(outputId="downGBIF",label="Download Data")),
-                             mainPanel(dataTableOutput("gbif_table")))
+                             mainPanel(DT::dataTableOutput("gbif_table")))

@@ -61,5 +61,5 @@ user_data <- sidebarLayout(position = "left",
 
                            ),
                            mainPanel(
-                             dataTableOutput("user_table")
+                             DT::dataTableOutput("user_table")
                            ))
