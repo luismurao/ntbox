@@ -42,7 +42,7 @@ mop calculates a Mobility-Oriented Parity
 \details{
 The MOP is calculated following Owens et al.
 (2013; \url{https://doi.org/10.1016/j.ecolmodel.2013.04.011}). This function is a modification
-of the \code{\link[ENMGadgets]{MOP}} funcion, available at \url{https://github.com/narayanibarve/ENMGadgets}.The value of the comp_each parameter dependes on the RAM memory aviable for the process; the computation can be faster if the user choose a bigger value for this parameter but you have to becarefull on memory use.
+of the MOP funcion, available at \url{https://github.com/narayanibarve/ENMGadgets}.The value of the comp_each parameter dependes on the RAM memory aviable for the process; the computation can be faster if the user choose a bigger value for this parameter but you have to becarefull on memory use.
 }
 \examples{
 m_stack <- raster::stack(list.files(system.file("extdata",

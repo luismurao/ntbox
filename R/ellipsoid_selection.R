@@ -302,18 +302,26 @@ ellipsoid_omr <- function(env_data,env_test=NULL,env_bg,cf_level,mve=TRUE,proc=F
   succsID <- which(names(occs_table) %in% "1")
   failsID <- which(names(occs_table) %in% "0")
 
-  occs_succs <-  ifelse(length(succsID)>0L,
-                             occs_table[[succsID]],0)
-  occs_fail <-  ifelse(length(failsID)>0L,
-                            occs_table[[failsID]],0)
+  occs_succs <-  if(length(succsID)>0L){
+    occs_table[[succsID]]
+  }
+  else{
+    0
+  }
+  occs_fail <-  if(length(failsID)>0L){
+    occs_table[[failsID]]
+  }
+  else{
+   0
+  }
 
-  a <-  occs_fail
-  omrate <- a /nrow( in_e)
+  a_train <-  occs_fail
+  omrate_train <- a_train /nrow( in_e)
 
   d_results <- data.frame(fitted_vars =paste(names(emd$centroid),
                                              collapse =  ","),
                           nvars=length(emd$centroid),
-                          om_rate_train=omrate)
+                          om_rate_train= omrate_train)
   if(is.data.frame(env_test) || is.matrix(env_test)){
     in_etest <-  inEllipsoid(centroid = emd$centroid,
                              eShape = emd$covariance,
@@ -327,12 +335,20 @@ ellipsoid_omr <- function(env_data,env_test=NULL,env_bg,cf_level,mve=TRUE,proc=F
     succsID <- which(names(occs_table_test) %in% "1")
     failsID <- which(names(occs_table_test) %in% "0")
 
-    occs_succs_test <-  ifelse(length(succsID)>0L,
-                               occs_table_test[[succsID]],1)
-    occs_fail_test <-  ifelse(length(failsID)>0L,
-                              occs_table_test[[failsID]],0)
-    a <-  occs_fail_test
-    omrate_test <- a /nrow( in_etest)
+    occs_succs_test <-  if(length(succsID)>0L){
+      occs_table_test[[succsID]]
+    }
+    else{
+      0
+    }
+    occs_fail_test <-  if(length(failsID)>0L){
+      occs_table_test[[failsID]]
+    }
+    else{
+     0
+    }
+    a_test <-  occs_fail_test
+    omrate_test <- a_test /nrow( in_etest)
     d_results <- data.frame(d_results,
                             om_rate_test=omrate_test)
   }
@@ -350,11 +366,19 @@ ellipsoid_omr <- function(env_data,env_test=NULL,env_bg,cf_level,mve=TRUE,proc=F
     succs_bg_ID <- which(names(bg_table) %in% "1")
     fails_bg_ID <- which(names(bg_table) %in% "0")
 
-    bg_succs <-  ifelse(length(succs_bg_ID)>0L,
-                          bg_table[[succs_bg_ID]],0)
-    bg_fails <-  ifelse(length(fails_bg_ID)>0L,
-                         occs_table[[fails_bg_ID]],0)
+    bg_succs <-  if(length(succs_bg_ID)>0L){
+      bg_table[[succs_bg_ID]]
+    }
+    else{
+      0
+    }
 
+    bg_fails <-  if(length(fails_bg_ID)>0L){
+      bg_table[[fails_bg_ID]]
+    }
+    else{
+      0
+    }
     prevBG <- bg_succs/(bg_fails+bg_succs)
     d_results <-data.frame( d_results,
                             bg_prevalence= prevBG)
