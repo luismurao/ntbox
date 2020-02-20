@@ -16,7 +16,7 @@
 #' @return A data.frame containing the AUC values and AUC ratios calculated for each iteration.
 #' @details Partial ROC is calculated following Peterson et al.
 #' (2008; \url{http://dx.doi.org/10.1016/j.ecolmodel.2007.11.008}). This function is a modification
-#' of the \code{\link[ENMGadgets]{PartialROC}} funcion, available at \url{https://github.com/narayanibarve/ENMGadgets}.
+#' of the PartialROC funcion, available at \url{https://github.com/narayanibarve/ENMGadgets}.
 #' @references Peterson,A.T. et al. (2008) Rethinking receiver operating characteristic analysis applications in ecological niche modeling. Ecol. Modell., 213, 63–72.
 #' @examples
 #' # Load a continuous model
