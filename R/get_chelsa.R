@@ -29,7 +29,7 @@
 get_chelsa <- function(period,model=NULL,rcp=NULL,sv_dir=getwd(),load2r=TRUE,parallel=TRUE){
   chelsa_urls <- NULL
   if(period == "current"){
-    url <- "https://www.wsl.ch/lud/chelsa/data/bioclim/integer/"
+    url <- "https://envidatrepo.wsl.ch/uploads/chelsa/chelsa_V1/bioclim/integer/"
     m_ab <- "chelsa_current"
     chelsa_names <- c(paste0("CHELSA_bio10_0",1:9,".tif"),
                   paste0("CHELSA_bio10_",10:19,".tif"))
@@ -44,9 +44,9 @@ get_chelsa <- function(period,model=NULL,rcp=NULL,sv_dir=getwd(),load2r=TRUE,par
                                                   package = "ntbox"),
                                       "chelsa_vars.rds"))
     if(period == "2041-2060")
-      url <- "https://www.wsl.ch/lud/chelsa/data/cmip5/2041-2060/bio/"
+      url <- "https://envidatrepo.wsl.ch/uploads/chelsa/chelsa_V1/cmip5/2041-2060/bio/"
     if(period == "2061-2080")
-      url <- "https://www.wsl.ch/lud/chelsa/data/cmip5/2061-2080/bio/"
+      url <- "https://envidatrepo.wsl.ch/uploads/chelsa/chelsa_V1/cmip5/2061-2080/bio/"
 
     m_ab <- paste(model,period,rcp,sep = "_")
     m_abID <- which( chelsa$M_AB %in% m_ab)
