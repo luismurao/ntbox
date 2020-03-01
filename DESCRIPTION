@@ -79,7 +79,7 @@ Imports:
     spocc (>= 0.7.0),
     sdmpredictors (>= 0.2.8),
     Rcpp (>= 0.12.18),
-URL: https://luismurao.github.io/
+URL: https://github.com/luismurao/ntbox/
 BugReports: https://github.com/luismurao/ntbox/issues
 License: GPL-3
 Encoding: UTF-8

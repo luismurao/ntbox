@@ -347,39 +347,39 @@ getEnvData <- eventReactive(input$get_now,{
     return(wc)
   }
   if(input$env_data=="ch_pre" && input$getEnvData){
-    chelsa_biocurrent <- get_chelsa(period = "current",
-                                    sv_dir =layers_dir,
-                                    load2r = TRUE,
-                                    parallel = input$ch_parallel)
+    chelsa_biocurrent <- ntbox::get_chelsa(period = "current",
+                                           sv_dir =layers_dir,
+                                           load2r = TRUE,
+                                           parallel = input$ch_parallel)
     return(chelsa_biocurrent)
   }
   if(input$env_data=="env_pres" && input$getEnvData){
-    envirem_pass <-  get_envirem_clim(period= "current",
-                                      gcm = NULL,
-                                      region = input$env_reg,
-                                      resolution = input$env_res,
-                                      fmt= input$env_fmt,
-                                      sv_dir = layers_dir,
-                                      load2r = TRUE)
+    envirem_pass <-  ntbox::get_envirem_clim(period= "current",
+                                             gcm = NULL,
+                                             region = input$env_reg,
+                                             resolution = input$env_res,
+                                             fmt= input$env_fmt,
+                                             sv_dir = layers_dir,
+                                             load2r = TRUE)
     return(envirem_pass)
   }
   if(input$env_data=="env_elev_pres" && input$getEnvData){
-    envirem_pass <-  get_envirem_elev(period= "current",
-                                      region = input$env_reg,
-                                      resolution = input$env_res,
-                                      fmt= input$env_fmt,
-                                      sv_dir = layers_dir,
-                                      load2r = TRUE)
+    envirem_pass <-  ntbox::get_envirem_elev(period= "current",
+                                             region = input$env_reg,
+                                             resolution = input$env_res,
+                                             fmt= input$env_fmt,
+                                             sv_dir = layers_dir,
+                                             load2r = TRUE)
     return(envirem_pass)
   }
   if(input$env_data=="bio_pre" && input$getEnvData){
-    bio_oracle <-  get_bio_oracle(period= "current",
-                                    var_type = input$bio_type,
-                                    model = NULL,
-                                    scenario = NULL,
-                                    sv_dir = layers_dir,
-                                    load2r = TRUE,
-                                    parallel = input$ch_parallel)
+    bio_oracle <-  ntbox::get_bio_oracle(period= "current",
+                                         var_type = input$bio_type,
+                                         model = NULL,
+                                         scenario = NULL,
+                                         sv_dir = layers_dir,
+                                         load2r = TRUE,
+                                         parallel = input$ch_parallel)
     return(bio_oracle)
   }
 
