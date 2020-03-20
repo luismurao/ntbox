@@ -9,14 +9,26 @@ bioclim_ui <- sidebarLayout(position = "left",
                                 selectInput("trainBio","Select a region to train the model",
                                             choices = c("All raster extent"="wWorld","Your shapefile of M"="mLayers")),
                                 selectInput("selectMBio","Select a region to project the model",
-                                            choices = c("All raster extent"="wWorld","Your shapefile of M"="mLayers")),
+                                            choices = c("All raster extent"="wWorld",
+                                                        "Your shapefile of M"="mLayers")),
                                 selectInput(inputId = "biosBioclim","Select the variables",choices = NULL,multiple = TRUE),
-                                conditionalPanel("input.selectMBio == 'wWorld'",
-                                                 actionButton("run_bioclim_all",label = "Run Bioclim")
+                                conditionalPanel("input.trainBio == 'wWorld' && input.selectMBio == 'wWorld'",
+                                                 actionButton("run_bioclim_all_all_train",
+                                                              label = "Run Bioclim 1")
                                                  ),
-                                conditionalPanel("input.selectMBio == 'mLayers'",
-                                                 actionButton("run_bioclim_m",label = "Run Bioclim")
+                                conditionalPanel("input.trainBio == 'wWorld' && input.selectMBio == 'mLayers'",
+                                                 actionButton("run_bioclim_m_all_train",
+                                                              label = "Run Bioclim 2")
                                 ),
+                                conditionalPanel("input.trainBio == 'mLayers' && input.selectMBio == 'wWorld'",
+                                                 actionButton("run_bioclim_all_m_train",
+                                                              label = "Run Bioclim 3")
+                                ),
+                                conditionalPanel("input.trainBio == 'mLayers' && input.selectMBio == 'mLayers'",
+                                                 actionButton("run_bioclim_m_m_train",
+                                                              label = "Run Bioclim 4")
+                                ),
+
                                 h5("Download your model in .asc"),
                                 downloadButton(outputId = "downBiclimRas",label = "Download model")
 
