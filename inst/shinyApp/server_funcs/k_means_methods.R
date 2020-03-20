@@ -107,7 +107,16 @@ kmeans_df <- reactive({
       else
         geo_dat <-occ_extract()$xy_data
 
-      kmeans_data <- data.frame(geo_dat,cluster = cluster,niche_data)
+      emessage <-  try({
+        kmeans_data <- data.frame(geo_dat,
+                                  cluster = cluster,
+                                  niche_data)
+      },silent = TRUE)
+
+      if(class(emessage)=="try-error")
+        return()
+
+
       return(kmeans_data)
 
     }
@@ -150,13 +159,16 @@ kmeans_3d_plot_data <- reactive({
 
 kmeans_3d_plot <- shiny::reactive({
   if(!is.null(kmeans_3d_plot_data())){
-    k3d <- ellipsoid_cluster_plot_3d(niche_data = kmeans_3d_plot_data()$data,
-                                     cluster_ids = kmeans_3d_plot_data()$cluster_ids,
-                                     mve = input$km_mve,
-                                     vgrupo = kmeans_3d_plot_data()$vgrupo,
-                                     x = input$x1,y = input$y1,
-                                     z = input$z1,alpha = input$alpha,ellips = input$ellips,
-                                     grupos=input$grupos,input$cex1,level=input$kmeans_level)
+    k3d <- ntbox::ellipsoid_cluster_plot_3d(niche_data = kmeans_3d_plot_data()$data,
+                                            cluster_ids = kmeans_3d_plot_data()$cluster_ids,
+                                            mve = input$km_mve,
+                                            vgrupo = kmeans_3d_plot_data()$vgrupo,
+                                            x = input$x1,y = input$y1,
+                                            z = input$z1,
+                                            alpha = input$alpha,
+                                            ellips = input$ellips,
+                                            grupos=input$grupos,
+                                            input$cex1,level=input$kmeans_level)
     return(k3d)
 
   }
