@@ -48,11 +48,16 @@ binomial <- sidebarLayout(position = 'left',
                                  actionButton("run_binomial","Run")
                                  ),
                                wellPanel(
-                                 downloadButton(outputId="binomial_down",label="Download results")
+                                 downloadButton(outputId="binomial_down",
+                                                label="Test results"),
+                                 downloadButton(outputId="binomial_val_down",
+                                                label="Coordinates and values")
                                )
                                ),
                              mainPanel(
                                plotOutput("bintest_map"),
                                h3("Binomial test results"),
-                               dataTableOutput('binomal_results'))
+                               dataTableOutput('binomal_results'),
+                               h3("Coordinates and prediction values"),
+                               dataTableOutput('binomal_values'))
                              )
