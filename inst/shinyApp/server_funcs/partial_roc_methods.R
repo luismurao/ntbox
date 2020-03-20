@@ -139,6 +139,57 @@ pRocStats <- reactive({
   dataP <- partialRoc()
 
   if(!is.null(dataP)){
+    res1 <- capture.output({
+      cat('++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n')
+      cat('                         Statistics for Partial Roc                                 \n')
+      cat('                          after',input$iter, 'simulations                          \n')
+      cat('++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n\n')
+
+      cat('The mean value for AUC ratio at, ',1 - input$omission,' is:',mean(dataP[,4],na.rm=TRUE),'\n\n')
+      cat('The mean value for partial AUC at, ',1 - input$omission,' is:',mean(dataP[,2],na.rm=TRUE),'\n\n')
+      cat('The mean value for partial AUC at random is:',mean(dataP[,3],na.rm=TRUE),'\n\n')
+
+
+      cat('++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n')
+      cat('                         Statistics for the difference between                         \n')
+      cat('                       AUC random and AUC from model prediction                      \n')
+      cat('++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n\n')
+      cat('      Ho: The difference between AUC from  model prediction and AUC at random is <=0\n')
+      cat('      Ha: The difference between AUC from  model prediction and AUC at random is  >0\n')
+      cat('++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n\n')
+
+      print(describe(dataP$AUC_ratio)[c(2,3,4,5,7,8,9,10,11,12)])
+      #mod <- t.test(y = dataP$AUC_at_0.5,x = dataP[,2],alternative = 'greater')
+      mod <- 1 - (length(which(dataP[,4]>1))/length(which(!is.na(dataP[,4]))))
+      mod <- list(p.value=mod)
+      cat('\n\n')
+      if(mod$p.value<0.001) pval <- paste0(round(mod$p.value,4),' ***')
+      if(mod$p.value< 0.01 && mod$p.value> 0.001) pval <- paste0(round(mod$p.value,4),' **')
+      if(mod$p.value< 0.05 && mod$p.value > 0.01) pval <- paste0(round(mod$p.value,4),' *')
+      if(mod$p.value > 0.05) pval <- round(mod$p.value,4)
+
+      cat("The p-value for the difference between means (AUC random and AUC partial) is: ",pval)
+      if(mod$p.value<0.05)
+        cat('\n\nReject Ho and Accept Ha: The difference between AUC from  model prediction and AUC at random is  >0')
+      else
+        cat('\n\nAccept Ho and Reject Ha')
+      cat('\n\n\n')
+      mod
+    })
+
+    return( res1)
+  }
+  else
+    return()
+
+})
+
+pRocStatsb <- reactive({
+
+  dataP <- partialRoc()
+
+  if(!is.null(dataP)){
+
     cat('++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n')
     cat('                         Statistics for Partial Roc                                 \n')
     cat('                          after',input$iter, 'simulations                          \n')
@@ -173,7 +224,7 @@ pRocStats <- reactive({
     else
       cat('\n\nAccept Ho and Reject Ha')
     cat('\n\n\n')
-    return(mod)
+    return( mod)
   }
   else
     return()
@@ -181,9 +232,10 @@ pRocStats <- reactive({
 })
 
 
+
 output$pStats <- renderPrint({
   if(!is.null(pRocStats()))
-    return(pRocStats())
+    return(pRocStatsb())
   else
     return()
 })
