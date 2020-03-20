@@ -1,0 +1,584 @@
+---
+title: "NicheToolBox: Ecological Niche Modeling module"
+date: "`r date()`"
+output: 
+  html_document:
+    self_contained: no
+---
+
+This is **NicheToolBox Ecological Niche Modeling module report** here you can find a quick view of the thinks that you have done in the software. Remember that this is free software so it comes with no waranty, please report any bugs you find at <luismurao@gmail.com> or or via projects GitHub repository <https://github.com/luismurao/ntbox>.
+
+```{r setup, echo=FALSE}
+library(knitr)
+library(rgl)
+knitr::opts_chunk$set(echo = TRUE)
+knit_hooks$set(rgl = hook_rgl, webgl = hook_webgl)
+plot_function <- system.file("shinyApp/helpers/ellipsoid_3D_plot.R",
+                             package = "ntbox")
+```
+
+
+
+```{r results="asis",echo=FALSE}
+printEllip_all_all_train <- FALSE
+printEllip_all_m_train <- FALSE
+printEllip_m_m_train <- FALSE 
+printEllip_m_all_train <- FALSE
+emap_all_all_train <- FALSE
+emap_all_m_train <- FALSE
+emap_m_all_train <- FALSE
+emap_m_m_train <- FALSE
+
+if(input$selectBios_all_all_train && (!is.null(mve_obj_all()) || !is.null(mve_obj_m()))){
+  printEllip_all_all_train <- TRUE
+  if(!is.null(leaf_ellip_all_all_train())) emap_all_all_train <- TRUE
+  
+}
+if(input$selectBios_all_m_train && (!is.null(mve_obj_all()) || !is.null(mve_obj_m()))){
+  
+  printEllip_all_m_train <- TRUE
+  if(!is.null(leaf_ellip_all_m_train())) emap_all_m_train <- TRUE
+}
+if(input$selectBios_m_m_train && (!is.null(mve_obj_all()) || !is.null(mve_obj_m()))){
+  printEllip_m_m_train <- TRUE
+  if(!is.null(leaf_ellip_m_m_train())) emap_m_m_train <- TRUE
+
+}
+if(input$selectBios_m_all_train && (!is.null(mve_obj_all()) || !is.null(mve_obj_m()))){
+  printEllip_m_all_train <- TRUE
+  if(!is.null(leaf_ellip_m_all_train())) emap_m_all_train <- TRUE
+
+}
+
+all_opts <- c(printEllip_all_all_train,
+              printEllip_all_m_train,
+              printEllip_m_m_train,
+              printEllip_m_all_train)
+
+
+if(TRUE %in% all_opts){
+  cat("## Ellipsoid modeling report")
+  cat("\n")
+}
+
+```
+
+
+```{r results="asis", echo=FALSE,eval=printEllip_all_all_train}
+cat("### Ellipsoid data for model trained in all raster area and projected in all raster area\n")
+```
+
+
+```{r  echo=printEllip_all_all_train,eval=printEllip_all_all_train}
+ellipsoid_metadata <- mve_obj_all()
+```
+
+
+```{r results="asis", echo=FALSE,eval=printEllip_all_all_train}
+cat("##### Ellipsoid centroid\n")
+```
+
+```{r echo=printEllip_all_all_train,eval=printEllip_all_all_train}
+print(ellipsoid_metadata$centroid)
+```
+
+
+
+```{r results="asis", echo=FALSE,eval=printEllip_all_all_train}
+cat("##### Shape matrix\n")
+```
+
+```{r echo=printEllip_all_all_train,eval=printEllip_all_all_train}
+print(ellipsoid_metadata$covariance)
+```
+
+
+```{r results="asis", echo=FALSE,eval=printEllip_all_all_train}
+cat("##### Ellipsoid volume")
+```
+
+
+```{r echo=printEllip_all_all_train,eval=printEllip_all_all_train}
+ellipsoid_metadata$niche_volume
+```
+
+
+```{r echo=FALSE,eval=FALSE}
+if(length(ellipsoid_metadata$centroid) == 3){
+  rgl::plot3d(rgl::ellipse3d(ellipsoid_metadata$covariance,
+                           centre = ellipsoid_metadata$centroid,
+                           level = 0.99),
+            alpha=0.4,col="blue")
+  rglwidget()
+}
+```
+
+
+```{r results="asis", echo=FALSE,eval=printEllip_all_all_train}
+cat("##### Ellipsoid projection in E")
+```
+
+```{r echo=printEllip_all_all_train,eval=printEllip_all_all_train}
+plot_function <- system.file("shinyApp/helpers/ellipsoid_3D_plot.R",
+                             package = "ntbox")
+source(plot_function)
+
+if(length(ellipsoid_metadata$centroid) == 3){
+  ellipsoid_obj <- ellip_model_all_rast_all_train()
+  suits <-ellipsoid_obj$suits[,"suitability"]
+  data <- ellipsoid_obj$suits[,input$biosEllip]
+  covar <- ellipsoid_metadata$covariance
+  centroid <- ellipsoid_metadata$centroid
+  ellipsoid_plot_3d(suits = suits,
+                    data = data,covar = covar,
+                    centroid = centroid,
+                    xlab1 = input$biosEllip[1],
+                    ylab1 = input$biosEllip[2])
+  rglwidget()
+} else{
+  multi.hist(occ_extract()$data[,input$biosEllip],
+                 dcol= c("blue","red"),dlty=c("dotted", "solid"))
+}
+```
+
+```{r results="asis", echo=FALSE,eval=emap_all_all_train}
+cat("##### Ellipsoid projection in G")
+```
+
+```{r results="asis", echo=emap_all_all_train,eval=emap_all_all_train}
+leaf_ellip_all_all_train()
+```
+
+```{r results="asis", echo=FALSE,eval=printEllip_all_m_train}
+cat("### Ellipsoid data for model trained in M area and projected in All raster area\n")
+```
+
+
+
+```{r  echo=printEllip_all_m_train,eval=printEllip_all_m_train}
+ellipsoid_metadata <- mve_obj_m()
+```
+
+
+```{r results="asis", echo=FALSE,eval=printEllip_all_m_train}
+cat("##### Ellipsoid centroid\n")
+```
+
+```{r echo=printEllip_all_m_train,eval=printEllip_all_m_train}
+print(ellipsoid_metadata$centroid)
+```
+
+
+
+```{r results="asis", echo=FALSE,eval=printEllip_all_m_train}
+cat("##### Shape matrix\n")
+```
+
+```{r echo=printEllip_all_m_train,eval=printEllip_all_m_train}
+print(ellipsoid_metadata$covariance)
+```
+
+
+```{r results="asis", echo=FALSE,eval=printEllip_all_m_train}
+cat("##### Ellipsoid volume")
+```
+
+
+```{r echo=printEllip_all_m_train,eval=printEllip_all_m_train}
+ellipsoid_metadata$niche_volume
+```
+
+
+```{r results="asis", echo=FALSE,eval=printEllip_all_m_train}
+cat("##### Ellipsoid projection in E")
+```
+
+```{r echo=printEllip_all_m_train,eval=printEllip_all_m_train}
+plot_function <- system.file("shinyApp/helpers/ellipsoid_3D_plot.R",
+                             package = "ntbox")
+source(plot_function)
+
+if(length(ellipsoid_metadata$centroid) == 3){
+  ellipsoid_obj <- ellip_model_all_rast_m_train()
+  suits <-ellipsoid_obj$suits[,"suitability"]
+  data <- ellipsoid_obj$suits[,input$biosEllip]
+  covar <- ellipsoid_metadata$covariance
+  centroid <- ellipsoid_metadata$centroid
+  ellipsoid_plot_3d(suits = suits,
+                    data = data,covar = covar,
+                    centroid = centroid,
+                    xlab1 = input$biosEllip[1],
+                    ylab1 = input$biosEllip[2])
+  rglwidget()
+} else{
+  multi.hist(occ_extract()$data[,input$biosEllip],
+                 dcol= c("blue","red"),dlty=c("dotted", "solid"))
+}
+```
+
+
+```{r results="asis", echo=FALSE,eval=emap_all_m_train}
+cat("##### Ellipsoid projection in G")
+```
+
+```{r results="asis", echo=emap_all_m_train,eval=emap_all_m_train}
+leaf_ellip_all_m_train()
+```
+
+
+
+```{r results="asis", echo=FALSE,eval=printEllip_m_all_train}
+cat("### Ellipsoid data for model trained in all area and projected in M raster area\n")
+```
+
+
+
+```{r  echo=printEllip_m_all_train,eval=printEllip_m_all_train}
+ellipsoid_metadata <- mve_obj_all()
+```
+
+
+```{r results="asis", echo=FALSE,eval=printEllip_m_all_train}
+cat("##### Ellipsoid centroid\n")
+```
+
+```{r echo=printEllip_m_all_train,eval=printEllip_m_all_train}
+print(ellipsoid_metadata$centroid)
+```
+
+
+
+```{r results="asis", echo=FALSE,eval=printEllip_m_all_train}
+cat("##### Shape matrix\n")
+```
+
+```{r echo=printEllip_m_all_train,eval=printEllip_m_all_train}
+print(ellipsoid_metadata$covariance)
+```
+
+
+```{r results="asis", echo=FALSE,eval=printEllip_m_all_train}
+cat("##### Ellipsoid volume")
+```
+
+
+```{r echo=printEllip_m_all_train,eval=printEllip_m_all_train}
+ellipsoid_metadata$niche_volume
+```
+
+
+```{r results="asis", echo=FALSE,eval=printEllip_m_all_train}
+cat("##### Ellipsoid projection in E")
+```
+
+```{r echo=printEllip_m_all_train,eval=printEllip_m_all_train}
+plot_function <- system.file("shinyApp/helpers/ellipsoid_3D_plot.R",
+                             package = "ntbox")
+source(plot_function)
+
+if(length(ellipsoid_metadata$centroid) == 3){
+  ellipsoid_obj <- ellip_model_m_rast_all_train()
+  suits <-ellipsoid_obj$suits[,"suitability"]
+  data <- ellipsoid_obj$suits[,input$biosEllip]
+  covar <- ellipsoid_metadata$covariance
+  centroid <- ellipsoid_metadata$centroid
+  ellipsoid_plot_3d(suits = suits,
+                    data = data,covar = covar,
+                    centroid = centroid,
+                    xlab1 = input$biosEllip[1],
+                    ylab1 = input$biosEllip[2])
+  rglwidget()
+} else{
+  multi.hist(occ_extract()$data[,input$biosEllip],
+                 dcol= c("blue","red"),dlty=c("dotted", "solid"))
+}
+```
+
+
+```{r results="asis", echo=FALSE,eval=emap_m_all_train}
+cat("##### Ellipsoid projection in G")
+```
+
+```{r results="asis", echo=emap_m_all_train,eval=emap_m_all_train}
+leaf_ellip_m_all_train()
+```
+
+
+```{r results="asis", echo=FALSE,eval=printEllip_m_m_train}
+cat("### Ellipsoid data for model trained in M area and projected in M raster area\n")
+```
+
+
+
+```{r  echo=printEllip_m_m_train,eval=printEllip_m_m_train}
+ellipsoid_metadata <- mve_obj_m()
+```
+
+
+```{r results="asis", echo=FALSE,eval=printEllip_m_m_train}
+cat("##### Ellipsoid centroid\n")
+```
+
+```{r echo=printEllip_m_m_train,eval=printEllip_m_m_train}
+print(ellipsoid_metadata$centroid)
+```
+
+
+
+```{r results="asis", echo=FALSE,eval=printEllip_m_m_train}
+cat("##### Shape matrix\n")
+```
+
+```{r echo=printEllip_m_m_train,eval=printEllip_m_m_train}
+print(ellipsoid_metadata$covariance)
+```
+
+
+```{r results="asis", echo=FALSE,eval=printEllip_m_m_train}
+cat("##### Ellipsoid volume")
+```
+
+
+```{r echo=printEllip_m_m_train,eval=printEllip_m_m_train}
+ellipsoid_metadata$niche_volume
+```
+
+
+```{r results="asis", echo=FALSE,eval=printEllip_m_m_train}
+cat("##### Ellipsoid projection in E")
+```
+
+```{r echo=printEllip_m_m_train,eval=printEllip_m_m_train}
+plot_function <- system.file("shinyApp/helpers/ellipsoid_3D_plot.R",
+                             package = "ntbox")
+source(plot_function)
+
+if(length(ellipsoid_metadata$centroid) == 3){
+  ellipsoid_obj <-ellip_model_m_rast_m_train()
+  suits <-ellipsoid_obj$suits[,"suitability"]
+  data <- ellipsoid_obj$suits[,input$biosEllip]
+  covar <- ellipsoid_metadata$covariance
+  centroid <- ellipsoid_metadata$centroid
+  ellipsoid_plot_3d(suits = suits,
+                    data = data,covar = covar,
+                    centroid = centroid,
+                    xlab1 = input$biosEllip[1],
+                    ylab1 = input$biosEllip[2])
+  rglwidget()
+} else{
+  multi.hist(occ_extract()$data[,input$biosEllip],
+                 dcol= c("blue","red"),dlty=c("dotted", "solid"))
+}
+```
+
+```{r results="asis", echo=FALSE,eval=emap_m_m_train}
+cat("##### Ellipsoid projection in G")
+```
+
+```{r results="asis", echo=emap_m_m_train,eval=emap_m_m_train}
+leaf_ellip_m_m_train()
+```
+
+
+
+
+```{r results="asis",echo=FALSE}
+printBio_all_all_train <- FALSE
+printBio_all_m_train <- FALSE
+printBio_m_m_train <- FALSE 
+printBio_m_all_train <- FALSE
+bmap_all_all_train <- FALSE
+bmap_all_m_train <- FALSE
+bmap_m_all_train <- FALSE
+bmap_m_m_train <- FALSE
+
+if(input$run_bioclim_all_all_train && is.list(bioclim_model_all_all_train())){
+  printBio_all_all_train <- TRUE
+  if(!is.null(leaf_bio_all_all_train())) bmap_all_all_train <- TRUE
+}
+
+if(input$run_bioclim_all_m_train && is.list(bioclim_model_all_m_train())){
+  printBio_all_m_train <- TRUE
+  if(!is.null(leaf_bio_all_m_train())) bmap_all_m_train <- TRUE
+}
+if(input$run_bioclim_m_m_train && is.list(bioclim_model_m_m_train())){
+  printBio_m_m_train <- TRUE
+  if(!is.null(leaf_bio_m_m_train())) bmap_m_m_train <- TRUE
+}
+if(input$run_bioclim_m_all_train && is.list(bioclim_model_m_all_train())){
+  printBio_m_all_train <- TRUE
+  if(!is.null(leaf_bio_m_all_train())) bmap_m_all_train <- TRUE
+}
+
+bio_all_opts <- c(printBio_all_all_train,
+                  printBio_all_m_train,
+                  printBio_m_m_train,
+                  printBio_m_all_train)
+
+if(TRUE %in% bio_all_opts){
+  cat("## Bioclim modeling report")
+  cat("\n")
+}
+```
+
+
+
+```{r results="asis", echo=FALSE,eval=printBio_all_all_train}
+cat("### Bioclim data for model trained in all raster area and projected in all raster area\n")
+```
+
+
+```{r  echo=printBio_all_all_train,eval=printBio_all_all_train}
+bioclim_metadata <- bioclim_model_all_all_train()
+```
+
+```{r results="asis", echo=FALSE,eval=printBio_all_all_train}
+cat("##### Bioclim ranges\n")
+```
+
+
+```{r  echo=printBio_all_all_train,eval=printBio_all_all_train}
+cat("Min values:\n")
+print(bioclim_metadata$train@min)
+cat("Max values:\n")
+print(bioclim_metadata$train@max)
+```
+
+```{r results="asis", echo=FALSE,eval=printBio_all_all_train}
+cat("##### Bioclim response curves\n")
+```
+
+```{r echo=printBio_all_all_train,eval=printBio_all_all_train}
+dismo::response(bioclim_metadata$train)
+```
+
+
+```{r results="asis", echo=FALSE,eval=bmap_all_all_train}
+cat("##### Bioclim projection in G")
+```
+
+```{r results="asis", echo=bmap_all_all_train,eval=bmap_all_all_train}
+leaf_bio_all_all_train()
+```
+
+
+
+```{r results="asis", echo=FALSE,eval=printBio_m_all_train}
+cat("### Bioclim data for model trained in all raster area and projected in M area\n")
+```
+
+
+```{r  echo=printBio_m_all_train,eval=printBio_m_all_train}
+bioclim_metadata <- bioclim_model_m_all_train()
+```
+
+```{r results="asis", echo=FALSE,eval=printBio_m_all_train}
+cat("##### Bioclim ranges\n")
+```
+
+
+```{r  echo=printBio_m_all_train,eval=printBio_m_all_train}
+cat("Min values:\n")
+print(bioclim_metadata$train@min)
+cat("Max values:\n")
+print(bioclim_metadata$train@max)
+```
+
+```{r results="asis", echo=FALSE,eval=printBio_m_all_train}
+cat("##### Bioclim response curves\n")
+```
+
+```{r echo=printBio_m_all_train,eval=printBio_m_all_train}
+dismo::response(bioclim_metadata$train)
+```
+
+
+```{r results="asis", echo=FALSE,eval=bmap_m_all_train}
+cat("##### Bioclim projection in G")
+```
+
+```{r results="asis", echo=bmap_m_all_train,eval=bmap_m_all_train}
+leaf_bio_m_all_train()
+```
+
+
+
+```{r results="asis", echo=FALSE,eval=printBio_all_m_train}
+cat("### Bioclim data for model trained in M area and projected in all raster area\n")
+```
+
+
+```{r  echo=printBio_all_m_train,eval=printBio_all_m_train}
+bioclim_metadata <- bioclim_model_all_m_train()
+```
+
+```{r results="asis", echo=FALSE,eval=printBio_all_m_train}
+cat("##### Bioclim ranges\n")
+```
+
+
+```{r  echo=printBio_all_m_train,eval=printBio_all_m_train}
+cat("Min values:\n")
+print(bioclim_metadata$train@min)
+cat("Max values:\n")
+print(bioclim_metadata$train@max)
+```
+
+```{r results="asis", echo=FALSE,eval=printBio_all_m_train}
+cat("##### Bioclim response curves\n")
+```
+
+```{r echo=printBio_all_m_train,eval=printBio_all_m_train}
+dismo::response(bioclim_metadata$train)
+```
+
+
+```{r results="asis", echo=FALSE,eval=bmap_all_m_train}
+cat("##### Bioclim projection in G")
+```
+
+```{r results="asis", echo=bmap_all_m_train,eval=bmap_all_m_train}
+leaf_bio_all_m_train()
+```
+
+
+
+```{r results="asis", echo=FALSE,eval=printBio_m_m_train}
+cat("### Bioclim data for model trained in M area and projected in M area\n")
+```
+
+
+```{r  echo=printBio_m_m_train,eval=printBio_m_m_train}
+bioclim_metadata <- bioclim_model_m_m_train()
+```
+
+```{r results="asis", echo=FALSE,eval=printBio_m_m_train}
+cat("##### Bioclim ranges\n")
+```
+
+
+```{r  echo=printBio_m_m_train,eval=printBio_m_m_train}
+cat("Min values:\n")
+print(bioclim_metadata$train@min)
+cat("Max values:\n")
+print(bioclim_metadata$train@max)
+```
+
+```{r results="asis", echo=FALSE,eval=printBio_m_m_train}
+cat("##### Bioclim response curves\n")
+```
+
+```{r echo=printBio_m_m_train,eval=printBio_m_m_train}
+dismo::response(bioclim_metadata$train)
+```
+
+
+
+```{r results="asis", echo=FALSE,eval=bmap_m_m_train}
+cat("##### Bioclim projection in G")
+```
+
+```{r results="asis", echo=bmap_m_m_train,eval=bmap_m_m_train}
+leaf_bio_m_m_train()
+```
+
