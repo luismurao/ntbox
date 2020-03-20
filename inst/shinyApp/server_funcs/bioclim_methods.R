@@ -16,10 +16,10 @@ observe({
 # ---------------------------------------------------------------------
 
 
-bioclim_model_all_all_train <- eventReactive(input$run_bioclim_all,{
+bioclim_model_all_all_train <- eventReactive(input$run_bioclim_all_all_train,{
   if(!is.null(data_extraction())){
     if(!is.null(occ_extract()) && input$selectMBio == "wWorld" && input$trainBio == "wWorld"){
-      model_train <- bioclim(occ_extract()$data[,input$biosBioclim])
+      model_train <- dismo::bioclim(occ_extract()$data[,input$biosBioclim])
       model <- predict(rasterLayers()[[input$biosBioclim]], model_train)
       return(list(train=model_train,prediction=model))
     }
@@ -35,7 +35,7 @@ output$bio_response_all_all_train <- renderPlot({
 })
 
 
-bioclim_model_all_m_train <- eventReactive(input$run_bioclim_all,{
+bioclim_model_all_m_train <- eventReactive(input$run_bioclim_all_m_train,{
   if(!is.null(data_extraction())){
     if(!is.null(occ_extract_from_mask()) && input$selectMBio == "wWorld" && input$trainBio == "mLayers"){
       model_train <- bioclim(occ_extract_from_mask()$data[,input$biosBioclim])
@@ -59,7 +59,7 @@ output$bio_response_all_m_train <- renderPlot({
 # ---------------------------------------------------------------------
 
 
-bioclim_model_m_all_train <- eventReactive(input$run_bioclim_m,{
+bioclim_model_m_all_train <- eventReactive(input$run_bioclim_m_all_train,{
   if(!is.null(data_extraction())){
     if(!is.null(occ_extract()) && input$selectMBio == "mLayers" && input$trainBio == "wWorld"){
       model_train <- bioclim(occ_extract()$data[,input$biosBioclim])
@@ -73,7 +73,7 @@ bioclim_model_m_all_train <- eventReactive(input$run_bioclim_m,{
 
 
 
-bioclim_model_m_m_train <- eventReactive(input$run_bioclim_m,{
+bioclim_model_m_m_train <- eventReactive(input$run_bioclim_m_m_train,{
   if(!is.null(data_extraction())){
     if(!is.null(occ_extract_from_mask()) && input$selectMBio == "mLayers" && input$trainBio == "mLayers"){
       model_train <- bioclim(occ_extract_from_mask()$data[,input$biosBioclim])
