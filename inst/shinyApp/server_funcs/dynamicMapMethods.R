@@ -39,37 +39,12 @@ leafMapDynamic <- reactive({
 
   map <- leafMapDynamic_base()
 
-  if(!is.null(myPolygon()) &&
-     !is.null(poly_dir()) &&
-     !is.null(input$poly_files)){
-    map <- map %>% addPolygons(data=myPolygon(),
-                               col="darkgreen")
-  }
 
   if(input$dataset_dynMap == "gbif_dataset" &&
      input$search_gbif_data == 0)
     return(map)
   if(is.null(data_set()))
     return(map)
-
-  map <- leaflet::leaflet() %>%
-    leaflet::addTiles(
-      urlTemplate = "//{s}.tiles.mapbox.com/v3/jcheng.map-5ebohr46/{z}/{x}/{y}.png",
-      attribution = 'Maps by <a href="http://www.mapbox.com/">Mapbox</a>'
-    )  %>%
-    leaflet.extras::addDrawToolbar(
-      targetGroup='draw0',
-      #position = T,
-      polygonOptions = T,
-      circleOptions =FALSE,
-      rectangleOptions =TRUE,
-      markerOptions =FALSE,
-      singleFeature =FALSE,
-      circleMarkerOptions	= FALSE,
-      #editOptions =FALSE
-      editOptions = leaflet.extras::editToolbarOptions(selectedPathOptions = leaflet.extras::selectedPathOptions())
-    )
-
 
   if(input$define_M == 0 && is.data.frame(dataDynamic())){
 
@@ -135,7 +110,8 @@ output$polyfeatures <- renderPrint({
 
 data_set <- reactive({
 
-  if(input$dataset_dynMap == "gbif_dataset" && input$search_gbif_data > 0){
+  if(input$dataset_dynMap == "gbif_dataset" && input$search_gbif_data &&
+     is.data.frame(data_gbif())){
     data <- data_gbif()
     data$ID_ntb <- 1:dim(data)[1]
     return(list(data=data,
