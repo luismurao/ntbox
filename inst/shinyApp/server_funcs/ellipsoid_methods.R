@@ -32,13 +32,13 @@ observe({
 
 mve_obj_all <- reactive({
   if(!is.null(occ_extract()) &&
-     !is.null(input$biosEllip) &&
-     input$selectShape == "wWorld"){
+     !is.null(input$biosEllip)){
     prop_points <- as.numeric(input$prop_points)
     niche_data <- na.omit(occ_extract()$data)
-    cov_centroid <- try(cov_center(niche_data,
-                               level=prop_points,
-                               vars=input$biosEllip),silent = T)
+    cov_centroid <- try(ntbox::cov_center(niche_data,
+                                          level=prop_points,
+                                          vars=input$biosEllip),
+                        silent = T)
 
     return(cov_centroid)
 
@@ -51,13 +51,12 @@ mve_obj_all <- reactive({
 
 mve_obj_m <- reactive({
   if(!is.null(occ_extract_from_mask()) &&
-     !is.null(input$biosEllip) &&
-     input$selectShape == "mLayers"){
+     !is.null(input$biosEllip)){
     prop_points <- as.numeric(input$prop_points)
     niche_data <- na.omit(occ_extract_from_mask()$data)
-    cov_centroid <- try(cov_center(niche_data,
-                               level=prop_points,
-                               vars=input$biosEllip),
+    cov_centroid <- try(ntbox::cov_center(niche_data,
+                                          level=prop_points,
+                                          vars=input$biosEllip),
                         silent = TRUE)
 
     return(cov_centroid)
@@ -94,10 +93,11 @@ ellip_model_all_rast_all_train <- eventReactive(input$selectBios_all_all_train,{
      class(mve_obj_all()) != "try-error"
      && input$selectShape == "wWorld"){
 
-    model <- ellipsoidfit(rasterLayers()[[input$biosEllip]],
-                          cov_centroid$centroid,
-                          cov_centroid$covariance,level = 0.95,
-                          plot = FALSE)
+    model <- ntbox::ellipsoidfit(envlayers = rasterLayers()[[input$biosEllip]],
+                                 centroid = cov_centroid$centroid,
+                                 covar = cov_centroid$covariance,
+                                 level = 0.95,
+                                 plot = FALSE)
 
     return(model)
   }
@@ -111,13 +111,13 @@ ellip_model_all_rast_m_train <- eventReactive(input$selectBios_all_m_train,{
   if(!is.null(rasterLayers()) &&
      input$selectM == 'wWorld' &&
      !is.null(cov_centroid) &&
-     class(mve_obj_all()) != "try-error" &&
+     class(mve_obj_m()) != "try-error" &&
      input$selectShape == "mLayers"){
 
-    model <- ellipsoidfit(rasterLayers()[[input$biosEllip]],
-                          cov_centroid$centroid,
-                          cov_centroid$covariance,level = 0.95,
-                          plot = FALSE)
+    model <- ntbox::ellipsoidfit(envlayers = rasterLayers()[[input$biosEllip]],
+                                 centroid = cov_centroid$centroid,
+                                 covar = cov_centroid$covariance,level = 0.95,
+                                 plot = FALSE)
 
 
     return(model)
@@ -202,8 +202,8 @@ output$Ellip2D_all_m_train <- renderPlot({
 response_ell_all_all_train <- eventReactive(input$selectBios_all_all_train,{
   if(!is.null(ellip_model_all_rast_all_train())){
     if(input$selectM=="wWorld" && input$selectShape == "wWorld"){
-      multi.hist(occ_extract()$data[,input$biosEllip],
-                 dcol= c("blue","red"),dlty=c("dotted", "solid"))
+      psych::multi.hist(occ_extract()$data[,input$biosEllip],
+                        dcol= c("blue","red"),dlty=c("dotted", "solid"))
     }
     else
       return()
@@ -219,8 +219,8 @@ output$reponse_curves_all_all_train <- renderPlot({
 response_ell_all_m_train <- eventReactive(input$selectBios_all_m_train,{
   if(!is.null(ellip_model_all_rast_m_train())){
     if(input$selectM=="wWorld" && input$selectShape == "mLayers"){
-      multi.hist(occ_extract_from_mask()$data[,input$biosEllip],
-                 dcol= c("blue","red"),dlty=c("dotted", "solid"))
+      psych::multi.hist(occ_extract_from_mask()$data[,input$biosEllip],
+                        dcol= c("blue","red"),dlty=c("dotted", "solid"))
     }
     else
       return()
@@ -249,10 +249,11 @@ ellip_model_m_rast_all_train <- eventReactive(input$selectBios_m_all_train,{
      input$selectM == 'mLayers' &&
      input$selectShape == 'wWorld'){
     if(class(cov_centroid) != "try-error"){
-      model <- ellipsoidfit(define_M_raster()[[input$biosEllip]],
-                            cov_centroid$centroid,
-                            cov_centroid$covariance,level = 0.95,
-                            plot = FALSE)
+      model <- ntbox::ellipsoidfit(envlayers = define_M_raster()[[input$biosEllip]],
+                                   centroid = cov_centroid$centroid,
+                                   covar = cov_centroid$covariance,
+                                   level = 0.95,
+                                   plot = FALSE)
       return(model)
     }
     return()
@@ -309,10 +310,11 @@ ellip_model_m_rast_m_train <- eventReactive(input$selectBios_m_m_train,{
      input$selectM == 'mLayers' &&
      input$selectShape == 'mLayers'){
 
-    model <- ellipsoidfit(define_M_raster()[[input$biosEllip]],
-                          cov_centroid$centroid,
-                          cov_centroid$covariance,level = 0.95,
-                          plot = FALSE)
+    model <- ntbox::ellipsoidfit(envlayers = define_M_raster()[[input$biosEllip]],
+                                 centroid = cov_centroid$centroid,
+                                 covar = cov_centroid$covariance,
+                                 level = 0.95,
+                                 plot = FALSE)
     return(model)
   }
   else
@@ -367,8 +369,8 @@ response_ell_m_all_train <- eventReactive(input$selectBios_m_all_train,{
   if(!is.null(ellip_model_all_rast_all_train())){
     if(input$selectM=="mLayers" &&
        input$selectShape == "wWorld"){
-      multi.hist(occ_extract()$data[,input$biosEllip],
-                 dcol= c("blue","red"),dlty=c("dotted", "solid"))
+      psych::multi.hist(occ_extract()$data[,input$biosEllip],
+                        dcol= c("blue","red"),dlty=c("dotted", "solid"))
     }
     else
       return()
@@ -380,8 +382,8 @@ response_ell_m_all_train <- eventReactive(input$selectBios_m_all_train,{
 response_ell_m_m_train <- eventReactive(input$selectBios_m_m_train,{
   if(!is.null(ellip_model_all_rast_all_train())){
     if(input$selectM=="mLayers" && input$selectShape == "mLayers"){
-      multi.hist(occ_extract_from_mask()$data[,input$biosEllip],
-                 dcol= c("blue","red"),dlty=c("dotted", "solid"))
+      psych::multi.hist(occ_extract_from_mask()$data[,input$biosEllip],
+                        dcol= c("blue","red"),dlty=c("dotted", "solid"))
     }
     else
       return()
