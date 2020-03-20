@@ -47,23 +47,40 @@ output$bintest_map <- renderPlot({
 
 binomial_testDF <- reactive({
   if(!is.null(binomial_raster()) && is.data.frame(d_testBin())){
-    bin_res <- binomial_test(binomial_raster(), d_testBin()[,-1])
+    bin_res <- ntbox::binomial_test(binomial_raster(), d_testBin()[,-1])
     return(bin_res)
   }
 })
 
 output$binomal_results <- renderDataTable({
-  if(is.data.frame(binomial_testDF()))
-    return(binomial_testDF())
+  if(is.data.frame(binomial_testDF()$results_bin))
+    return(binomial_testDF()$results_bin)
 })
+
+output$binomal_values <- renderDataTable({
+  if(is.data.frame(binomial_testDF()$coords_df))
+    return(binomial_testDF()$coords_df)
+})
+
 
 output$binomial_down <- downloadHandler(
   filename = function() return(paste0("binomial_test_results.csv")),
   content = function(file) {
-    if(is.data.frame(binomial_testDF())){
+    if(is.data.frame(binomial_testDF()$results_bin)){
       ## Leyendo los datos de la especie e escriendolos en un .csv
-      write.csv(binomial_testDF(),file,row.names = FALSE)
+      write.csv(binomial_testDF()$results_bin,file,row.names = FALSE)
     }
   }
 )
+
+output$binomial_val_down <- downloadHandler(
+  filename = function() return(paste0("binomial_test_results.csv")),
+  content = function(file) {
+    if(is.data.frame(binomial_testDF()$coords_df)){
+      ## Leyendo los datos de la especie e escriendolos en un .csv
+      write.csv(binomial_testDF()$coords_df,file,row.names = FALSE)
+    }
+  }
+)
+
 
