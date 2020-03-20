@@ -8,16 +8,22 @@ data_gbif_search <- eventReactive(input$search_gbif_data,{
                                  writeFile = FALSE)
 
 
-  if(is.null(test))
+  if(is.null(test)){
     return(0)
+  }
 
   data <- ntbox::searh_gbif_data(genus = input$genus,
                                  species = input$species,
                                  occlim = input$occlim,
                                  writeFile = FALSE)
 
-  if(is.null(data))
-    return("No occurrences found")
+  if(is.null(data)){
+    data <- paste("No occurrences found for",input$genus,
+                                      input$species)
+    return(data)
+
+  }
+
   return(data)
 
 })
