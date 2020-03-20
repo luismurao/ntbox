@@ -7,7 +7,7 @@ models_ell_all_all_train <- reactive({
   mod1 <- ellip_model_all_rast_all_train()
   if(!is.null(mod1)){
 
-    models_in_ntb <- c("Ellip All extent in G-Trained All extent"
+    models_in_ntb <- c("Ellip proj All extent, Trained all extent"
                        ="Ellipsoid_all_extent_shape_W")
 
     return(models_in_ntb)
@@ -23,7 +23,7 @@ models_ell_all_all_train <- reactive({
 models_ell_all_m_train <- reactive({
   mod2 <- ellip_model_all_rast_m_train()
   if(!is.null(mod2)){
-    models_in_ntb <- c("Ellip All extent in G-Trained M extent"
+    models_in_ntb <- c("Ellip proj All extent, Trained in M"
                        = "Ellipsoid_all_extent_shape_M")
     return(models_in_ntb)
 
@@ -37,7 +37,7 @@ models_ell_all_m_train <- reactive({
 models_ell_m_all_train <- reactive({
   mod3 <- ellip_model_m_rast_all_train()
   if(!is.null(mod3)){
-    models_in_ntb <- c("Ellip M extent projec Trained all extent"
+    models_in_ntb <- c("Ellip proj M extent, Trained in all extent"
                        = "Ellipsoid_m_extent_shape_W")
     return(models_in_ntb)
   } else{
@@ -50,7 +50,7 @@ models_ell_m_all_train <- reactive({
 models_ell_m_m_train <- reactive({
   mod4 <- ellip_model_m_rast_m_train()
   if(!is.null(mod4)){
-    models_in_ntb <- c("Ellip M extent projection Trained M extent"
+    models_in_ntb <- c("Ellip proj M extent, Trained M extent"
                        = "Ellipsoid_m_extent_shape_M")
     return(models_in_ntb)
   } else{
@@ -62,7 +62,7 @@ models_ell_m_m_train <- reactive({
 models_bio_all_all_train <- reactive({
   mod5 <- bioclim_model_all_all_train()
   if(!is.null(bioclim_model_all_all_train())){
-    models_in_ntb <- c("BioCl all extent projec Trained all extent"
+    models_in_ntb <- c("BioCl proj all extent, Trained all extent"
                        ="Bioclim_all_extent_shape_W")
     return(models_in_ntb)
   } else{
@@ -74,7 +74,7 @@ models_bio_all_all_train <- reactive({
 models_bio_all_m_train <-reactive({
   mod6 <- bioclim_model_all_m_train()
   if(!is.null(mod6)){
-    models_in_ntb <- c("BioCl all extent projec Trained M extent"
+    models_in_ntb <- c("BioCl proj all extent, Trained M extent"
                        = "Bioclim_all_extent_shape_M")
     return(models_in_ntb)
 
@@ -88,7 +88,7 @@ models_bio_all_m_train <-reactive({
 models_bio_m_all_train <-reactive({
   mod7 <- bioclim_model_m_all_train()
   if(!is.null(mod7)){
-    models_in_ntb <- c("BioCl M extent projec Trained all extent"
+    models_in_ntb <- c("BioCl proj M extent, Trained all extent"
                        = "Bioclim_m_extent_shape_W")
     return(models_in_ntb)
 
@@ -102,7 +102,7 @@ models_bio_m_all_train <-reactive({
 models_bio_m_m_train <-reactive({
   mod8 <- bioclim_model_m_m_train()
   if(!is.null(mod8)){
-    models_in_ntb <- c("BioCl M extent projec Trained M extent"
+    models_in_ntb <- c("BioCl proj M extent, Trained M extent"
                        = "Bioclim_m_extent_shape_M")
     return(models_in_ntb)
 
@@ -189,7 +189,7 @@ leaf_ellip_all_all_train <- reactive({
       attribution = 'Maps by <a href="http://www.mapbox.com/">Mapbox</a>'
     )
 
-  if(input$proj_model1 == "Ellipsoid_all_extent_shape_W" && !is.null(ellip_model_all_rast_all_train())){
+  if(!is.null(ellip_model_all_rast_all_train())){
 
     model <- ellip_model_all_rast_all_train()$suitRaster
     cbbPalette <- rev(terrain.colors(100))
@@ -219,7 +219,7 @@ leaf_ellip_all_m_train <- reactive({
       attribution = 'Maps by <a href="http://www.mapbox.com/">Mapbox</a>'
     )
 
-  if(input$proj_model1 == "Ellipsoid_all_extent_shape_M" && !is.null(ellip_model_all_rast_m_train())){
+  if(!is.null(ellip_model_all_rast_m_train())){
 
     model <- ellip_model_all_rast_m_train()$suitRaster
     cbbPalette <- rev(terrain.colors(100))
@@ -249,7 +249,7 @@ leaf_ellip_m_all_train <- reactive({
       attribution = 'Maps by <a href="http://www.mapbox.com/">Mapbox</a>'
     )
 
-  if(input$proj_model1 == "Ellipsoid_m_extent_shape_W" && !is.null(ellip_model_m_rast_all_train())){
+  if(!is.null(ellip_model_m_rast_all_train())){
 
     model <- ellip_model_m_rast_all_train()$suitRaster
     cbbPalette <- rev(terrain.colors(100))
@@ -279,7 +279,7 @@ leaf_ellip_m_m_train <- reactive({
       attribution = 'Maps by <a href="http://www.mapbox.com/">Mapbox</a>'
     )
 
-  if(input$proj_model1 == "Ellipsoid_m_extent_shape_M" && !is.null(ellip_model_m_rast_m_train())){
+  if(!is.null(ellip_model_m_rast_m_train())){
 
     model <- ellip_model_m_rast_m_train()$suitRaster
     cbbPalette <- rev(terrain.colors(100))
@@ -308,7 +308,7 @@ leaf_bio_all_all_train <- reactive({
       attribution = 'Maps by <a href="http://www.mapbox.com/">Mapbox</a>'
     )
 
-  if(input$proj_model1 == "Bioclim_all_extent_shape_W" && !is.null(bioclim_model_all_all_train())){
+  if(!is.null(bioclim_model_all_all_train())){
 
     model <- bioclim_model_all_all_train()$prediction
     cbbPalette <- rev(terrain.colors(100))
@@ -337,7 +337,7 @@ leaf_bio_all_m_train <- reactive({
       attribution = 'Maps by <a href="http://www.mapbox.com/">Mapbox</a>'
     )
 
-  if(input$proj_model1 == "Bioclim_all_extent_shape_W" && !is.null(bioclim_model_all_m_train())){
+  if(!is.null(bioclim_model_all_m_train())){
 
     model <- bioclim_model_all_m_train()$prediction
     cbbPalette <- rev(terrain.colors(100))
@@ -367,7 +367,7 @@ leaf_bio_m_all_train <- reactive({
       attribution = 'Maps by <a href="http://www.mapbox.com/">Mapbox</a>'
     )
 
-  if(input$proj_model1 == "Bioclim_m_extent_shape_W" && !is.null(bioclim_model_m_all_train())){
+  if(!is.null(bioclim_model_m_all_train())){
 
     model <- bioclim_model_m_all_train()$prediction
     cbbPalette <- rev(terrain.colors(100))
@@ -397,7 +397,7 @@ leaf_bio_m_m_train <- reactive({
       attribution = 'Maps by <a href="http://www.mapbox.com/">Mapbox</a>'
     )
 
-  if(input$proj_model1 == "Bioclim_m_extent_shape_M" && !is.null(bioclim_model_m_m_train())){
+  if(!is.null(bioclim_model_m_m_train())){
 
     model <- bioclim_model_m_m_train()$prediction
     cbbPalette <- rev(terrain.colors(100))
