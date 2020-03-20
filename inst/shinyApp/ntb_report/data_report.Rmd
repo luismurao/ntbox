@@ -1,5 +1,5 @@
 ---
-title: "NicheToolBox long-lat data report"
+title: "NicheToolBox: longitude-latitude data report"
 date: "`r date()`"
 ---
 
