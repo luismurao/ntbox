@@ -82,7 +82,7 @@ occ_extract_from_mask <- eventReactive(input$run_extract,{
     #  data_env_xy  <- data.frame(xy_data,data_env)
     #  data_env <- data_env_xy[,-c(1,2)]
     #}
-
+    print(data_env_xy)
 
     return(list(data=data_env,
                 xy_data=xy_data,
