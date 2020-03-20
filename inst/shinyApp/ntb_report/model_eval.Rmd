@@ -1,0 +1,161 @@
+---
+title: "NicheToolBox: Model Evaluation module report"
+date: "`r date()`"
+output: 
+  html_document:
+    self_contained: no
+    df_print: paged
+---
+
+This is **NicheToolBox: Model Evaluation module** here you can find a quick view of the thinks that you have done in the software. Remember that this is free software so it comes with no waranty, please report any bugs you find at <luismurao@gmail.com> or or via projects GitHub repository <https://github.com/luismurao/ntbox>.
+
+
+
+```{r setup, echo=FALSE}
+library(knitr)
+library(rgl)
+knitr::opts_chunk$set(echo = TRUE)
+knit_hooks$set(rgl = hook_rgl, webgl = hook_webgl)
+
+```
+
+```{r results="asis",echo=FALSE}
+printPROC <- FALSE
+printCMoptim <- FALSE 
+printMTP <- FALSE
+printPERCENTIL <- FALSE
+printUDT <- FALSE
+printBIN <- FALSE
+if(!is.null(partialRoc())) printPROC <- TRUE
+if(!is.null(threshold_search2())) printCMoptim <- TRUE
+if(!is.null(mtp_threshold()))  printMTP <- TRUE
+if(!is.null(percentil_threshold()))  printPERCENTIL <- TRUE
+if(input$compBin && !is.null(binary_user_method()))  printUDT <- TRUE
+if(input$run_binomial && !is.null(binomial_testDF()))  printBIN <- TRUE
+
+```
+
+```{r results="asis", echo=FALSE,eval=printPROC}
+cat("### Partial ROC results")
+```
+
+
+```{r results="asis", echo=FALSE,eval=printPROC}
+cat("##### Table")
+```
+
+```{r echo=printPROC,eval=printPROC}
+head(partialRoc())
+```
+
+
+
+```{r results="asis", echo=FALSE,eval=printPROC}
+cat("##### Partial ROC stats")
+```
+
+```{r echo=printPROC,eval=printPROC}
+pRocStats()
+```
+
+
+```{r results="asis", echo=FALSE,eval=printPROC}
+cat("##### Partial ROC distribution")
+```
+
+```{r echo=printPROC,eval=printPROC}
+auc_res <- pRoc_distribution()
+hist(auc_res$aucRatio,prob=TRUE,col="grey",
+     xlim=c(min(auc_res$dens_rnd$x,na.rm = TRUE),
+            max(auc_res$aucRatio,na.rm = TRUE)),
+        main="Partial AUC distribution", xlab="AUC ratio")
+lines(auc_res$dens_rnd,col='red')
+lines(auc_res$dens_ratio,col='blue')
+
+```
+
+
+```{r results="asis", echo=FALSE,eval=printCMoptim}
+cat("### Confusion matrix optimization\n")
+```
+
+
+```{r  echo=printCMoptim,eval=printCMoptim}
+
+head(threshold_search2())
+
+# Print function for confusion matrix
+confu_matrix <- function(a,b,c,d){
+
+  m <- matrix(c(paste0("a = ", a),paste0("b = ",b),paste0("c = ", c),paste0("d = ", d)),ncol=2)
+  colnames(m) <- c("Predicted presence","Prediceted absence")
+  m <- as.data.frame(m)
+  rownames(m) <- c("Observed presence", "Observed absence")
+  m <- t(m)
+  return(m)
+
+}
+a <- input$a
+b <- input$b
+c <- input$c
+d <- input$d
+
+confu_matrix(a=a,b=b,c=c,d=d)
+
+meta_data_cm_method()
+
+plot(binary_cm_method())
+```
+
+
+
+```{r results="asis", echo=FALSE,eval=printMTP}
+cat("### Minimum training presence results\n")
+```
+
+```{r echo=printMTP,eval=printMTP}
+meta_data_mtp_method()
+plot(binary_mtp_method())
+```
+
+
+
+```{r results="asis", echo=FALSE,eval=printPERCENTIL}
+cat("### User percentil results\n")
+```
+
+```{r echo=printPERCENTIL,eval=printPERCENTIL}
+meta_data_percentil_method()
+plot(binary_percentil_method())
+```
+
+
+```{r results="asis", echo=FALSE,eval=printUDT}
+cat("### User defined threshold results\n")
+```
+
+```{r  echo=printUDT,eval=printUDT}
+meta_data_user_method()
+plot(binary_user_method())
+```
+
+
+
+```{r results="asis", echo=FALSE,eval=printBIN}
+cat("### Binomial test results\n")
+```
+
+```{r  echo=printBIN,eval=printBIN}
+binomial_testDF()$results_bin
+```
+
+```{r results="asis", echo=FALSE,eval=printBIN}
+cat("#### Coordinates and prediction values\n")
+```
+
+
+```{r  echo=printBIN,eval=printBIN}
+binomial_testDF()$coords_df
+```
+
+
