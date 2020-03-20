@@ -1,9 +1,14 @@
 ---
-title: "NicheToolBox niche data report"
+title: "NicheToolBox: environmental data report"
 date: "`r date()`"
+output: 
+  html_document:
+    self_contained: no
 ---
 
-This is **NicheToolBox data report** here you can find a quick view of the thinks that you have done in the software. Remember that this is free software so it comes with no waranty, please report any bugs you find at <luismurao@gmail.com>
+This is **NicheToolBox environmental data report** here you can find a quick view of the thinks that you have done in the software. Remember that this is free software so it comes with no waranty, please report any bugs you find at <luismurao@gmail.com> or via projects GitHub repository <https://github.com/luismurao/ntbox>.
+
+
 
 ```{r setup, echo=FALSE}
 library(knitr)
@@ -65,7 +70,7 @@ cat("Raster plot showing 1 layer")
 
 
 ```{r results='asis', echo=printInfoNiche,eval=printInfoNiche}
-plot(rasterLayers()[[1]])
+#plot(rasterLayers()[[1]])
 ```
 
 
@@ -232,11 +237,12 @@ print(kable(head(kmeans_df())))
 ```
 
 ```{r results="asis",echo=FALSE,eval=TRUE}
+printKmeansPlot <- 0
 if(input$load_kmeas_vars){
   k_means_plot <- kmeans_3d_plot_data()
-  ifelse(!is.null(k_means_plot), 
-         printKmeansPlot <- 1 ,
-         printKmeansPlot <- 0)
+  if(!is.null(k_means_plot)){
+   printKmeansPlot <- 1 
+  }
 }
 
 ```
@@ -268,4 +274,3 @@ cat("### K-means clustering (Geographic space)")
 ```{r ,eval=printKmeansPlot,echo=printKmeansPlot}
 leaflet_cluster_map()
 ```
-
