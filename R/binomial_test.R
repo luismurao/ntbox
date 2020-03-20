@@ -36,6 +36,8 @@ binomial_test <- function(binary_model,validation_data){
       npixels <- clases[1,2] + clases[2,2]
       proportional_area <- clases[2,2]/npixels
       pred_vals <- raster::extract(binary_model,validation_data)
+      df_pred <- data.frame(validation_data,binary_pred=pred_vals)
+      pred_vals <- stats::na.omit(pred_vals)
       nasId <- attr(pred_vals,"na.action")
 
       if(length(nasId)>0L)
@@ -55,7 +57,8 @@ binomial_test <- function(binary_model,validation_data){
                                 n_success=occs_succs,
                                 n_fails=ocss_fail,
                                 p_value=p_bin)
-      return( results_bin)
+      return( list(results_bin=results_bin,
+                   coords_df=df_pred))
     }
     warning("binary_model has to have only 2 classes")
     return()
