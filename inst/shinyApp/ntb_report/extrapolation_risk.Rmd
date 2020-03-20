@@ -1,0 +1,94 @@
+---
+title: "NicheToolBox: Extrapolation risk assessment"
+date: "`r date()`"
+output: 
+  html_document:
+    self_contained: no
+    df_print: paged
+---
+
+This is **NicheToolBox: Extrapolation risk assessment module** here you can find a quick view of the thinks that you have done in the software. Remember that this is free software so it comes with no waranty, please report any bugs you find at <luismurao@gmail.com> or or via projects GitHub repository <https://github.com/luismurao/ntbox>.
+
+
+
+```{r results="asis",echo=FALSE}
+printMOP <- FALSE
+printMESS <- FALSE
+printEXDET1 <- FALSE 
+printEXDET2 <- FALSE 
+if(input$run_mop && !is.null(mop_comp())) printMOP <- TRUE
+if(input$run_mess && !is.null(mess_comp())) printMESS <- TRUE
+if(input$run_nt1 && !is.null(exdet_univar_comp())) printEXDET1 <- TRUE
+if(input$run_nt2 && !is.null(exdet_multvar_comp())) printEXDET2 <- TRUE
+# Print sitation exdet
+exdetSitation <- TRUE %in% c(printEXDET1,printEXDET2)
+```
+
+```{r results="asis", echo=FALSE,eval=printMOP}
+cat("### MOP results\n")
+```
+
+```{r echo=printMOP,eval=printMOP}
+mop_raster<- mop_comp()
+plot(mop_raster[[1]],col=terrain.colors(256),main="MOP raw values")
+plot(mop_raster[[2]],col=rev(terrain.colors(256)),main="MOP normalized")
+```
+
+```{r results="asis", echo=FALSE,eval=printMOP}
+cat("Please site as:\n\n")
+cat(paste("Owens, H. L., Campbell, L. P., Dornak, L. L.,",
+          "Saupe, E. E., Barve, N., Soberón, J",
+          "., … Peterson, A. T. (2013). Constraints on", 
+          "interpretation of ecological niche models by",
+          "limited environmental ranges on calibration areas.", 
+          "Ecological Modelling, 263(0), 10–18.", 
+          "doi:http://dx.doi.org/10.1016/j.ecolmodel.2013.04.011"))
+```
+
+```{r results="asis", echo=FALSE,eval=printMESS}
+cat("### MESS results\n")
+```
+
+```{r echo=printMESS,eval=printMESS}
+mess_raster <- mess_comp()
+plot(mess_raster,main="MESS")
+```
+
+```{r results="asis", echo=FALSE,eval=printMESS}
+cat("Please site as:\n\n")
+cat(paste("Elith, J., Kearney, M., & Phillips, S. (2010).", 
+          "The art of modelling range-shifting species.", 
+          "Methods in Ecology and Evolution, 1(4), 330–342."))
+
+```
+
+
+```{r results="asis", echo=FALSE,eval=printEXDET1}
+cat("### Exdet univariate extrapolation\n")
+```
+
+```{r echo=printEXDET1,eval=printEXDET1}
+exdet_univar_raster <- exdet_univar_comp()
+plot(exdet_univar_raster,main="Exdet univarite")
+```
+
+
+```{r results="asis", echo=FALSE,eval=printEXDET2}
+cat("### Exdet multivariate extrapolation\n")
+```
+
+```{r echo=printEXDET2,eval=printEXDET2}
+exdet_multivariate_raster <- exdet_univar_comp()
+plot(exdet_multivariate_raster,main="Exdet multivariate")
+```
+
+```{r results="asis", echo=FALSE,eval=exdetSitation}
+cat("Please site as:\n\n")
+cat(paste("Mesgaran, M. B., Cousens, R. D., & Webber, B. L. (2014).", 
+          "Here be dragons: a tool for quantifying novelty due", 
+          "to covariate range and correlation change when",
+          "projecting species distribution models." ,
+          "Diversity and Distributions, 20(10),",
+          "1147–1159. doi:10.1111/ddi.12209"))
+```
+
