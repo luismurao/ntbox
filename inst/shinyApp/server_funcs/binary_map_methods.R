@@ -57,7 +57,7 @@ observe({
 threshold_search <- reactive({
   sdm_raster <- sdm_raster()
   dat_Val <- dat_Validation()
-  if(!is.null(sdm_raster) && input$valdata_type == 'pres_abs_data'){
+  if(!is.null(sdm_raster)){
     if(!is.null(dat_Val)){
       input$searchTh
       isolate({
@@ -79,38 +79,16 @@ threshold_search <- reactive({
       })
     }
   }
-  if(!is.null(dat_val_mtp()) && input$valdata_type != 'pres_abs_data'){
-    dat_Val <- data.frame(dat_val_mtp()[,-1])
-    values <- raster::extract(sdm_raster, dat_Val[, c(1,  2)])
-
-    if(input$valdata_type=='user_threshold'){
-
-      threshold <- as.numeric(input$thresholdBin)
-    }
-    if(input$valdata_type=='min_traing_pres' | input$valdata_type=='percentil_bin'){
-      threshold <- mtp_threshold()
-    }
-    reclass <- values >= threshold
-    a <- length(which(reclass))
-    b <- NA
-    c <- length(which(!reclass))
-    d <- NA
-    conf <- data.frame(a,b,c,d)
-    return(conf)
-  }
   else
     return(NULL)
 
 })
 
 threshold_search2 <- reactive({
-  if(!is.null(threshold_search()) && input$valdata_type=='pres_abs_data'){
+  if(!is.null(threshold_search())){
     df_threshold <- threshold_search()
     df_threshold <- df_threshold[order(-df_threshold[,input$optim_by1]),]
     return(df_threshold)
-  }
-  if(!is.null(threshold_search()) && input$valdata_type !='pres_abs_data'){
-    return(threshold_search())
   }
   else
     return()
@@ -453,7 +431,7 @@ output$cm_method_metrics <- renderPrint({
 
 
 # ----------------------------------------------------------------------------------
-# Minimum training presence threshold
+# Validation data to compute MTP and Percentil selection
 
 
 dat_val_mtp <- reactive({
@@ -467,30 +445,27 @@ dat_val_mtp <- reactive({
   return()
 })
 
-mtp_threshold <- reactive({
+# ----------------------------------------------------------------------------------
+# Suitability values to compute MTP and Percentil selection
+
+suit_vals <- shiny::reactive({
   if(!is.null(dat_val_mtp()) && !is.null(sdm_raster())){
     coorde <- dat_val_mtp()[,2:3]
     threshold <- raster::extract(sdm_raster(),coorde)
-    if(input$valdata_type=="min_traing_pres")
-      return(min(threshold,na.rm = TRUE))
-    if(input$valdata_type=="percentil_bin"){
-      percentil <- as.numeric(input$percentil_th)
-      thr <- quantile(threshold,  probs =  percentil/100,na.rm=TRUE)
-      return(thr)
-    }
+    threshold <- na.omit(threshold)
+    return(threshold)
   }
-  else
-    return()
 })
 
-#percentil_threshold <- reactive({
-#    if(!is.null(dat_val_mtp()) && !is.null(sdm_raster()) && input$valdata_type == ""){
-#      coorde <- dat_val_mtp()[,2:3]
-#      threshold <- raster::extract(sdm_raster(),coorde)
-#      thr <- quantile(threshold,  probs = 0.5)
-#      return(thr)
-#    }
-#})
+
+# ----------------------------------------------------------------------------------
+# Minimum training presence threshold
+
+
+mtp_threshold <- reactive({
+  if(!is.null(suit_vals()))
+    return(min(suit_vals(),na.rm = TRUE))
+})
 
 
 binary_mtp_method <- reactive({
@@ -498,12 +473,6 @@ binary_mtp_method <- reactive({
   model <- sdm_raster()
 
   if(!is.null(threshold) && !is.null(model)){
-    #min_range <- cellStats(model,min)
-    #max_range <- cellStats(model,max)
-    #reclass_matrix <- matrix(c(min_range,threshold,
-    #                           0,threshold,max_range,1),
-    #                         ncol=3,byrow=TRUE)
-    #rbin <- reclassify(model,rcl = reclass_matrix)
     rbin <- model > threshold
     return(rbin)
   }
@@ -512,16 +481,13 @@ binary_mtp_method <- reactive({
 
 })
 
-#output$binarymap_mtp <- renderPlot({
-#  if(!is.null(binary_mtp_method()))
-#    plot(binary_mtp_method())
-#})
 
 output$binary_mtp <- renderPlot({
   if(!is.null(binary_mtp_method()))
     return(plot(binary_mtp_method(),col=c("#d8dae5","#0d8dd7")))
 
 })
+
 
 binary_area_mtp_method <- reactive({
   if(!is.null(binary_mtp_method())){
@@ -578,15 +544,117 @@ output$downloadBinary_metadata_mtp <- downloadHandler(
 
 
 
-
-
 output$downloadBinary_mtp <- downloadHandler(
   filename <- function() paste0("binaryMap_",
                                 round(mtp_threshold(),4),
-                                "mtp.asc"),
+                                "_mtp.asc"),
   content <- function(file){
     if(!is.null(binary_mtp_method())){
       writeRaster(binary_mtp_method(),file)
+    }
+  }
+)
+
+# ----------------------------------------------------------------------------------
+# Percentil selection method
+
+
+percentil_threshold <- reactive({
+  if(!is.null(suit_vals())){
+    percentil <- as.numeric(as.character(input$percentil_th))
+    thr <- quantile(suit_vals(),
+                    probs =  percentil/100,na.rm=TRUE)
+    return(thr)
+  }
+  else
+    return()
+})
+
+
+binary_percentil_method <- reactive({
+  threshold <- percentil_threshold()
+  model <- sdm_raster()
+  if(!is.null(threshold) && !is.null(model)){
+    rbin <- model > threshold
+    return(rbin)
+  }
+  else
+    return()
+
+})
+
+
+output$binary_percentil <- renderPlot({
+  if(!is.null(binary_percentil_method()))
+    return(plot(binary_percentil_method(),col=c("#d8dae5","#0d8dd7")))
+
+})
+
+binary_area_percentil_method <- reactive({
+  if(!is.null(binary_percentil_method())){
+    sdm_area <- distribution_area(binary_percentil_method())
+    return(sdm_area)
+  }
+  else
+    return()
+})
+
+
+
+
+output$area_percentil_method <- renderUI({
+  area <- binary_area_percentil_method()
+  if(!is.null(area)){
+    threshold <-  round(percentil_threshold(),4)
+    area <- round(area,4)
+    h3(paste("Species Distribution Area",area,"in km^2",
+             "(at",input$th_percentil,
+             ", threshold",threshold, ")"))
+  }
+})
+
+
+
+
+meta_data_percentil_method <- reactive({
+  if(!is.null(binary_area_percentil_method())){
+    threshold <-  percentil_threshold()
+    area <- binary_area_percentil_method()
+    model <- binary_percentil_method()
+    xmin <- model@extent@xmin
+    ymin <- model@extent@ymin
+    xmax <- model@extent@xmax
+    ymax <- model@extent@ymax
+    pixel_res <- res(model)[1]
+    area_df <- data.frame(SDM_area = area,
+                          cutoff_threshold=threshold,
+                          xmin,ymin,xmax,ymax,pixel_res)
+    return(area_df)
+  }
+  else
+    return()
+})
+
+output$downloadBinary_metadata_percentil <- downloadHandler(
+  filename <- function() paste0("binaryMap_metadata_",
+                                round(percentil_threshold(),4),
+                                "_percentil.csv"),
+  content <- function(file){
+    if(!is.null(meta_data_percentil_method())){
+      write.csv(meta_data_percentil_method(),file, row.names = FALSE)
+    }
+  }
+)
+
+
+
+output$downloadBinary_percentil <- downloadHandler(
+  filename <- function() paste0("binaryMap_",
+                                round(percentil_threshold(),4),
+                                "_percentil.asc"),
+  content <- function(file){
+    if(!is.null(binary_percentil_method())){
+      writeRaster(binary_percentil_method(),file)
     }
   }
 )
@@ -602,12 +670,13 @@ binary_user_method <- eventReactive(input$compBin,{
 
   if(!is.null(model)){
 
-    min_range <- cellStats(model,min)
-    max_range <- cellStats(model,max)
-    reclass_matrix <- matrix(c(min_range,threshold,
-                               0,threshold,max_range,1),
-                             ncol=3,byrow=TRUE)
-    rbin <- reclassify(model,rcl = reclass_matrix)
+    #min_range <- cellStats(model,min)
+    #max_range <- cellStats(model,max)
+    #reclass_matrix <- matrix(c(min_range,threshold,
+    #                           0,threshold,max_range,1),
+    #                         ncol=3,byrow=TRUE)
+    #rbin <- reclassify(model,rcl = reclass_matrix)
+    rbin <- model > threshold
     return(rbin)
   }
   else
