@@ -347,39 +347,39 @@ getEnvData <- eventReactive(input$get_now,{
     return(wc)
   }
   if(input$env_data=="ch_pre" && input$getEnvData){
-    chelsa_biocurrent <- ntbox::get_chelsa(period = "current",
-                                           sv_dir =layers_dir,
-                                           load2r = TRUE,
-                                           parallel = input$ch_parallel)
+    chelsa_biocurrent <- get_chelsa(period = "current",
+                                    sv_dir =layers_dir,
+                                    load2r = TRUE,
+                                    parallel = input$ch_parallel)
     return(chelsa_biocurrent)
   }
   if(input$env_data=="env_pres" && input$getEnvData){
-    envirem_pass <-  ntbox::get_envirem_clim(period= "current",
-                                             gcm = NULL,
-                                             region = input$env_reg,
-                                             resolution = input$env_res,
-                                             fmt= input$env_fmt,
-                                             sv_dir = layers_dir,
-                                             load2r = TRUE)
+    envirem_pass <-  get_envirem_clim(period= "current",
+                                      gcm = NULL,
+                                      region = input$env_reg,
+                                      resolution = input$env_res,
+                                      fmt= input$env_fmt,
+                                      sv_dir = layers_dir,
+                                      load2r = TRUE)
     return(envirem_pass)
   }
   if(input$env_data=="env_elev_pres" && input$getEnvData){
-    envirem_pass <-  ntbox::get_envirem_elev(period= "current",
-                                             region = input$env_reg,
-                                             resolution = input$env_res,
-                                             fmt= input$env_fmt,
-                                             sv_dir = layers_dir,
-                                             load2r = TRUE)
+    envirem_pass <-  get_envirem_elev(period= "current",
+                                      region = input$env_reg,
+                                      resolution = input$env_res,
+                                      fmt= input$env_fmt,
+                                      sv_dir = layers_dir,
+                                      load2r = TRUE)
     return(envirem_pass)
   }
   if(input$env_data=="bio_pre" && input$getEnvData){
-    bio_oracle <-  ntbox::get_bio_oracle(period= "current",
-                                         var_type = input$bio_type,
-                                         model = NULL,
-                                         scenario = NULL,
-                                         sv_dir = layers_dir,
-                                         load2r = TRUE,
-                                         parallel = input$ch_parallel)
+    bio_oracle <-  get_bio_oracle(period= "current",
+                                    var_type = input$bio_type,
+                                    model = NULL,
+                                    scenario = NULL,
+                                    sv_dir = layers_dir,
+                                    load2r = TRUE,
+                                    parallel = input$ch_parallel)
     return(bio_oracle)
   }
 
@@ -653,12 +653,12 @@ observeEvent(input$saveState, {
 
       # Create a directory for OCC data.
       data_dir_path <- file.path(workflowDir(),
-                                 "NicheToolBox_OccData")
+                                 "ntbox_OccData")
       if(!dir.exists(data_dir_path))
         dir.create(data_dir_path)
       # Create a directory for workflow report
       wf_dir_path <- file.path(workflowDir(),
-                               "NicheToolBox_workflowReport")
+                               "ntbox_workflowReport")
       if(!dir.exists(wf_dir_path))
         dir.create(wf_dir_path)
       # Animated map of GBIF records
@@ -821,12 +821,12 @@ observeEvent(input$saveState, {
      !is.null(niche_data) && length(workflowDir())>0L){
     # Create a directory for niche data.
     niche_dir_path <- file.path(workflowDir(),
-                                "NicheToolBox_NicheData")
+                                "ntbox_NicheData")
     if(!dir.exists(niche_dir_path))
       dir.create(niche_dir_path)
     # Create a directory for workflow report
     wf_dir_path <- file.path(workflowDir(),
-                             "NicheToolBox_workflowReport")
+                             "ntbox_workflowReport")
     if(!dir.exists(wf_dir_path))
       dir.create(wf_dir_path)
 
@@ -852,7 +852,7 @@ observeEvent(input$saveState, {
 
       rmarkdown::render(input = niche_data_report_path,
                         output_format = html_document(pandoc_args = c("+RTS", "-K64m","-RTS"),
-                                                      highlight="haddock",
+                                                      highlight="haddock",self_contained = FALSE,
                                                       toc = TRUE,theme = "readable"),
                         output_file = niche_data_report_save)
 
@@ -875,7 +875,7 @@ observeEvent(input$saveState, {
                                        "/niche_",data,"_corretable.csv"),
                   row.names = FALSE)
 
-        niche_dir_path <- paste0(workflowDir(),"NicheToolBox_NicheData")
+        niche_dir_path <- paste0(workflowDir(),"ntbox_NicheData")
         save_corfind <- paste0(niche_dir_path,"/niche_correlationfinder.txt")
         corr_finder <- summs_corr_var()$cor_vars_summary
         capture.output(print(corr_finder),file=save_corfind)
@@ -884,5 +884,430 @@ observeEvent(input$saveState, {
 
     }
 
+  }
+})
+
+
+# -----------------------------------------------------------------------
+# Observer for writing to the Workflow: Ecological niche modeling report
+# ---------------------------------------------------------------------
+
+observeEvent(input$saveState, {
+
+  if(nchar(workflowDir()) > 0L &&
+     !is.null(niche_data) && length(workflowDir())>0L){
+
+    wf_dir_path <- file.path(workflowDir(),
+                             "ntbox_workflowReport")
+
+    enm_report_path <- system.file("shinyApp/ntb_report/enm_report.Rmd",
+                                   package = "ntbox")
+
+    enm_report_save <- file.path(wf_dir_path,"enm_report.html")
+
+
+    if(!is.null(mve_obj_all()) || !is.null(mve_obj_m())){
+
+      rmarkdown::render(input = enm_report_path,
+                        output_format = html_document(pandoc_args = c("+RTS",
+                                                                      "-K64m",
+                                                                      "-RTS"),
+                                                      self_contained = FALSE,
+                                                      highlight="haddock",
+                                                      toc = TRUE,
+                                                      theme = "readable"),
+                        output_file = enm_report_save)
+
+      #model_name <- paste0()
+      #raster::writeRaster(ellipsoid_obj$suitRaster,)
+
+      models_dir_path <- file.path(workflowDir(),
+                                  "ntbox_enm_files")
+      if(!dir.exists(models_dir_path))
+        dir.create(models_dir_path)
+
+      # Save raster all all train Ellispoid models
+
+      try({
+
+
+
+        if(input$selectBios_all_all_train && (!is.null(mve_obj_all()) || !is.null(mve_obj_m()))){
+          vars <- names(mve_obj_all()$centroid)
+          mod_name <- paste0(paste(vars,
+                                   collapse = "_"),
+                             "_ellip_all_proj_trained_all.asc")
+
+          metafile <- base::gsub(pattern = ".asc",
+                                 replacement =".text" ,
+                                 mod_name)
+
+        model <- ellip_model_all_rast_all_train()$suitRaster
+        capture.output(mve_obj_all(),file = file.path(models_dir_path,
+                                                      metafile))
+        raster::writeRaster( model, file.path(models_dir_path,
+                                              mod_name))
+
+        }
+      },silent = TRUE)
+
+      # Save raster all M train Ellispoid models
+
+      try({
+
+
+        if(input$selectBios_all_m_train && (!is.null(mve_obj_all()) || !is.null(mve_obj_m()))){
+          vars <- names(mve_obj_m()$centroid)
+          mod_name <- paste0(paste(vars,
+                                   collapse = "_"),
+                             "_ellip_all_proj_trained_m.asc")
+
+          metafile <- base::gsub(pattern = ".asc",
+                                 replacement =".text" ,
+                                 mod_name)
+
+          model <-ellip_model_all_rast_m_train()$suitRaster
+
+          capture.output(mve_obj_m(),file = file.path(models_dir_path,
+                                                      metafile))
+          raster::writeRaster( model, file.path(models_dir_path,
+                                                mod_name))
+        }
+      },silent = TRUE)
+
+      # Save raster M all train Ellispoid models
+
+      try({
+
+        if(input$selectBios_m_all_train && (!is.null(mve_obj_all()) || !is.null(mve_obj_m()))){
+          vars <- names(mve_obj_all()$centroid)
+          mod_name <- paste0(paste(vars,
+                                   collapse = "_"),
+                             "_ellip_m_proj_trained_all.asc")
+          metafile <- base::gsub(pattern = ".asc",
+                                 replacement =".text" ,
+                                 mod_name)
+
+          capture.output(mve_obj_all(),file = file.path(models_dir_path,
+                                                        metafile))
+          model <-ellip_model_m_rast_all_train()$suitRaster
+          raster::writeRaster( model, file.path(models_dir_path,
+                                                mod_name))
+
+        }
+      },silent = TRUE)
+
+      # Save raster m m train Ellispoid models
+
+      try({
+
+
+
+        if(input$selectBios_m_m_train && (!is.null(mve_obj_all()) || !is.null(mve_obj_m()))){
+          vars <- names(mve_obj_m()$centroid)
+          mod_name <- paste0(paste( vars,
+                                   collapse = "_"),
+                             "_ellip_m_proj_trained_m.asc")
+
+          metafile <- base::gsub(pattern = ".asc",
+                                 replacement =".text" ,
+                                 mod_name)
+
+          model <-ellip_model_m_rast_m_train()$suitRaster
+
+          capture.output(mve_obj_m(),file = file.path(models_dir_path,
+                                                      metafile))
+          raster::writeRaster( model, file.path(models_dir_path,
+                                                mod_name))
+
+
+        }
+      },silent = TRUE)
+
+
+
+      # Save raster all all train Bioclim models
+
+      try({
+
+        if(input$run_bioclim_all_all_train && !is.null(bioclim_model_all_all_train())){
+
+          vars <- names(bioclim_model_all_all_train()$train@min)
+          mod_name <- paste0(paste(vars,
+                                   collapse = "_"),
+                             "_bioclim_all_proj_trained_all.asc")
+
+          model <- bioclim_model_all_all_train()$prediction
+          raster::writeRaster( model, file.path(models_dir_path,
+                                                mod_name))
+
+        }
+      },silent = TRUE)
+
+
+      # Save raster m all train Bioclim models
+
+      try({
+
+        if(input$run_bioclim_m_all_train && !is.null(bioclim_model_m_all_train())){
+
+          vars <- names(bioclim_model_m_all_train()$train@min)
+          mod_name <- paste0(paste(vars,
+                                   collapse = "_"),
+                             "_bioclim_m_proj_trained_all.asc")
+
+          model <- bioclim_model_m_all_train()$prediction
+          raster::writeRaster( model, file.path(models_dir_path,
+                                                mod_name))
+
+        }
+      },silent = TRUE)
+
+      # Save raster all m train Bioclim models
+
+      try({
+
+        if(input$run_bioclim_all_m_train && !is.null(bioclim_model_all_m_train())){
+
+          vars <- names(bioclim_model_all_m_train()$train@min)
+          mod_name <- paste0(paste(vars,
+                                   collapse = "_"),
+                             "_bioclim_all_proj_trained_m.asc")
+
+          model <- bioclim_model_all_m_train()$prediction
+          raster::writeRaster( model, file.path(models_dir_path,
+                                                mod_name))
+
+        }
+      },silent = TRUE)
+
+      # Save raster m m train Bioclim models
+
+      try({
+
+        if(input$run_bioclim_m_m_train && !is.null(bioclim_model_m_m_train())){
+
+          vars <- names(bioclim_model_m_m_train()$train@min)
+          mod_name <- paste0(paste(vars,
+                                   collapse = "_"),
+                             "_bioclim_m_proj_m_all.asc")
+
+          model <- bioclim_model_m_m_train()$prediction
+          raster::writeRaster( model, file.path(models_dir_path,
+                                                mod_name))
+
+        }
+      },silent = TRUE)
+
+
+    }
+
+  }
+})
+
+# -----------------------------------------------------------------------
+# Observer for writing to the Workflow: Model evaluation report
+# ---------------------------------------------------------------------
+
+
+observeEvent(input$saveState, {
+
+  if(nchar(workflowDir()) > 0L &&
+     length(workflowDir())>0L){
+
+    if(!is.null(partialRoc()) || !is.null(threshold_search2()) ||
+       !is.null(mtp_threshold()) || (input$compBin &&
+                                     !is.null(binary_user_method())) ||
+       (input$run_binomial && !is.null(binomial_testDF())) ||
+       !is.null(percentil_threshold())){
+      wf_dir_path <- file.path(workflowDir(),
+                               "ntbox_workflowReport")
+
+      model_eval_report_path <- system.file("shinyApp/ntb_report/model_eval.Rmd",
+                                            package = "ntbox")
+
+      meval_report_save <- file.path(wf_dir_path,"model_eval_report.html")
+
+      meval_dir <- file.path(workflowDir(),"ntbox_model_eval_files")
+      if(!dir.exists(meval_dir)) dir.create(meval_dir)
+
+
+      rmarkdown::render(input = model_eval_report_path,
+                        output_format = html_document(pandoc_args = c("+RTS",
+                                                                      "-K64m",
+                                                                      "-RTS"),
+                                                      self_contained = FALSE,
+                                                      highlight="haddock",
+                                                      toc = TRUE,
+                                                      theme = "readable"),
+                        output_file = meval_report_save)
+
+
+      if(!is.null(partialRoc())){
+
+        proc_path <- file.path(meval_dir,"proc_results.csv")
+
+        write.csv(partialRoc(),proc_path,row.names = FALSE)
+        proc_stats_path <- file.path(meval_dir,"proc_stats.txt")
+
+        capture.output(pRocStats(),file = proc_stats_path)
+
+      }
+
+      if(!is.null(threshold_search2())){
+        th_optim_path <- file.path(meval_dir,"confusion_matrix_optim.csv")
+        meta_optim_path <- file.path(meval_dir,"confusion_matrix_optim_metadata.csv")
+
+        th_optim <- round( meta_data_cm_method()$cutoff_threshold,4)
+        raster_optim_path <- file.path(meval_dir,
+                                       paste0("bin_cmatrix_optim_th_",
+                                              th_optim,".asc"))
+        write.csv(threshold_search2(),th_optim_path,row.names = FALSE)
+        write.csv(meta_data_cm_method(),meta_optim_path,row.names = FALSE)
+        try({
+          raster::writeRaster(binary_cm_method(),raster_optim_path)
+        },silent = TRUE)
+      }
+      if(!is.null(mtp_threshold())){
+        meta_mtp_path <- file.path(meval_dir,"mtp_metadata.csv")
+
+        write.csv(meta_data_mtp_method(),meta_mtp_path,row.names = FALSE)
+
+        th_mtp <- round( meta_data_mtp_method()$cutoff_threshold,8)
+
+        raster_mtp_path <- file.path(meval_dir,
+                                       paste0("bin_mtp_th_",
+                                              th_mtp,".asc"))
+        try({
+          raster::writeRaster(binary_mtp_method(),raster_mtp_path)
+        },silent = TRUE)
+      }
+      if(!is.null(percentil_threshold())){
+        meta_percentil_path <- file.path(meval_dir,"user_percentil_metadata.csv")
+
+        write.csv(meta_data_percentil_method(),meta_percentil_path,row.names = FALSE)
+
+        th_percentil <- round( meta_data_percentil_method()$cutoff_threshold,8)
+
+        raster_percentil_path <- file.path(meval_dir,
+                                     paste0("bin_user_percentil_th_",
+                                            input$percentil_th,"_",
+                                            th_percentil,".asc"))
+        try({
+          raster::writeRaster(binary_percentil_method(),raster_percentil_path)
+        },silent = TRUE)
+      }
+
+      if(input$compBin && !is.null(binary_user_method())){
+
+        meta_udt_path <- file.path(meval_dir,"user_threshold_metadata.csv")
+
+        write.csv(meta_data_user_method(),meta_udt_path,row.names = FALSE)
+
+        th_udt <- round( meta_data_user_method()$cutoff_threshold,4)
+        raster_udt_path <- file.path(meval_dir,
+                                     paste0("bin_user_th_",
+                                            th_udt,".asc"))
+
+        try({
+          raster::writeRaster(binary_user_method(),raster_udt_path)
+        },silent = TRUE)
+
+      }
+
+      if(input$run_binomial && !is.null(binomial_testDF())){
+        bino_results_path <- file.path(meval_dir,
+                                       "binomial_test_results.csv")
+        bino_coords_path <- file.path(meval_dir,
+                                      "binomial_coordinates_values.csv")
+
+        write.csv(binomial_testDF()$results_bin,bino_results_path,
+                  row.names = FALSE)
+
+        write.csv(binomial_testDF()$coords_df,bino_coords_path,
+                  row.names = FALSE)
+
+      }
+
+    }
+  }
+
+})
+
+
+# -----------------------------------------------------------------------
+# Observer for writing to the Workflow: Model evaluation report
+# ---------------------------------------------------------------------
+
+
+observeEvent(input$saveState, {
+  if(nchar(workflowDir()) > 0L &&
+     length(workflowDir())>0L){
+
+    if((input$run_mop && !is.null(mop_comp())) ||
+       (input$run_mess && !is.null(mess_comp())) ||
+       (input$run_nt1 && !is.null(exdet_univar_comp())) ||
+       (input$run_nt2 && !is.null(exdet_multvar_comp()))){
+
+
+
+      wf_dir_path <- file.path(workflowDir(),
+                               "ntbox_workflowReport")
+
+      erisk_report_path <- system.file("shinyApp/ntb_report/extrapolation_risk.Rmd",
+                                            package = "ntbox")
+
+      erisk_report_save <- file.path(wf_dir_path,"extrapolation_risk_report.html")
+
+      erisk_dir <- file.path(workflowDir(),"ntbox_extrapolation_risk_files")
+      if(!dir.exists(erisk_dir)) dir.create(erisk_dir)
+
+
+      rmarkdown::render(input = erisk_report_path,
+                        output_format = html_document(pandoc_args = c("+RTS",
+                                                                      "-K64m",
+                                                                      "-RTS"),
+                                                      self_contained = FALSE,
+                                                      highlight="haddock",
+                                                      toc = TRUE,
+                                                      theme = "readable"),
+                        output_file = erisk_report_save)
+
+      if(input$run_mop && !is.null(mop_comp())){
+        percent <- as.numeric(as.character(input$ref_percent))
+        mop_raw_file <- file.path(erisk_dir,paste0("mop_raw_values_percent_",
+                                               percent,".asc"))
+        mop_norm_file <- file.path(erisk_dir,paste0("mop_normalized_values_percent_",
+                                                   percent,".asc"))
+
+        try({
+          raster::writeRaster(mop_comp()[[1]],mop_raw_file)
+        },silent = TRUE)
+
+        try({
+          raster::writeRaster(mop_comp()[[2]],mop_norm_file)
+        },silent = TRUE)
+
+      }
+      if(input$run_mess && !is.null(mess_comp())){
+        mess_raw_file <- file.path(erisk_dir,"mess_raster.asc")
+        try({
+          raster::writeRaster(mess_comp(),mess_raw_file)
+        },silent = TRUE)
+      }
+      if(input$run_nt1 && !is.null(exdet_univar_comp())){
+        exdet_1_file <- file.path(erisk_dir,"exdet_univarite.asc")
+        try({
+          raster::writeRaster(exdet_univar_comp(),exdet_1_file)
+        },silent = TRUE)
+      }
+      if(input$run_nt2 && !is.null(exdet_multvar_comp())){
+        exdet_2_file <- file.path(erisk_dir,"exdet_multivariate.asc")
+        try({
+          raster::writeRaster(exdet_multvar_comp(),exdet_2_file)
+        },silent = TRUE)
+      }
+
+    }
   }
 })
