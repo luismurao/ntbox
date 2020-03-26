@@ -2,7 +2,7 @@
 % Please edit documentation in R/rlayers_ntb.R
 \name{rlayers_ntb}
 \alias{rlayers_ntb}
-\title{Function to read raster layers with the same extent and resolution in all `raster` acepted formats}
+\title{Function to read raster layers with the same extent and resolution in all \code{raster} acepted formats}
 \usage{
 rlayers_ntb(layers_path)
 }

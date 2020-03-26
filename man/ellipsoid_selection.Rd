@@ -135,5 +135,5 @@ print(pg_proc$pROC_summary)
 Peterson,A.T. et al. (2008) Rethinking receiver operating characteristic analysis applications in ecological niche modeling. Ecol. Modell., 213, 63–72.
 }
 \author{
-Luis Osorio-Olvera <luismurao@gmail.com>
+Luis Osorio-Olvera \href{mailto:luismurao@gmail.com}{luismurao@gmail.com}
 }

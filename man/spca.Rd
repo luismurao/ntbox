@@ -17,12 +17,12 @@ spca(
 \item{layers_stack}{A RasterStack of envrionmental variables}
 
 \item{layers_to_proj}{A RasterStack of the envrionmental variables that will be projected (default NULL). If provided
-the function will project the PCA for those layers by using the PCA object computed for the `layers_stack`. It can also use the PCA object
-stored in `pca_obj`.}
+the function will project the PCA for those layers by using the PCA object computed for the \code{layers_stack}. It can also use the PCA object
+stored in \code{pca_obj}.}
 
 \item{pca_obj}{An object of class \code{\link[stats]{prcomp}} (default NULL). Usefull when the user already
-has done the PCa for `layers_stack`
-and just wants to project the PCA on the `layers_to_proj` object.}
+has done the PCa for \code{layers_stack}
+and just wants to project the PCA on the \code{layers_to_proj} object.}
 
 \item{sv_dir}{A directory where the PCs will be saved. If NULL the PCs will not be written.}
 
@@ -31,16 +31,16 @@ and just wants to project the PCA on the `layers_to_proj` object.}
 \item{sv_proj_dir}{A directory where the PCs projection will be saved. If NULL the PCs will be written inside sv_dir.}
 }
 \value{
-A list containing either the raster stack with Pricipal Components of `layers_stack` or `layers_to_proj`,
-a barplot of the cumulative and explained variance of each compoent of `layers_stack` and a \code{\link[stats]{prcomp}} object(`pca_obj`).
+A list containing either the raster stack with Pricipal Components of \code{layers_stack} or \code{layers_to_proj},
+a barplot of the cumulative and explained variance of each compoent of \code{layers_stack} and a \code{\link[stats]{prcomp}} object(\code{pca_obj}).
 }
 \description{
 Performs PCA for a stack of raster layers.
 }
 \details{
-spca uses the function \code{\link[stats]{prcomp}} of the `stats` package. If `sv_dir` is provided  the PCs
-and `pca_obj` will be stored on it. The names of the layers in `layers_to_proj` need to be named
-with exactly the same names of those either in`layers_stack` or the `pca_obj`.
+spca uses the function \code{\link[stats]{prcomp}} of the \code{stats} package. If \code{sv_dir} is provided  the PCs
+and \code{pca_obj} will be stored on it. The names of the layers in \code{layers_to_proj} need to be named
+with exactly the same names of those either in\code{layers_stack} or the \code{pca_obj}.
 }
 \examples{
 # -------------------------------------------------------------------

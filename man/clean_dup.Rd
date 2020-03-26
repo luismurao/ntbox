@@ -21,8 +21,8 @@ Returns a data.frame with coordinate data from species
 }
 \description{
 Clean duplicated longitude and latitude data using threshold distance
-             which is a distance (in grades) between points to be considered
-             duplicates.
+which is a distance (in grades) between points to be considered
+duplicates.
 }
 \examples{
 # Species genus
