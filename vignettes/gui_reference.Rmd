@@ -1,5 +1,5 @@
 ---
-title: "`ntbox`: Quick Guide, package version `r packageVersion('ntbox')`"
+title: "`ntbox`: Reference guide, package version `r packageVersion('ntbox')`"
 output: rmarkdown::html_vignette
 bibliography: library.bib
 vignette: >
@@ -90,13 +90,13 @@ This is a method that lets the user save the workflow of the `ntbox` session. It
 
 Please select workflow directory by pressing the button **Select workflow directoy**.
 
-```{r out.width="120", echo=FALSE,fig.cap="Workflow directory", dpi=72}
+```{r out.width="220", echo=FALSE,fig.cap="Workflow directory", dpi=72}
 include_graphics(paste0(urls_base,
                         "ntbox_01_appsettings_01.png",
                         urls_r,collapse = "/"))
 ```
 
-```{r out.width = "120", echo=FALSE,fig.cap="Select workflow directory", dpi=72}
+```{r out.width = "320", echo=FALSE,fig.cap="Select workflow directory", dpi=72}
 include_graphics(paste0(urls_base,
                         "ntbox_01_appsettings_01b.png",
                         urls_r,collapse = "/"))
@@ -110,7 +110,7 @@ Go to  `Saving your analysis` section for an example on how to save the things t
 
 Go to the **Niche layers** section and click on select raster layers directory
 
-```{r out.width = "120", echo=FALSE, fig.cap="Niche layers directory", dpi=72}
+```{r out.width = "220", echo=FALSE, fig.cap="Niche layers directory", dpi=72}
 include_graphics(paste0(urls_base,
                         "ntbox_01_appsettings.png",
                         urls_r,collapse = "/"))
@@ -119,7 +119,7 @@ include_graphics(paste0(urls_base,
 
 Once you have selected the directory click on **Load niche layers** button.
 
-```{r out.width = "120", echo=FALSE, fig.cap="Load niche layers", dpi=72}
+```{r out.width = "420", echo=FALSE, fig.cap="Load niche layers", dpi=72}
 include_graphics(paste0(urls_base,
                         "ntbox_01_appsettings_02.png",
                         urls_r,collapse = "/"))
@@ -147,7 +147,7 @@ If you don't have environmental layers, you can download them [WorldClim data](h
 
 Get IPPC5 climate projections from global climate models (GCMs) for four representative concentration pathways (RCPs) ( [click here](http://www.worldclim.org/cmip5_30s)).
 
-```{r out.width = "120", echo=FALSE,fig.cap="Aviable Global Climate Models", dpi=72}
+```{r out.width = "220", echo=FALSE,fig.cap="Aviable Global Climate Models", dpi=72}
 include_graphics(paste0(urls_base,
                         "ntbox_01_appsettings_03.png",
                         urls_r,collapse = "/"))
@@ -172,7 +172,7 @@ You can remove duplicate records using a separation (spatially filtering) distan
 
 
 
-```{r out.width = "120", echo=FALSE,fig.cap="GBIF search example", dpi=72}
+```{r out.width = "420", echo=FALSE,fig.cap="GBIF search example", dpi=72}
 include_graphics(paste0(urls_base,
                         "ntbx_02_gbif.png",
                         urls_r,collapse = "/"))
@@ -185,7 +185,7 @@ Suppose that your species has a huge geographic range and you want to work only 
 
 
 
-```{r out.width = "120", echo=FALSE,fig.cap="Duplicate records", dpi=72}
+```{r out.width = "220", echo=FALSE,fig.cap="Duplicate records", dpi=72}
 include_graphics(paste0(urls_base,
                         "10_tutorial.png",
                         urls_r,collapse = "/"))
@@ -195,7 +195,7 @@ From **154** records only **2** are in Canada.
 
 
 
-```{r out.width = "120", echo=FALSE,fig.cap="Duplicate records", dpi=72}
+```{r out.width = "420", echo=FALSE,fig.cap="Duplicate records", dpi=72}
 include_graphics(paste0(urls_base,
                         "12_tutorial.png",
                         urls_r,collapse = "/"))
@@ -206,7 +206,7 @@ include_graphics(paste0(urls_base,
 The GBIF dataset has some fields that can be used to get some exciting visualizations, particularly fields related to observation date (year, month, day) and country. In Data -> GBIF data -> GBIF visualizations tab you can play with interactive plots, create animated visualizations and display a calendar of the reported records by year.
 
 
-```{r out.width = "120", echo=FALSE,fig.cap="GBIF visualizations", dpi=72}
+```{r out.width = "420", echo=FALSE,fig.cap="GBIF visualizations", dpi=72}
 include_graphics(paste0(urls_base,
                         "ntbox_02_gbifvis.png",
                         urls_r,collapse = "/"))
@@ -223,7 +223,7 @@ include_graphics(paste0(urls_base,
 You can use and clean your latitude and longitude data for the modeling process. Go to Data -> User data and upload your data. The data cleaning process is the same as the GBIF data.
 
 
-```{r out.width = "120", echo=FALSE,fig.cap="User data", dpi=72}
+```{r out.width = "420", echo=FALSE,fig.cap="User data", dpi=72}
 include_graphics(paste0(urls_base,
                         "ntbox_02_userdata.png",
                         urls_r,collapse = "/"))
@@ -239,7 +239,7 @@ We have seen how to curate data using threshold distances and grouping variables
 Go to Data -> Dynamic Map and on the right panel **Select a dataset** that you want to work with; in this case GBIF data will be used. 
 
 
-```{r out.width = "120", echo=FALSE,fig.cap="Dynamic map", dpi=72}
+```{r out.width = "420", echo=FALSE,fig.cap="Dynamic map", dpi=72}
 include_graphics(paste0(urls_base,
                         "ntbox_01_dynamic.png",
                         urls_r,collapse = "/"))
@@ -251,7 +251,7 @@ include_graphics(paste0(urls_base,
 On the right-side panel, there is an option where you can specify the data point id to remove it from the dataset. Click on the pop-up to see the point id, select it in the select input form from the right panel and press **Clean data points** button to clean. 
 
 
-```{r out.width = "120", echo=FALSE,fig.cap="Dynamic map", dpi=72}
+```{r out.width = "420", echo=FALSE,fig.cap="Dynamic map", dpi=72}
 include_graphics(paste0(urls_base,
                         "ntbox_02_dynamicpol_01.png",
                         urls_r,collapse = "/"))
@@ -263,7 +263,7 @@ include_graphics(paste0(urls_base,
 You can use `ntbox` to define your study area. Go to  Data -> Dynamic Map and in the right-side panel turn-on the button **Define and work with M polygon**, when activated you can either draw a polygon using the drawing tools (top-right corner) from `ntbox` or select your shapefile. If you prefer to define the M polygon using `ntbox` press the polygon tool and draw it:
 
 
-```{r out.width = "120", echo=FALSE,fig.cap="Dynamic map polygon", dpi=72}
+```{r out.width = "420", echo=FALSE,fig.cap="Dynamic map polygon", dpi=72}
 include_graphics(paste0(urls_base,
                         "ntbox_02_dynamicpol_01.png",
                         urls_r,collapse = "/"))
@@ -273,7 +273,7 @@ include_graphics(paste0(urls_base,
 Once defined, the polygon can be saved. In the right panel, there is a form where you can give a name for your polygon.
 
 
-```{r out.width = "120", echo=FALSE,fig.cap="Dynamic map polygon", dpi=72}
+```{r out.width = "420", echo=FALSE,fig.cap="Dynamic map polygon", dpi=72}
 include_graphics(paste0(urls_base,
                         "ntbox_02_dynamicpol_02.png",
                         urls_r,collapse = "/"))
@@ -285,7 +285,7 @@ include_graphics(paste0(urls_base,
 We can filter the data points that lie inside the polygon. In the right panel just press the button **Points in polygon**
 
 
-```{r out.width = "120", echo=FALSE,fig.cap="Polygon clean", dpi=72}
+```{r out.width = "420", echo=FALSE,fig.cap="Polygon clean", dpi=72}
 include_graphics(paste0(urls_base,
                         "ntbox_02_dynamicpol_03.png",
                         urls_r,collapse = "/"))
@@ -301,7 +301,7 @@ To work in **Niche space** (i.e., "environmental space") we need to have loaded 
 Go to Niche space -> Niche data extraction and select a longitude and latitude dataset. In the example, I selected the **GBIF dataset**. If the dataset is not empty and we have loaded the **raster layers** the app will not show any message:
 
 
-```{r out.width = "120", echo=FALSE,fig.cap="Extract environmental data", dpi=72}
+```{r out.width = "220", echo=FALSE,fig.cap="Extract environmental data", dpi=72}
 include_graphics(paste0(urls_base,
                         "24_tutorial.png",
                         urls_r,collapse = "/"))
@@ -310,7 +310,7 @@ include_graphics(paste0(urls_base,
 On the contrary, if we have not loaded either the **raster layers** or the **longitude/latitude data** a message indicating what to do will be displayed.
 
 
-```{r out.width = "120", echo=FALSE,fig.cap=" ", dpi=72}
+```{r out.width = "420", echo=FALSE,fig.cap=" ", dpi=72}
 include_graphics(paste0(urls_base,
                         "25_tutorial.png",
                         urls_r,collapse = "/"))
@@ -320,7 +320,7 @@ When the dataset and the layers are in the app memory we can proceed to the next
 
 
 
-```{r out.width = "120", echo=FALSE,fig.cap="Extract environmental data", dpi=72}
+```{r out.width = "420", echo=FALSE,fig.cap="Extract environmental data", dpi=72}
 include_graphics(paste0(urls_base,
                         "ntbox_03_extract.png",
                         urls_r,collapse = "/"))
@@ -332,7 +332,7 @@ include_graphics(paste0(urls_base,
 We can explore our niche data using some exciting 3-Dimensional plots. Go to Niche space -> Known niche and play with **$x$**, **$y$** and **$z$** variables of the ellipsoid plot.
 
 
-```{r out.width = "120", echo=FALSE,fig.cap="Niche space", dpi=72}
+```{r out.width = "420", echo=FALSE,fig.cap="Niche space", dpi=72}
 include_graphics(paste0(urls_base,
                         "27_tutorial.png",
                         urls_r,collapse = "/"))
@@ -344,7 +344,7 @@ include_graphics(paste0(urls_base,
 You can fit a (linear, quadratic, additive, smooth) model to see if your niche data have a trend. 
 
 
-```{r out.width = "120", echo=FALSE,fig.cap="Niche trends", dpi=72}
+```{r out.width = "420", echo=FALSE,fig.cap="Niche trends", dpi=72}
 include_graphics(paste0(urls_base,
                         "ntbox_03_nvisual.png",
                         urls_r,collapse = "/"))
@@ -357,7 +357,7 @@ One popular method to select the niche variables for modeling species niches and
 
 
 
-```{r out.width = "120", echo=FALSE,fig.cap="Niche correlations", dpi=72}
+```{r out.width = "420", echo=FALSE,fig.cap="Niche correlations", dpi=72}
 include_graphics(paste0(urls_base,
                         "ntbox_04_ncors.png",
                         urls_r,collapse = "/"))
@@ -368,7 +368,7 @@ include_graphics(paste0(urls_base,
 Also, you can explore the correlation matrix and download it in .csv format.
 
 
-```{r out.width = "120", echo=FALSE,fig.cap="Correlation matrix", dpi=72}
+```{r out.width = "420", echo=FALSE,fig.cap="Correlation matrix", dpi=72}
 include_graphics(paste0(urls_base,
                         "ntbox_04_corM.png",
                         urls_r,collapse = "/"))
@@ -381,7 +381,7 @@ include_graphics(paste0(urls_base,
 Another thing that the user can do is to plot a correlogram.
 
 
-```{r out.width = "120", echo=FALSE,fig.cap="Correlogram", dpi=72}
+```{r out.width = "420", echo=FALSE,fig.cap="Correlogram", dpi=72}
 include_graphics(paste0(urls_base,
                         "ntbox_04_corgram.png",
                         urls_r,collapse = "/"))
@@ -394,7 +394,7 @@ When studying species niches and distributions, one of the biggest questions tha
 Go to Niche clustering -> K-means section and select at least 3 niche variables to make the cluster analysis. In my case, as I selected the bios of the [WorldClim](http://www.worldclim.org/) database as my niche layers, I used 19 niche variables, but if you want to work with fewer variables just delete some of them (**Select at least 3 niche variables** section). 
 
 
-```{r out.width = "120", echo=FALSE,fig.cap="Niche clustering", dpi=72}
+```{r out.width = "420", echo=FALSE,fig.cap="Niche clustering", dpi=72}
 include_graphics(paste0(urls_base,
                         "29_tutorial.png",
                         urls_r,collapse = "/"))
@@ -403,7 +403,7 @@ include_graphics(paste0(urls_base,
 Here it is necessary to indicate the number of clusters, the default value is 3 (in the future the app will have algorithms to help you to make this decision). Press the **Go!!!** button and you will see a 3-dimensional plot with ellipsoids representing the number of clusters you suggested. Bellow this plot you will see a `leaflet` map with the geographic projection of the points that fall inside each ellipsoid (colors help to identify to which cluster each data point belongs).
 
 
-```{r out.width = "120", echo=FALSE,fig.cap="Number of clusters", dpi=72}
+```{r out.width = "420", echo=FALSE,fig.cap="Number of clusters", dpi=72}
 include_graphics(paste0(urls_base,
                         "ntbox_05_ncluster.png",
                         urls_r,collapse = "/"))
@@ -412,7 +412,7 @@ include_graphics(paste0(urls_base,
 Let's play with the number of clusters (now 5) and see how the results change...
 
 
-```{r out.width = "120", echo=FALSE,fig.cap="Number of clusters", dpi=72}
+```{r out.width = "420", echo=FALSE,fig.cap="Number of clusters", dpi=72}
 include_graphics(paste0(urls_base,
                         "ntbox_05_ncluster_2.png",
                         urls_r,collapse = "/"))
@@ -433,7 +433,7 @@ In `Nichetoolbox` you can model ecological niches by using one of the following 
 Although the maxent [@Phillips2004; @Phillips2008] is not yet in the GUI interface, `ntbox` it could be run by using `ntbox::maxent_call`function on the command line.
 
 
-```{r out.width = "120", echo=FALSE,fig.cap="Ecological niche models", dpi=72}
+```{r out.width = "220", echo=FALSE,fig.cap="Ecological niche models", dpi=72}
 include_graphics(paste0(urls_base,
                         "ntbox_06_nicheM.png",
                         urls_r,collapse = "/"))
@@ -458,7 +458,7 @@ In `Nichetoolbox`, to make an ellipsoid model you just need the environmental in
 The model can be trained either with all occurrence data or with the occurrence points that lie inside your M polygon.
 
 
-```{r out.width = "120", echo=FALSE,fig.cap="ENM M-polygon", dpi=72}
+```{r out.width = "220", echo=FALSE,fig.cap="ENM M-polygon", dpi=72}
 include_graphics(paste0(urls_base,
                         "37_tutorial.png",
                         urls_r,collapse = "/"))
@@ -469,7 +469,7 @@ Similarly, you can project the model to the geography by using either the full e
 #### Using full extent
 
 
-```{r out.width = "120", echo=FALSE,fig.cap="ENM all extent", dpi=72}
+```{r out.width = "220", echo=FALSE,fig.cap="ENM all extent", dpi=72}
 include_graphics(paste0(urls_base,
                         "38_tutorial.png",
                         urls_r,collapse = "/"))
@@ -479,7 +479,7 @@ Select the niche variables and run your model.
 
 
 
-```{r out.width = "120", echo=FALSE,fig.cap=" ", dpi=72}
+```{r out.width = "420", echo=FALSE,fig.cap=" ", dpi=72}
 include_graphics(paste0(urls_base,
                         "ntbox_06_Ellips.png",
                         urls_r,collapse = "/"))
@@ -489,7 +489,7 @@ include_graphics(paste0(urls_base,
 #### Using the extent of the M polygon 
 
 
-```{r out.width = "120", echo=FALSE,fig.cap=" ", dpi=72}
+```{r out.width = "420", echo=FALSE,fig.cap=" ", dpi=72}
 include_graphics(paste0(urls_base,
                         "40_tutorial.png",
                         urls_r,collapse = "/"))
@@ -498,7 +498,7 @@ include_graphics(paste0(urls_base,
 Download ellipsoid meta-data.
 
 
-```{r out.width = "120", echo=FALSE,fig.cap="Ellipsoid meta-data", dpi=72}
+```{r out.width = "220", echo=FALSE,fig.cap="Ellipsoid meta-data", dpi=72}
 include_graphics(paste0(urls_base,
                         "41_tutorial.png",
                         urls_r,collapse = "/"))
@@ -507,7 +507,7 @@ include_graphics(paste0(urls_base,
 Download the ellipsoid raster model.
 
  
-```{r out.width = "120", echo=FALSE,fig.cap="Ellipsoid raster model", dpi=72}
+```{r out.width = "420", echo=FALSE,fig.cap="Ellipsoid raster model", dpi=72}
 include_graphics(paste0(urls_base,
                         "42_tutorial.png",
                         urls_r,collapse = "/"))
@@ -517,7 +517,7 @@ include_graphics(paste0(urls_base,
 Download distance to the centroid table.
 
 
-```{r out.width = "120", echo=FALSE,fig.cap="Distances to niche-centroid table", dpi=72}
+```{r out.width = "420", echo=FALSE,fig.cap="Distances to niche-centroid table", dpi=72}
 include_graphics(paste0(urls_base,
                         "43_tutorial.png",
                         urls_r,collapse = "/"))
@@ -531,7 +531,7 @@ The way that Bioclim model is implemented in `Nichetoolbox` is the same as the e
 - The model can be trained either with all occurrence data or with occurrence points that lie inside your M polygon.
 
 
-```{r out.width = "120", echo=FALSE,fig.cap=" ", dpi=72}
+```{r out.width = "420", echo=FALSE,fig.cap=" ", dpi=72}
 include_graphics(paste0(urls_base,
                         "ntbox_06_bioclim.png",
                         urls_r,collapse = "/"))
@@ -540,7 +540,7 @@ include_graphics(paste0(urls_base,
 - Similarly, you can project the model to the geography using either the full extent of rasters or the extent of the M polygon.
 
 
-```{r out.width = "120", echo=FALSE,fig.cap=" ", dpi=72}
+```{r out.width = "420", echo=FALSE,fig.cap=" ", dpi=72}
 include_graphics(paste0(urls_base,
                         "45_tutorial.png",
                         urls_r,collapse = "/"))
@@ -551,7 +551,7 @@ include_graphics(paste0(urls_base,
 
 Once you have modeled your species' niche using one or all modeling algorithms, you can explore them in geographic space by using the model visualizer. The visualizer is interactive (you can zoom in/out a map) and uses the `leaflet` library.
 
-```{r out.width = "120", echo=FALSE,fig.cap=" ", dpi=72}
+```{r out.width = "420", echo=FALSE,fig.cap=" ", dpi=72}
 include_graphics(paste0(urls_base,
                         "ntbox_06_Gproj.png",
                         urls_r,collapse = "/"))
@@ -571,7 +571,7 @@ The last part of the project deals with species distribution model evaluation an
 To do Partial ROC analysis in `Nichetoolbox` upload your continuous niche model output map (e.g., from Maxent) and your validation dataset. 
 
 
-```{r out.width = "120", echo=FALSE,fig.cap=" ", dpi=72}
+```{r out.width = "420", echo=FALSE,fig.cap=" ", dpi=72}
 include_graphics(paste0(urls_base,
                         "56_tutorial.png",
                         urls_r,collapse = "/"))
@@ -589,7 +589,7 @@ kable(head(d))
 ##### Partial ROC output
 
 
-```{r out.width = "120", echo=FALSE,fig.cap=" ", dpi=72}
+```{r out.width = "420", echo=FALSE,fig.cap=" ", dpi=72}
 include_graphics(paste0(urls_base,
                         "ntbox_07_proc.png",
                         urls_r,collapse = "/"))
@@ -611,7 +611,7 @@ The conversion can be done by using one of the following methods:
  - **Percent selection:** The user can choose the percentile to make the cut-off. The 10 percentile is the default.
 
 
-```{r out.width = "120", echo=FALSE,fig.cap=" ", dpi=72}
+```{r out.width = "220", echo=FALSE,fig.cap=" ", dpi=72}
 include_graphics(paste0(urls_base,
                         "ntbox_07_binmethods.png",
                         urls_r,collapse = "/"))
@@ -633,7 +633,7 @@ kable(tail(d))
 ```
 
  
-```{r out.width = "120", echo=FALSE,fig.cap=" ", dpi=72}
+```{r out.width = "420", echo=FALSE,fig.cap=" ", dpi=72}
 include_graphics(paste0(urls_base,
                         "ntbox_07_bin.png",
                         urls_r,collapse = "/"))
@@ -655,7 +655,7 @@ kable(head(d))
 Once uploaded, press specify the range of thresholds to look for and press the `Search threshold` button.
 
 
-```{r out.width = "120", echo=FALSE,fig.cap=" ", dpi=72}
+```{r out.width = "220", echo=FALSE,fig.cap=" ", dpi=72}
 include_graphics(paste0(urls_base,
                         "59_tutorial.png",
                         urls_r,collapse = "/"))
@@ -666,7 +666,7 @@ The output looks like this:
 
 
 
-```{r out.width = "120", echo=FALSE,fig.cap=" ", dpi=72}
+```{r out.width = "420", echo=FALSE,fig.cap=" ", dpi=72}
 include_graphics(paste0(urls_base,
                         "ntbox_07_confmat.png",
                         urls_r,collapse = "/"))
@@ -685,7 +685,7 @@ include_graphics(paste0(urls_base,
 Specify a cut-off threshold.
 
  
-```{r out.width = "120", echo=FALSE,fig.cap=" ", dpi=72}
+```{r out.width = "220", echo=FALSE,fig.cap=" ", dpi=72}
 include_graphics(paste0(urls_base,
                         "ntbox_07_userth.png",
                         urls_r,collapse = "/"))
@@ -696,7 +696,7 @@ include_graphics(paste0(urls_base,
 The result is:
 
 
-```{r out.width = "120", echo=FALSE,fig.cap=" ", dpi=72}
+```{r out.width = "420", echo=FALSE,fig.cap=" ", dpi=72}
 include_graphics(paste0(urls_base,
                         "ntbox_07_userthR.png",
                         urls_r,collapse = "/"))
@@ -708,7 +708,7 @@ include_graphics(paste0(urls_base,
 Upload the continuous map and the presence data; then select the percentile that you want to work with (11 in this example).
 
 
-```{r out.width = "120", echo=FALSE,fig.cap=" ", dpi=72}
+```{r out.width = "220", echo=FALSE,fig.cap=" ", dpi=72}
 include_graphics(paste0(urls_base,
                         "ntbox_07_percentil_selec.png",
                         urls_r,collapse = "/"))
@@ -718,7 +718,7 @@ include_graphics(paste0(urls_base,
 The output is:
 
 
-```{r out.width = "120", echo=FALSE,fig.cap=" ", dpi=72}
+```{r out.width = "420", echo=FALSE,fig.cap=" ", dpi=72}
 include_graphics(paste0(urls_base,
                         "ntbox_07_percentil_res.png",
                         urls_r,collapse = "/"))
@@ -735,10 +735,16 @@ According to Anderson et al. (2003) [@Anderson2003], this test is "employed to d
 You can upload your SDM model as a binary map or as a continuous model. If you choose the second, you will need to specify the threshold to convert it into a binary map. 
 
 
-```{r out.width = "120", echo=FALSE,fig.cap=" ", dpi=72}
+```{r out.width = "220", echo=FALSE,fig.cap=" ", dpi=72}
 include_graphics(paste0(urls_base,
                         "ntbox_07_binomial.png",
                         urls_r,collapse = "/"))
+
+
+```
+
+
+```{r out.width = "420", echo=FALSE,fig.cap=" ", dpi=72}
 
 include_graphics(paste0(urls_base,
                         "ntbox_07_binomialRes.png",
@@ -747,7 +753,6 @@ include_graphics(paste0(urls_base,
 
 ```
 
- 
 # 8. `Extrapolation risk` (model uncertainty)
 
 In this section you will find the tools to asses the extrapolation risk of the ecological niche models in a geographic context; this analysis becomes more important when doing model projections in time (e.g.,  climate change projections) or in geography (i.e., model transference from one calibration region to another region of interest). 
@@ -762,7 +767,7 @@ To do any of the analyses listed above use the environmental layers that you upl
 
 
 
-```{r out.width = "120", echo=FALSE,fig.cap=" ", dpi=72}
+```{r out.width = "520", echo=FALSE,fig.cap=" ", dpi=72}
 include_graphics(paste0(urls_base,
                         "ntbox_08_extrapol.png",
                         urls_r,collapse = "/"))
@@ -776,7 +781,7 @@ The MOP is calculated following Owens et al. [@Owens2013].
  1. Go to `Extrapolation risk` section and select MOP
 
 
-```{r out.width = "120", echo=FALSE,fig.cap="MOP", dpi=72}
+```{r out.width = "520", echo=FALSE,fig.cap="MOP", dpi=72}
 include_graphics(paste0(urls_base,
                         "ntbox_08_mop0.png",
                         urls_r,collapse = "/"))
@@ -786,7 +791,7 @@ include_graphics(paste0(urls_base,
  2. Select the variables that will be used to compute the MOP; these variables should be the same for both the M layers (the calibration layers of your niche model) and the G layers (projection layers).
 
  
-```{r out.width = "120", echo=FALSE,fig.cap="MOP", dpi=72}
+```{r out.width = "220", echo=FALSE,fig.cap="MOP", dpi=72}
 include_graphics(paste0(urls_base,
                         "ntbox_08_mop2.png",
                         urls_r,collapse = "/"))
@@ -796,7 +801,7 @@ include_graphics(paste0(urls_base,
  3. Select the percent of the reference points (i.e., pixels in M polygon layers) to be sampled (in this example 10%). You can also select the normalized version of MOP (normalized to 1 for regions that are more similar in both M and G regions). The computations can be done in parallel. This method is very efficient for big layers; the **compute each** parameter determines the number of pixels to be processed in each core (number of cores parameter). 
 
 
-```{r out.width = "120", echo=FALSE,fig.cap="MOP", dpi=72}
+```{r out.width = "220", echo=FALSE,fig.cap="MOP", dpi=72}
 include_graphics(paste0(urls_base,
                         "ntbox_08_mop3.png",
                         urls_r,collapse = "/"))
@@ -805,7 +810,7 @@ include_graphics(paste0(urls_base,
 
 Press Run.
   
-```{r out.width = "120", echo=FALSE,fig.cap="MOP", dpi=72}
+```{r out.width = "520", echo=FALSE,fig.cap="MOP", dpi=72}
 include_graphics(paste0(urls_base,
                         "ntbox_08_mop4.png",
                         urls_r,collapse = "/"))
@@ -821,7 +826,7 @@ MESS is computed following [@Elith2010]. A version of this function is implement
 As in MOP, you need to select which variables will be used to compute the MESS and then press the **Run** button.
 
 
-```{r out.width = "120", echo=FALSE,fig.cap="MESS", dpi=72}
+```{r out.width = "220", echo=FALSE,fig.cap="MESS", dpi=72}
 include_graphics(paste0(urls_base,
                         "ntbox_08_mess1.png",
                         urls_r,collapse = "/"))
@@ -832,7 +837,7 @@ include_graphics(paste0(urls_base,
 The result is:
 
 
-```{r out.width = "120", echo=FALSE,fig.cap="MESS", dpi=72}
+```{r out.width = "520", echo=FALSE,fig.cap="MESS", dpi=72}
 include_graphics(paste0(urls_base,
                         "ntbox_08_mess.png",
                         urls_r,collapse = "/"))
@@ -855,7 +860,7 @@ In `ntbox` you can do the two types of ExDet analysis:
 Select the `Exdet` in the left panel of `ntbox`, then select which variables are going to be used in the analysis for the M and G region.
 
 
-```{r out.width = "120", echo=FALSE,fig.cap="Exdet NT1", dpi=72}
+```{r out.width = "220", echo=FALSE,fig.cap="Exdet NT1", dpi=72}
 include_graphics(paste0(urls_base,
                         "ntbox_08_exdet1.png",
                         urls_r,collapse = "/"))
@@ -865,7 +870,7 @@ include_graphics(paste0(urls_base,
 
 Press run and the result looks like this:
 
-```{r out.width = "120", echo=FALSE,fig.cap="Exdet NT1", dpi=72}
+```{r out.width = "520", echo=FALSE,fig.cap="Exdet NT1", dpi=72}
 include_graphics(paste0(urls_base,
                         "ntbox_08_exdet2.png",
                         urls_r,collapse = "/"))
@@ -877,7 +882,7 @@ include_graphics(paste0(urls_base,
 Follow the above steps and you will see:
 
 
-```{r out.width = "120", echo=FALSE,fig.cap="Exdet NT2", dpi=72}
+```{r out.width = "520", echo=FALSE,fig.cap="Exdet NT2", dpi=72}
 include_graphics(paste0(urls_base,
                         "ntbox_08_exdet3.png",
                         urls_r,collapse = "/"))
@@ -896,7 +901,7 @@ Here we provide methods to do some Geographic Information System (GIS) operation
 To do any of the analyses listed above, upload your environmental layers in the `AppSettings` section and set your working directory.
 
  
-```{r out.width = "120", echo=FALSE,fig.cap=" ", dpi=72}
+```{r out.width = "520", echo=FALSE,fig.cap=" ", dpi=72}
 include_graphics(paste0(urls_base,
                         "ntbox_09_export.png",
                         urls_r,collapse = "/"))
@@ -916,7 +921,7 @@ Just select which layers to export into one of the available formats.
 
 
  
-```{r out.width = "120", echo=FALSE,fig.cap=" ", dpi=72}
+```{r out.width = "520", echo=FALSE,fig.cap=" ", dpi=72}
 include_graphics(paste0(urls_base,
                         "ntbox_09_export2.png",
                         urls_r,collapse = "/"))
@@ -926,7 +931,7 @@ include_graphics(paste0(urls_base,
 Give a name to the folder where they will be exported and press go.
 
  
-```{r out.width = "120", echo=FALSE,fig.cap=" ", dpi=72}
+```{r out.width = "220", echo=FALSE,fig.cap=" ", dpi=72}
 include_graphics(paste0(urls_base,
                         "ntbox_09_export3.png",
                         urls_r,collapse = "/"))
@@ -936,7 +941,7 @@ include_graphics(paste0(urls_base,
 The output is:
 
  
-```{r out.width = "120", echo=FALSE,fig.cap=" ", dpi=72}
+```{r out.width = "220", echo=FALSE,fig.cap=" ", dpi=72}
 include_graphics(paste0(urls_base,
                         "ntbox_09_export4.png",
                         urls_r,collapse = "/"))
@@ -947,7 +952,7 @@ include_graphics(paste0(urls_base,
 
 In the `GIS tools` section, you can create a polygon of your `M (calibration) and G (projection)` regions to crop or mask the environmental layers that will be used in the modeling process.
  
-```{r out.width = "120", echo=FALSE,fig.cap=" ", dpi=72}
+```{r out.width = "520", echo=FALSE,fig.cap=" ", dpi=72}
 include_graphics(paste0(urls_base,
                         "ntbox_09_cropMask1.png",
                         urls_r,collapse = "/"))
@@ -957,7 +962,7 @@ include_graphics(paste0(urls_base,
 Select the format to export the crop/masked layers
 
 
-```{r out.width = "120", echo=FALSE,fig.cap=" ", dpi=72}
+```{r out.width = "420", echo=FALSE,fig.cap=" ", dpi=72}
 include_graphics(paste0(urls_base,
                         "ntbox_09_cropmask2.png",
                         urls_r,collapse = "/"))
@@ -968,7 +973,7 @@ include_graphics(paste0(urls_base,
 `ntbox` will create a folder called **ntbox_nicheLayersMasked**
 
 
-```{r out.width = "120", echo=FALSE,fig.cap=" ", dpi=72}
+```{r out.width = "420", echo=FALSE,fig.cap=" ", dpi=72}
 include_graphics(paste0(urls_base,
                         "ntbox_09_cropmask2.png",
                         urls_r,collapse = "/"))
@@ -978,7 +983,7 @@ include_graphics(paste0(urls_base,
 
 This is the visualization of the masked layers 
 
-```{r out.width = "120", echo=FALSE,fig.cap=" ", dpi=72}
+```{r out.width = "420", echo=FALSE,fig.cap=" ", dpi=72}
 include_graphics(paste0(urls_base,
                         "ntbox_09_cropmask3.png",
                         urls_r,collapse = "/"))
@@ -991,7 +996,7 @@ include_graphics(paste0(urls_base,
 You can do a principal components analysis (PCA) of your environmental layers and project them in time or space. As in all the analysis of this section, you should upload your environmental layers in the `AppSettings` section and set your working directory.
 
  
-```{r out.width = "120", echo=FALSE,fig.cap=" ", dpi=72}
+```{r out.width = "520", echo=FALSE,fig.cap=" ", dpi=72}
 include_graphics(paste0(urls_base,
                         "ntbox_09_export.png",
                         urls_r,collapse = "/"))
@@ -1002,7 +1007,7 @@ include_graphics(paste0(urls_base,
 The transformation can be computed on the flight (the option **From my niche layers**) or in a previous `ntbox` session by using the `rda` file (see the help of the function `?ntbox::spca`).
 
 
-```{r out.width = "120", echo=FALSE,fig.cap=" ", dpi=72}
+```{r out.width = "220", echo=FALSE,fig.cap=" ", dpi=72}
 include_graphics(paste0(urls_base,
                         "ntbox_09_pca1.png",
                         urls_r,collapse = "/"))
@@ -1012,7 +1017,7 @@ include_graphics(paste0(urls_base,
 To do the PCA transformation and project it, you must ensure that both the calibration layers and projection layers are listed in the same order (or named equal). This means that if you have a set of calibration layers called `bio1`, `bio2`, `bio6`, and `bio12`, the projection layers will need to be in the same order `cc85bi501`, `cc85bi502`, `cc85bi506`, `cc85bi5012`.
 
 
-```{r out.width = "120", echo=FALSE,fig.cap=" ", dpi=72}
+```{r out.width = "220", echo=FALSE,fig.cap=" ", dpi=72}
 include_graphics(paste0(urls_base,
                         "ntbox_pca_02.png",
                         urls_r,collapse = "/"))
@@ -1021,7 +1026,7 @@ include_graphics(paste0(urls_base,
 
 Just select a format for your PC layers and give a name to the directory where they will be saved. When the computation is done you will see a scree plot of the explained variance by each component.
 
-```{r out.width = "120", echo=FALSE,fig.cap=" ", dpi=72}
+```{r out.width = "220", echo=FALSE,fig.cap=" ", dpi=72}
 include_graphics(paste0(urls_base,
                         "ntbox_pcs_03.png",
                         urls_r,collapse = "/"))
@@ -1031,7 +1036,7 @@ include_graphics(paste0(urls_base,
 The above will create 2 folders, *pca_referenceLayers* for the calibration layers and *PC_projection* for the calibration. 
 
 
-```{r out.width = "120", echo=FALSE,fig.cap=" ", dpi=72}
+```{r out.width = "420", echo=FALSE,fig.cap=" ", dpi=72}
 
 include_graphics(paste0(urls_base,
                         "ntbox_09_pca_r1.png",
@@ -1048,7 +1053,7 @@ include_graphics(paste0(urls_base,
 Your analysis can be saved just by pressing the **Save state** button  <span class="glyphicon glyphicon-hdd"></span>   located in the top-left corner of the application. 
 
 
-```{r out.width = "120", echo=FALSE,fig.cap=" ", dpi=72}
+```{r out.width = "220", echo=FALSE,fig.cap=" ", dpi=72}
 include_graphics(paste0(urls_base,
                         "ntbox_10_workflow_sv.png",
                         urls_r,collapse = "/"))
@@ -1069,7 +1074,7 @@ It is worth noting that you can save your analysis at any stage of the workflow.
 
 
 
-```{r out.width = "120", echo=FALSE,fig.cap="ntbox_10_gdata.html", dpi=72}
+```{r out.width = "220", echo=FALSE,fig.cap="ntbox_10_gdata.html", dpi=120}
 include_graphics(paste0(urls_base,
                         "ntbox_10_gdata.png",
                         urls_r,collapse = "/"))
@@ -1077,14 +1082,14 @@ include_graphics(paste0(urls_base,
 ```
 
 
-```{r out.width = "120", echo=FALSE,fig.cap="ntbox_10_env_data.html", dpi=72}
+```{r out.width = "220", echo=FALSE,fig.cap="ntbox_10_env_data.html", dpi=120}
 include_graphics(paste0(urls_base,
                         "ntbox_10_env_data.png",
                         urls_r,collapse = "/"))
 
 ```
 
-```{r out.width = "120", echo=FALSE,fig.cap="ntbox_10_enm.html", dpi=72}
+```{r out.width = "220", echo=FALSE,fig.cap="ntbox_10_enm.html", dpi=120}
 include_graphics(paste0(urls_base,
                         "ntbox_10_enm.png",
                         urls_r,collapse = "/"))
@@ -1092,7 +1097,7 @@ include_graphics(paste0(urls_base,
 ```
 
 
-```{r out.width = "120", echo=FALSE,fig.cap="ntbox_10_enm_eval.html", dpi=72}
+```{r out.width = "220", echo=FALSE,fig.cap="ntbox_10_enm_eval.html", dpi=120}
 include_graphics(paste0(urls_base,
                         "ntbox_10_enm_eval.png",
                         urls_r,collapse = "/"))
