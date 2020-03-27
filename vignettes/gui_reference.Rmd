@@ -39,7 +39,7 @@ urls_r <- ""
 
 # Presentation
 
-Here, we present a quick guide that will show the basics of the Graphical User Interface (GUI) of `ntbox` with the instructions of how to save the analysis in a workflow directory (at the end of this document); Note that the software is open-source, so you could see the code that it's running behind the GUI by visiting the author's [`github`](https://github.com/luismurao/ntbox) repository.
+Here, we present a quick guide that will show the basics of the Graphical User Interface (GUI) of `ntbox` with the instructions of how to save the analysis in a workflow directory (at the end of this document); Note that the software is open-source, so you could see the code that it's running behind the GUI by visiting the author's [`github`](https://github.com/luismurao/ntbox) repository. You can find an improved version of this vignette in this web site https://luismurao.github.io/ntbox_user_guide.html
 
 ## Launching the app
 
@@ -400,10 +400,10 @@ include_graphics(paste0(urls_base,
                         urls_r,collapse = "/"))
 ```
 
-Here it is necessary to indicate the number of clusters, the default value is 3 (in the future the app will have algorithms to help you to make this decision). Press the **Go!!!** button and you will see a 3-dimensional plot with ellipsoids representing the number of clusters you suggested. Bellow this plot you will see a `leaflet` map with the geographic projection of the points that fall inside each ellipsoid (colors help to identify to which cluster each data point belongs).
+Here it is necessary to indicate the number of clusters, the default value is 3 (in the future the app will have algorithms to help you to make this decision). Press the **Go!!!** button and you will see a 3-dimensional plot with ellipsoids representing the number of clusters you suggested. Bellow this plot you will see a `leaflet` map with the geographic projection of the points that fall inside each ellipsoid (colors help to identify to which cluster each data point belongs). his tool is designed to help you visualizing the `Hutchison’s duality` [@Colwell2009].
 
 
-```{r out.width = "420", echo=FALSE,fig.cap="Number of clusters", dpi=72}
+```{r out.width = "420", echo=FALSE,fig.cap="Niche clustering and visualization of the `Hutchison’s duality`", dpi=72}
 include_graphics(paste0(urls_base,
                         "ntbox_05_ncluster.png",
                         urls_r,collapse = "/"))
@@ -412,7 +412,7 @@ include_graphics(paste0(urls_base,
 Let's play with the number of clusters (now 5) and see how the results change...
 
 
-```{r out.width = "420", echo=FALSE,fig.cap="Number of clusters", dpi=72}
+```{r out.width = "420", echo=FALSE,fig.cap="Niche clustering and visualization of the `Hutchison’s duality`", dpi=72}
 include_graphics(paste0(urls_base,
                         "ntbox_05_ncluster_2.png",
                         urls_r,collapse = "/"))
