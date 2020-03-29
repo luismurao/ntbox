@@ -3,6 +3,7 @@
 #' @description maxent_call Allows the user to introduce all the arguments that can be passed to MaxEnt. It also allows to run MaxEnt from R.
 #' @param maxentjar_path Path to maxent.jar
 #' @param run_fromR Logical If TRUE, maxent will be excuted from the current R session.
+#' @param wait Loogical If TRUE, R will wait until maxent fishes to run the model. Default TRUE.
 #' @param features A vector with features classes to fit the maxent model. Use "l" for "linear","q" for "quadratic", "p" for "product", "h" for "hinge"and "t" for "threshold".
 #' @param memory_assigned A numeric value representing the RAM memory assigned to the process.
 #' @param environmentallayers Path to the directory containing environmental layers. Environmental variables can be in a directory containing one file per variable,
@@ -91,6 +92,7 @@
 #' @export
 maxent_call <- function(maxentjar_path,
                         run_fromR=TRUE,
+                        wait =TRUE,
                         features,
                         memory_assigned = 2000,
                         environmentallayers,
@@ -348,7 +350,7 @@ maxent_call <- function(maxentjar_path,
   )
   if(run_fromR){
     #if(.Platform$OS.type == "unix")
-    system(command = maxent_call,intern = T,wait = T)
+    system(command = maxent_call,intern = wait,wait = wait)
     #else
     #  system2(command  = maxent_call, wait = T, invisible = FALSE)
   }

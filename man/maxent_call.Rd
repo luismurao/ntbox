@@ -7,6 +7,7 @@
 maxent_call(
   maxentjar_path,
   run_fromR = TRUE,
+  wait = TRUE,
   features,
   memory_assigned = 2000,
   environmentallayers,
@@ -76,6 +77,8 @@ maxent_call(
 \item{maxentjar_path}{Path to maxent.jar}
 
 \item{run_fromR}{Logical If TRUE, maxent will be excuted from the current R session.}
+
+\item{wait}{Loogical If TRUE, R will wait until maxent fishes to run the model. Default TRUE.}
 
 \item{features}{A vector with features classes to fit the maxent model. Use "l" for "linear","q" for "quadratic", "p" for "product", "h" for "hinge"and "t" for "threshold".}
 
