@@ -156,22 +156,29 @@ maxent_call <- function(maxentjar_path,
   selected_features <- paste(unlist(lapply(features, .maxent_features)),collapse = " ")
   #print(selected_features)
   maxentpath <- normalizePath(file.path(maxentjar_path,
-                                      "maxent.jar"))
+                                        "maxent.jar"))
 
-  if(.Platform$OS.type == "unix") {
-    sl <- "/"
-    dl <- "/"
-  } else {
-    sl <- "\\"
-    dl <- "\\\\"
-  }
-  env_name <- unlist(stringr::str_split(environmentallayers ,dl))
+  maxentpath <- gsub(pattern = "[\\]","/",maxentpath)
+
+  environmentallayers <- gsub(pattern = "[\\]","/",environmentallayers)
+
+  #env_name <- unlist(stringr::str_split(environmentallayers ,dl))
+  env_name <- gsub(pattern = "[\\]","/",environmentallayers)
+  env_name <- unlist(stringr::str_split(environmentallayers,pattern = "/"))
+
   ifelse(nchar(env_name[length(env_name)])>0L,
          env_name <- env_name[length(env_name)],
          env_name <- env_name[length(env_name)-1])
   samplesfile <- normalizePath(samplesfile)
-  if(is.null(outputdirectory) || !dir.exists(outputdirectory))
+  samplesfile <- gsub(pattern = "[\\]","/",samplesfile)
+
+  if(is.null(outputdirectory) || !dir.exists(outputdirectory)){
     outputdirectory <- getwd()
+  } else{
+    outputdirectory <- normalizePath(outputdirectory)
+  }
+  outputdirectory <- gsub(pattern = "[\\]","/",outputdirectory)
+
   f_act <- paste(unlist(features),collapse = "")
 
   outputdirectory <- file.path(outputdirectory,
@@ -185,6 +192,7 @@ maxent_call <- function(maxentjar_path,
       dir.create(x)
   })
   outputdirectory <- normalizePath(outputdirectory)
+  outputdirectory <- gsub(pattern = "[\\]","/",outputdirectory)
   maxent_call <-   paste0("java ","-mx",
                           memory_assigned,"m -jar ",
                           maxentpath," environmentallayers=",
@@ -330,12 +338,12 @@ maxent_call <- function(maxentjar_path,
                           ifelse(!is.null(nodata),paste0(" nodata=",nodata)," nodata=-9999"),
                           ifelse(is.logical(autorun) && isTRUE(autorun),
                                  " autorun","")
-                          )
+  )
   if(run_fromR){
-    if(.Platform$OS.type == "unix")
-      system(command = maxent_call,intern = T,wait = T)
-    else
-      system2(command = maxent_call, wait = T, invisible = FALSE)
+    #if(.Platform$OS.type == "unix")
+    system(command = maxent_call,intern = T,wait = T)
+    #else
+    #  system2(command  = maxent_call, wait = T, invisible = FALSE)
   }
   #system(command = maxent_call)
   #cat(paste0("#!/bin/sh\n",maxent_call),file = "~/Dropbox/maxentcommand.sh")
