@@ -159,7 +159,7 @@ maxent_call <- function(maxentjar_path,
                                         "maxent.jar"))
 
   maxentpath <- gsub(pattern = "[\\]","/",maxentpath)
-
+  environmentallayers <- normalizePath(environmentallayers)
   environmentallayers <- gsub(pattern = "[\\]","/",environmentallayers)
 
   #env_name <- unlist(stringr::str_split(environmentallayers ,dl))
