@@ -27,6 +27,7 @@
 #' @param betamultiplier Numeric. Regularization multiplier.  A higher number gives a more spread-out distribution.
 #' @param maximumbackground Numeric. Max number of background points.
 #' @param biasfile Path to the bias file. Sampling is assumed to be biased according to the sampling distribution given in this grid file. Values in this file must not be zero or negative.
+#' @param biastype Default 3. See \url{https://groups.google.com/forum/#!topic/maxent/bZYdlYmDG4s} for details.
 #' @param replicates Numeric. Number of replicate runs to do when cross-validating, bootstrapping or doing sampling with replacement runs.
 #' @param replicatetype Character vector. Posible values are crossvalidate, bootstrap and subsample. If replicates > 1, do multiple runs of this type: Crossvalidate: samples divided into replicates folds; each fold in turn used for test data. Bootstrap: replicate sample sets chosen by sampling with replacement. Subsample: replicate sample sets chosen by removing random test percentage without replacement to be used for evaluation.
 #' @param perspeciesresults Logical, if TRUE write separate maxentResults file for each species.
@@ -113,6 +114,7 @@ maxent_call <- function(maxentjar_path,
                         betamultiplier=1,
                         maximumbackground=10000,
                         biasfile = "",
+                        biastype = 3,
                         replicates=NULL,
                         replicatetype="crossvalidate",
                         perspeciesresults=FALSE,
@@ -196,7 +198,7 @@ maxent_call <- function(maxentjar_path,
   maxent_call <-   paste0("java ","-mx",
                           memory_assigned,"m -jar ",
                           maxentpath," environmentallayers=",
-                          normalizePath(environmentallayers),
+                          environmentallayers,
                           " samplesfile=",samplesfile,
                           " outputdirectory=",outputdirectory,
                           ifelse(is.null(projectionlayers) || !dir.exists(projectionlayers),"",
@@ -233,7 +235,12 @@ maxent_call <- function(maxentjar_path,
                                  paste0(" maximumbackground=",
                                         maximumbackground),""),
                           ifelse(!file.exists(biasfile),"",
-                                 paste0(" biasfile=",biasfile)),
+                                 paste0(" biasfile=",{
+                                   biasfile <- normalizePath(biasfile)
+                                   biasfile <- gsub(pattern = "[\\]","/",biasfile)
+                                   biasfile})),
+                          ifelse(!file.exists(biasfile),"",
+                                 paste0(" biastype=",biastype)),
                           ifelse(is.numeric(replicates),
                                  paste0(" replicates=",
                                         replicates),""),

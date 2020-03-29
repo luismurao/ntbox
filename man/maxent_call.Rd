@@ -30,6 +30,7 @@ maxent_call(
   betamultiplier = 1,
   maximumbackground = 10000,
   biasfile = "",
+  biastype = 3,
   replicates = NULL,
   replicatetype = "crossvalidate",
   perspeciesresults = FALSE,
@@ -122,6 +123,8 @@ or all together in a .csv file in SWD format. Please enter a directory name or f
 \item{maximumbackground}{Numeric. Max number of background points.}
 
 \item{biasfile}{Path to the bias file. Sampling is assumed to be biased according to the sampling distribution given in this grid file. Values in this file must not be zero or negative.}
+
+\item{biastype}{Default 3. See \url{https://groups.google.com/forum/#!topic/maxent/bZYdlYmDG4s} for details.}
 
 \item{replicates}{Numeric. Number of replicate runs to do when cross-validating, bootstrapping or doing sampling with replacement runs.}
 
