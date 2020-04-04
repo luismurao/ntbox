@@ -6,6 +6,8 @@
 #' @param envlayers A raster stack or brick.
 #' @param nbg Number of points for the background data
 #' @param nprop Proportion of environmental data to be sampled. Default NULL
+#' @param coordinates Logical. If TRUE cell coordinates will be retuerned
+#' @param cellIDs Logical. If TRUE cell IDs will be retuerned
 #' @examples
 #' \dontrun{
 #' wcpath <- list.files(system.file("extdata/bios",
@@ -19,7 +21,7 @@
 #' vals <- envbg(envlayers,nprop = 0.20)
 #' }
 #' @export
-sample_envbg <- function(envlayers,nbg,nprop=NULL){
+sample_envbg <- function(envlayers,nbg,nprop=NULL,coordinates=FALSE,cellIDs=FALSE){
   if(class(envlayers) == "RasterStack" ||
      class(envlayers) == "RasterBrick"){
     envlayers <- raster::stack(envlayers)
@@ -55,6 +57,13 @@ sample_envbg <- function(envlayers,nbg,nprop=NULL){
         return(d1)
       })
       future::plan(future::sequential)
+    }
+    if(coordinates){
+      coords <- raster::xyFromCell(toSamp)
+      env_bg <- data.frame(coords,env_bg)
+    }
+    if(cellIDs){
+      env_bg <- data.frame(cellID=toSamp,env_bg)
     }
 
   }

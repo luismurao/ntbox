@@ -4,7 +4,13 @@
 \alias{sample_envbg}
 \title{Generate random environmental background data}
 \usage{
-sample_envbg(envlayers, nbg, nprop = NULL)
+sample_envbg(
+  envlayers,
+  nbg,
+  nprop = NULL,
+  coordinates = FALSE,
+  cellIDs = FALSE
+)
 }
 \arguments{
 \item{envlayers}{A raster stack or brick.}
@@ -12,6 +18,10 @@ sample_envbg(envlayers, nbg, nprop = NULL)
 \item{nbg}{Number of points for the background data}
 
 \item{nprop}{Proportion of environmental data to be sampled. Default NULL}
+
+\item{coordinates}{Logical. If TRUE cell coordinates will be retuerned}
+
+\item{cellIDs}{Logical. If TRUE cell IDs will be retuerned}
 }
 \description{
 Generate environmental background data is a function similar
