@@ -176,6 +176,9 @@ maxent_call <- function(maxentjar_path,
   samplesfile <- normalizePath(samplesfile)
   samplesfile <- gsub(pattern = "[\\]","/",samplesfile)
 
+  testsamplesfile <- normalizePath(testsamplesfile)
+  testsamplesfile <- gsub(pattern = "[\\]","/",testsamplesfile)
+
   if(is.null(outputdirectory) || !dir.exists(outputdirectory)){
     outputdirectory <- getwd()
   } else{
@@ -202,6 +205,8 @@ maxent_call <- function(maxentjar_path,
                           maxentpath," environmentallayers=",
                           environmentallayers,
                           " samplesfile=",samplesfile,
+                          ifelse(exists("testsamplesfile"),
+                                 paste0(" testsamplesfile=",testsamplesfile),""),
                           " outputdirectory=",outputdirectory,
                           ifelse(is.null(projectionlayers) || !dir.exists(projectionlayers),"",
                                  paste0(" projectionlayers=",normalizePath(projectionlayers))),
