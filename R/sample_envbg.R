@@ -59,7 +59,7 @@ sample_envbg <- function(envlayers,nbg,nprop=NULL,coordinates=FALSE,cellIDs=FALS
       future::plan(future::sequential)
     }
     if(coordinates){
-      coords <- raster::xyFromCell(toSamp)
+      coords <- raster::xyFromCell(l1,toSamp)
       env_bg <- data.frame(coords,env_bg)
     }
     if(cellIDs){
