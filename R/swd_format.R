@@ -48,17 +48,42 @@ swd_format <- function(env_layers,nbg=NULL,occs_points,sp_name="sp",longitude, l
                                   nbg = nbg,
                                   coordinates = T,
                                   cellIDs = FALSE)
-    bg_swd <- data.frame(background="background",bg_swd)
+    bg_swd <- data.frame(sp_name="background",bg_swd)
   }
 
 
-  occs_env <- raster::extract(env_layers,
-                              occs_points[,c(longitude,latitude)],
-                              cellnumbers=TRUE)
-  xy_occs <- raster::xyFromCell(env_layers,
-                                occs_env[,1])
+  occs_cellID <- raster::cellFromXY(env_layers[[1]],
+                                    occs_points[,c(longitude,latitude)])
+
+  xy_occs <- raster::xyFromCell(env_layers[[1]],
+                                occs_cellID)
+
+
+  canP <- raster::canProcessInMemory(env_layers[[1]],
+                                     n = raster::nlayers(env_layers))
+  if (canP) {
+    occs_env <-env_layers[occs_cellID]
+  } else{
+    future::plan(future::multiprocess)
+    fnames <- sapply(env_layers@layers, function(x) x@file@name)
+    fnames <- unique(fnames)
+    indexL <- 1:raster::nlayers(env_layers)
+
+    occs_env <- furrr::future_map_dfc(indexL, function(x) {
+      if (length(fnames) == 1)
+        r1 <- raster::raster(fnames, band = x)
+      else r1 <- raster::raster(fnames[x])
+      d1 <- data.frame(r1[occs_cellID])
+      names(d1) <- names(r1)
+      return(d1)
+    })
+    future::plan(future::sequential)
+  }
+
+
+
   occs_swd <- data.frame(sp_name = sp_name,
-                         xy_occs,occs_env[,-1])
+                         xy_occs,occs_env)
 
 
   r1 <- list(occs_swd=occs_swd)
