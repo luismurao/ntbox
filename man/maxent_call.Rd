@@ -12,7 +12,7 @@ maxent_call(
   memory_assigned = 2000,
   environmentallayers,
   samplesfile,
-  testsamplesfile,
+  testsamplesfile = NULL,
   outputdirectory = NULL,
   projectionlayers = NULL,
   responsecurves = FALSE,

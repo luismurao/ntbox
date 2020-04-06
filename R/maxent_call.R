@@ -97,7 +97,7 @@ maxent_call <- function(maxentjar_path,
                         memory_assigned = 2000,
                         environmentallayers,
                         samplesfile,
-                        testsamplesfile,
+                        testsamplesfile=NULL,
                         outputdirectory=NULL,
                         projectionlayers = NULL,
                         responsecurves = FALSE,
@@ -175,10 +175,9 @@ maxent_call <- function(maxentjar_path,
          env_name <- env_name[length(env_name)-1])
   samplesfile <- normalizePath(samplesfile)
   samplesfile <- gsub(pattern = "[\\]","/",samplesfile)
-  if(exists("testsamplesfile")){
+  if(!is.null(testsamplesfile)){
     testsamplesfile <- normalizePath(testsamplesfile)
     testsamplesfile <- gsub(pattern = "[\\]","/",testsamplesfile)
-
   }
 
   if(is.null(outputdirectory) || !dir.exists(outputdirectory)){
@@ -207,7 +206,7 @@ maxent_call <- function(maxentjar_path,
                           maxentpath," environmentallayers=",
                           environmentallayers,
                           " samplesfile=",samplesfile,
-                          ifelse(exists("testsamplesfile"),
+                          ifelse(!is.null(testsamplesfile),
                                  paste0(" testsamplesfile=",testsamplesfile),""),
                           " outputdirectory=",outputdirectory,
                           ifelse(is.null(projectionlayers) || !dir.exists(projectionlayers),"",
