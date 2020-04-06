@@ -175,9 +175,11 @@ maxent_call <- function(maxentjar_path,
          env_name <- env_name[length(env_name)-1])
   samplesfile <- normalizePath(samplesfile)
   samplesfile <- gsub(pattern = "[\\]","/",samplesfile)
+  if(exists("testsamplesfile")){
+    testsamplesfile <- normalizePath(testsamplesfile)
+    testsamplesfile <- gsub(pattern = "[\\]","/",testsamplesfile)
 
-  testsamplesfile <- normalizePath(testsamplesfile)
-  testsamplesfile <- gsub(pattern = "[\\]","/",testsamplesfile)
+  }
 
   if(is.null(outputdirectory) || !dir.exists(outputdirectory)){
     outputdirectory <- getwd()
