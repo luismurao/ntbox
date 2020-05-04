@@ -89,7 +89,7 @@ pROC <- function(continuous_mod,test_data,
 
   if(nrow(classpixels)>1000){
     classpixels <- classpixels %>%
-      dplyr::sample_n(500) %>% dplyr::arrange(value)
+      dplyr::sample_n(1000) %>% dplyr::arrange(value)
   }
 
   error_sens <- 1 - (E_percent/100)
