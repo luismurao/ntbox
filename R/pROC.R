@@ -191,8 +191,10 @@ pROC <- function(continuous_mod,test_data,
 proc_precision <- function(mod_vals,test_data){
 
   min_vals <- min(mod_vals,na.rm = TRUE)
+
+
   percentil_test <- stats::quantile(test_data,
-                                    probs=.05)
+                                    probs=0.1)
   partition_flag <- mean(c(min_vals,
                            percentil_test))
 
