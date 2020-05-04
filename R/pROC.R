@@ -68,11 +68,11 @@ pROC <- function(continuous_mod,test_data,
   ndigits <- proc_precision(mod_vals = vals,
                             test_data = test_data)
 
-  test_value <- round(test_data,
-                      ndigits)
-  test_value <- as.vector(test_value)
+  tomult <- as.numeric(paste0("1e+",ndigits))
+  test_value <- test_data*tomult
+  test_value <- round(as.vector(test_value),1)
 
-  vals2 <- round(vals, ndigits)
+  vals2 <- round(vals*tomult,1)
   classpixels <- as.data.frame(base::table(vals2),
                                stringsAsFactors = F)
   names(classpixels) <- c("value",
@@ -86,6 +86,11 @@ pROC <- function(continuous_mod,test_data,
                    totpixperclass = ~cumsum(count),
                    percentpixels = ~totpixperclass/sum(count)) %>%
     dplyr::arrange(value)
+
+  if(nrow(classpixels)>1000){
+    classpixels <- classpixels %>%
+      dplyr::sample_n(500) %>% dplyr::arrange(value)
+  }
 
   error_sens <- 1 - (E_percent/100)
   models_thresholds <- classpixels[, "value"]
@@ -193,7 +198,7 @@ proc_precision <- function(mod_vals,test_data){
 
   if (stringr::str_detect(partition_flag, "e")) {
     ndigits <- stringr::str_split(partition_flag, "e-")[[1]]
-    ndigits <- as.numeric(ndigits)[2] - 1
+    ndigits <- as.numeric(ndigits)[2] #- 1
   }
   else {
     med <- stringr::str_extract_all(partition_flag, pattern = "[0-9]|[.]")
