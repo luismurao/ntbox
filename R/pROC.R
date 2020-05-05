@@ -87,9 +87,9 @@ pROC <- function(continuous_mod,test_data,
                    percentpixels = ~totpixperclass/sum(count)) %>%
     dplyr::arrange(value)
 
-  if(nrow(classpixels)>1000){
+  if(nrow(classpixels)>1500){
     classpixels <- classpixels %>%
-      dplyr::sample_n(1000) %>% dplyr::arrange(value)
+      dplyr::sample_n(1500) %>% dplyr::arrange(value)
   }
 
   error_sens <- 1 - (E_percent/100)
@@ -192,9 +192,11 @@ proc_precision <- function(mod_vals,test_data){
 
   min_vals <- min(mod_vals,na.rm = TRUE)
 
+  percentil_test <- unique(sort(stats::na.omit(test_data)))[2]
 
-  percentil_test <- stats::quantile(test_data,
-                                    probs=0.1)
+
+  #percentil_test <- stats::quantile(test_data,
+  #                                  probs=0.1)
   partition_flag <- mean(c(min_vals,
                            percentil_test))
 
