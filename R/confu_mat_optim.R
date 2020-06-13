@@ -1,9 +1,9 @@
 #' Function to find the cut-off threshold that optimizes the confusion matrix
 #' @description The function finds out which is the best cut-off threshold that
-#' optimizes the confusion matrix based on any of the entries of the confussion matrix (a,b,c,d) or by Kappa, TSS, Prevalence, Specificity, Sensibility,Correct Classification Rate , Miss Classification Rate.
+#' optimizes the confusion matrix based on any of the entries of the confusion matrix (a,b,c,d) or by Kappa, TSS, Prevalence, Specificity, Sensibility, Correct Classification Rate, Miss Classification Rate.
 #' @param sdm_raster  Continuos predicition raster.
 #' @param valData A data.frame or a matrix with validation data. The data must contain
-#' longitude, latitude and a column of presences (1) and absences (0).
+#' longitude, latitude, and a column of presences (1) and absences (0).
 #' @param longitude Column name of the longitude data
 #' @param latitude Column name of the latitude data
 #' @param pres_abs Column name of presences and absences. The presences have to represented by
@@ -11,9 +11,9 @@
 #' @param optim_by The optimation should be by any of the following options: kappa, tss, a, b, c, d, correct_class_rate, miss_cla_rate, posit_pre_pow, nega_pre_pow, comission_error,or by omission_error.
 #' @param th_range A vector with the minimum and max range of threshold values used in the searching process.
 #' @param step A numeric value representing the step size to be used in the searching process.
-#' @return Returns a data.frame with the values of: confusion matrix, kappa, tss, prevalence,
+#' @return Returns a data.frame with the values of the confusion matrix, kappa, tss, prevalence,
 #' specificity, sensibility,correct classification rate (correct_class_rate), miss classification rate (miss_cla_rate), positive predictive power (posit_pre_pow), negative predictive power (nega_pre_pow), comission error (comission_error) and omission error (omission_error).
-#' @references Fielding,A.H. and Bell,J. (1997) A review of methods for the assessment of prediction errors in conservation presence/absence models. Environ. Conserv., 24, 38–49.
+#' @references Fielding, A.H. and Bell,J. (1997) A review of methods for the assessment of prediction errors in conservation presence/absence models. Environ. Conserv., 24, 38–49.
 #' @export
 #' @examples
 #' \dontrun{
@@ -51,11 +51,12 @@
 #'                                          optim_by = "sensibility",
 #'                                          th_range = c(0.005,0.5),step = 0.005)
 #'
-#' # Convert continuos model to binary by using Sensibility optimization threshold
+#' # Convert the continuous model to binary by using Sensibility optimization threshold
 #' sdm_bin_sensibility <- sdm_model >= sensibility_threshold$threshold[1]
 #' # Plot binary model
 #' raster::plot(sdm_bin_sensibility)
 #' }
+
 confu_mat_optim <- function(sdm_raster,valData,longitude,latitude,pres_abs,optim_by="kappa",th_range=c(0,1),step=0.005){
 
   if (is.data.frame(valData) || is.matrix(valData)) {

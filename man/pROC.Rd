@@ -11,18 +11,19 @@ pROC(
   E_percent = 5,
   boost_percent = 50,
   parallel = FALSE,
-  ncores = 4
+  ncores = 4,
+  rseed = FALSE
 )
 }
 \arguments{
 \item{continuous_mod}{a RasterLayer or a numeric vector of the ecological niche model to be evaluated. If a numeric vector is provided it should contain the values of the predicted suitability.}
 
-\item{test_data}{A numerical matrix, data.frame or numeric vector. If is data.frame or matrix it should contain coordinates of the occurrences used to test the ecological niche model to be evaluated; columns must be: longitude and latitude. If numeric vector it should contain the values of the predicted suitability.}
+\item{test_data}{A numerical matrix, data.frame, or a numeric vector. If it is data.frame or matrix it should contain coordinates of the occurrences used to test the ecological niche model to be evaluated; columns must be: longitude and latitude. If numeric vector it should contain the values of the predicted suitability.}
 
 \item{n_iter}{(numeric) number of bootstrap iterations to be performed;
 default = 1000.}
 
-\item{E_percent}{(numeric) value from 0 to 100 that will be used as threshold (E);
+\item{E_percent}{(numeric) value from 0 to 100 that will be used as a threshold (E);
 default = 5.}
 
 \item{boost_percent}{(numeric) value from 0 to 100 representing the percent of testing data
@@ -31,13 +32,15 @@ default = 50.}
 
 \item{parallel}{Logical to specify if the computation will be done in parallel. default=TRUE.}
 
-\item{ncores}{Numeric; number of cores to be used for parallelization.}
+\item{ncores}{Numeric; the number of cores to be used for parallelization.}
+
+\item{rseed}{Logical. Whether or not to set a random seed. Default FALSE.}
 }
 \value{
 A data.frame containing the AUC values and AUC ratios calculated for each iteration.
 }
 \description{
-pROC applies partial ROC tests to continues niche models.
+pROC applies partial ROC tests to continuous niche models.
 }
 \details{
 Partial ROC is calculated following Peterson et al.
@@ -66,5 +69,5 @@ partial_roc <- pROC(continuous_mod=conti_model,
 
 }
 \references{
-Peterson,A.T. et al. (2008) Rethinking receiver operating characteristic analysis applications in ecological niche modeling. Ecol. Modell., 213, 63–72.
+Peterson, A.T. et al. (2008) Rethinking receiver operating characteristic analysis applications in ecological niche modeling. Ecol. Modell., 213, 63–72.
 }

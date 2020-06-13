@@ -2,7 +2,7 @@
 % Please edit documentation in R/nc.R
 \name{nc}
 \alias{nc}
-\title{nc: Function to check the number of aviable cores}
+\title{nc: Function to check the number of available cores}
 \usage{
 nc(ncores)
 }
@@ -10,10 +10,10 @@ nc(ncores)
 \item{ncores}{Number of cores for the parallel process.}
 }
 \value{
-Returns a integer representing the number of cores that will be used to run a parallel process.
+Returns an integer representing the number of cores that will be used to run a parallel process.
 }
 \description{
-nc is a helper function to check if the number of cores required to run a parallel process are less or equal to the total number of cores of the system.
+nc is a helper function to check if the number of cores required to run a parallel process is less or equal to the total number of cores of the system.
 }
 \details{
 If ncores is bigger than the system's number of cores the function will return the system's number of cores. The functions that use this helper are \code{\link{mop}} and \code{\link{pROC}}.

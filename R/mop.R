@@ -3,7 +3,7 @@
 #' @description mop calculates a Mobility-Oriented Parity
 #' @param M_stack a RasterStack of variables representing the calibration area (M area in ENM context).
 #' @param G_stack a RasterStack of variables representing areas or scenarios to which models will be transferred.
-#' @param percent (numeric) percent of values sampled from te calibration region to calculate the MOP.
+#' @param percent (numeric) percent of values sampled from the calibration region to calculate the MOP.
 #' @param comp_each (numeric) compute distance matrix for a each fixed number of rows (default = 2000).
 #' @param parallel (logical) if TRUE, calculations will be performed in parallel using the available
 #' cores of the computer. This will demand more RAM and almost full use of the CPU; hence, its use
@@ -16,18 +16,18 @@
 #'
 #' @details The MOP is calculated following Owens et al.
 #' (2013; \url{https://doi.org/10.1016/j.ecolmodel.2013.04.011}). This function is a modification
-#' of the MOP funcion, available at \url{https://github.com/narayanibarve/ENMGadgets}.The value of the comp_each parameter dependes on the RAM memory aviable for the process; the computation can be faster if the user choose a bigger value for this parameter but you have to becarefull on memory use.
+#' of the MOP function, available at \url{https://github.com/narayanibarve/ENMGadgets}.The value of the comp_each parameter depends on the RAM memory available for the process; the computation can be faster if the user chooses a bigger value for this parameter but you have to be careful on memory use.
 #' @importFrom future %<-%
 #' @import future
 #' @export
 #'
 #' @examples
 #' m_stack <- raster::stack(list.files(system.file("extdata",
-#'                                     package = "ntbox"),
+#'                                                 package = "ntbox"),
 #'                                     pattern = "M_layers.tif$",
 #'                                     full.names = TRUE))
 #' g_stack <- raster::stack(list.files(system.file("extdata",
-#'                                     package = "ntbox"),
+#'                                                 package = "ntbox"),
 #'                                     pattern = "G_layers.tif$",
 #'                                     full.names = TRUE))
 #'
@@ -124,7 +124,7 @@ mop <- function(M_stack, G_stack, percent = 10, comp_each = 2000, parallel = FAL
 }
 
 
-#' Detection of environmental values ouside the calibration area of a model
+#' Detection of environmental values outside the calibration area of a model
 #'
 #' @description plot.out for calculating a mobility-oriented parity layer.
 #' This function is designed to be used specifically in the \code{\link{mop}} function.

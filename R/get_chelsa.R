@@ -10,7 +10,7 @@
 #' 'MIROC-ESM-CHEM','MIROC5','MPI-ESM-LR','MPI-ESM-MR','MRI-CGCM3',
 #' 'MRI-ESM1','NorESM1-M'
 #' @param rcp Representative Concentration Pathway. Posible values are "rcp26","rcp45","rcp85".
-#' @param sv_dir Path to the directory where the layers will be saved. Default is the working directory of R session.
+#' @param sv_dir Path to the directory where the layers will be saved. The default is the working directory of the R session.
 #' @param load2r Logical. Load layers into R?
 #' @param parallel Download layers in parallel.
 #' @seealso \code{\link[ntbox]{get_envirem_elev}}, \code{\link[ntbox]{get_envirem_clim}},\code{\link[ntbox]{get_bio_oracle}}.
@@ -32,7 +32,7 @@ get_chelsa <- function(period,model=NULL,rcp=NULL,sv_dir=getwd(),load2r=TRUE,par
     url <- "https://envidatrepo.wsl.ch/uploads/chelsa/chelsa_V1/bioclim/integer/"
     m_ab <- "chelsa_current"
     chelsa_names <- c(paste0("CHELSA_bio10_0",1:9,".tif"),
-                  paste0("CHELSA_bio10_",10:19,".tif"))
+                      paste0("CHELSA_bio10_",10:19,".tif"))
     chelsa_urls <- paste0(url , chelsa_names)
 
 
@@ -68,14 +68,14 @@ get_chelsa <- function(period,model=NULL,rcp=NULL,sv_dir=getwd(),load2r=TRUE,par
       ncores <- parallel::detectCores() -1
       cl <- parallel::makeCluster(ncores)
       parallel::clusterExport(cl,varlist = c("chelsa_urls",
-                                   "fnames"),
+                                             "fnames"),
                               envir = environment())
       ch_down <- parallel::clusterApply(cl, seq_along(fnames),
                                         function(x){
-        r1 <- utils::download.file(chelsa_urls[x],
-                                   fnames[x],
-                                   method = "curl")
-      })
+                                          r1 <- utils::download.file(chelsa_urls[x],
+                                                                     fnames[x],
+                                                                     method = "curl")
+                                        })
       parallel::stopCluster(cl)
     }
     else{
@@ -87,7 +87,11 @@ get_chelsa <- function(period,model=NULL,rcp=NULL,sv_dir=getwd(),load2r=TRUE,par
 
     if(load2r)
       chelsa_urls <- ntbox::rlayers_ntb(dir_name)
-    cite_chelsa <- "Karger, D.N., Conrad, O., Bohner, J., Kawohl, T., Kreft, H., Soria-Auza, R.W., Zimmermann, N.E., Linder, H.P. & Kessler, M. (2017) Climatologies at high resolution for the earth's land surface areas. Scientific Data 4, 170122."
+    cite_chelsa <- paste("Karger, D.N., Conrad, O., Bohner, J., Kawohl, T.,",
+                         "Kreft, H., Soria-Auza, R.W., Zimmermann, N.E., Linder,",
+                         "H.P. & Kessler, M. (2017) Climatologies at high",
+                         "resolution for the earth's land surface areas.",
+                         "Scientific Data 4, 170122.")
     base::message(paste("Please cite as",cite_chelsa))
   }
   return(chelsa_urls)

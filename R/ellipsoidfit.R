@@ -1,11 +1,11 @@
 #' Function fit an ellipsoid model
 #' @description Function fit an ellipsoid model using the shape matrix (covariance matrix)
 #' of the niche variables.
-#' @param envlayers A RasterStack or RasterBrick objet of the niche varibles.
+#' @param envlayers A RasterStack or RasterBrick object of the niche variables.
 #' @param centroid A vector with the values of the centers of the ellipsoid (see \code{\link[ntbox]{cov_center}}).
 #' @param covar The shape matrix (covariance) of the ellipoid (see \code{\link[ntbox]{cov_center}}).
 #' @param level The proportion of points  to be included inside the ellipsoid
-#' @param plot Logical If True a plot of niche will be shown.
+#' @param plot Logical If True a plot of the niche will be shown.
 #' @param size The size of the points of the niche plot.
 #' @param xlab1 For x label for 2-dimensional histogram
 #' @param ylab1 For y label for 2-dimensional histogram
@@ -21,9 +21,10 @@
 #' ## Compute the centroid and shape (covariance matrix) of the ellipsoid model.
 #' covar_centroid <- cov_center(d_cardon,mve=TRUE,level=0.99,vars=c(3,4,5))
 #' ## RasterStack with the niche variables
-#' nicheStack <- stack(list.files(system.file("extdata",
-#'                    package = "ntbox"),
-#'                    pattern = ".asc$",full.names = TRUE))
+#' nicheStack <- raster::stack(list.files(system.file("extdata",
+#'                                        package = "ntbox"),
+#'                                        pattern = ".asc$",
+#'                                        full.names = TRUE))
 #' # Fitting the ellipsoid model
 #'  ellipsoidMod <- ellipsoidfit(nicheStack,
 #'                           covar_centroid$centroid,
@@ -54,8 +55,8 @@ ellipsoidfit <- function(envlayers,centroid,covar,level=0.95,
 
   # Calculating distance to the centroid
   mahalanobisD <- stats::mahalanobis(env_vars,
-                                    center = centroid,
-                                    cov = covar)
+                                     center = centroid,
+                                     cov = covar)
 
 
   ecucliedean <- sqrt(rowSums(centroid-env_vars)^2)

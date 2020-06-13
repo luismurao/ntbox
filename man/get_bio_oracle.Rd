@@ -21,11 +21,11 @@ get_bio_oracle(
 'current_velocity','sea_water_temperature','sea_water_salinity','sea_ice_thickness',
 'chlorophyll_concentration','sea_surface_salinity'.}
 
-\item{model}{Climate model. Posible values are:"UKMO-HadCM3" and "AOGCM"}
+\item{model}{Climate model. Possible values are: "UKMO-HadCM3" and "AOGCM"}
 
 \item{scenario}{Climate change scenario. Posible values are "a1b","a2","b1","rcp26","rcp45","rcp60","rcp85".}
 
-\item{sv_dir}{Path to the directory where the layers will be saved. Default is the working directory of R session.}
+\item{sv_dir}{Path to the directory where the layers will be saved. The default is the working directory of the R session.}
 
 \item{load2r}{Logical. Load layers into R?}
 
@@ -50,7 +50,7 @@ swater_temp_2100_AOGCM_rcp85 <- get_bio_oracle(period = "2100",
                                                var_type ='sea_water_temperature',
                                                model = "AOGCM",
                                                scenario = "rcp85",
-                                               sv_dir="~/Desktop/",
+                                               sv_dir="C:/Users/l916o895/Desktop",
                                                load2r = TRUE,
                                                parallel = TRUE)
 }

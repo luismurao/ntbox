@@ -8,11 +8,11 @@
 #' @export
 #' @examples
 #' m_stack <- raster::stack(list.files(system.file("extdata",
-#'                                     package = "ntbox"),
+#'                                                 package = "ntbox"),
 #'                                     pattern = "M_layers.tif$",
 #'                                     full.names = TRUE))
 #' g_stack <- raster::stack(list.files(system.file("extdata",
-#'                                     package = "ntbox"),
+#'                                                 package = "ntbox"),
 #'                                     pattern = "G_layers.tif$",
 #'                                     full.names = TRUE))
 #'

@@ -1,5 +1,5 @@
-#' Function to plot clusters in 3-dimsensions.
-#' @description Plot cluster data in 3D by modelling them as an Ellipsoid.
+#' Function to plot clusters in 3-dimensions.
+#' @description Plot cluster data in 3D by modeling them as an Ellipsoid.
 #' @param niche_data A data.frame or matrix containing niche variables
 #' @param cluster_ids Cluster ids
 #' @param x variable on x-axes
@@ -13,7 +13,7 @@
 #' @param grupos Logical. Show ids of a geographic grouping variable
 #' @param vgrupo A vector containing the levels of the  geographic grouping variable
 #' @param cex1 Point size
-#' @return Returns a list of the ellipsoid metada for each cluster.
+#' @return Returns a list of the ellipsoid metadata for each cluster.
 #' @details The output of this function is the same of the \code{\link[ntbox]{cov_center}} function.
 #' @export
 #' @examples
@@ -31,6 +31,7 @@
 #' # Print metadata for the Minimum Volume Ellipsoid that belongs to cluster 1
 #' print(ellipsoid_clusters$cluster_n_1)
 #' }
+
 
 ellipsoid_cluster_plot_3d <- function(niche_data,cluster_ids,x,y,z,mve=FALSE,ellips=TRUE,level=0.975,alpha,grupos,vgrupo,cex1=0.25){
 

@@ -2,7 +2,7 @@
 #' @description Visualize a time series of the history of GBIF records.
 #' @param gbif_data A data.frame with GBIF data
 #' @importFrom magrittr %>%
-#' @return Returns a list with googleVis motin chart and a data.frame
+#' @return Returns a list with googleVis motion chart and a data.frame
 #' @export
 #' @details Creates a motionchart of the time series of the occurrence data. It uses the function \code{\link[googleVis]{gvisMotionChart}} from \code{\link[googleVis]{googleVis-package}}.
 #' @examples
@@ -52,4 +52,4 @@ occs_history <- function(gbif_data){
 
 
   return(list(mot=mot,data=data))
-  }
+}

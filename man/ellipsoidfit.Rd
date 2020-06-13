@@ -18,7 +18,7 @@ ellipsoidfit(
 )
 }
 \arguments{
-\item{envlayers}{A RasterStack or RasterBrick objet of the niche varibles.}
+\item{envlayers}{A RasterStack or RasterBrick object of the niche variables.}
 
 \item{centroid}{A vector with the values of the centers of the ellipsoid (see \code{\link[ntbox]{cov_center}}).}
 
@@ -26,7 +26,7 @@ ellipsoidfit(
 
 \item{level}{The proportion of points  to be included inside the ellipsoid}
 
-\item{plot}{Logical If True a plot of niche will be shown.}
+\item{plot}{Logical If True a plot of the niche will be shown.}
 
 \item{size}{The size of the points of the niche plot.}
 
@@ -53,9 +53,10 @@ d_cardon <-  read.csv(system.file("extdata", "cardon_virtual.csv", package = "nt
 ## Compute the centroid and shape (covariance matrix) of the ellipsoid model.
 covar_centroid <- cov_center(d_cardon,mve=TRUE,level=0.99,vars=c(3,4,5))
 ## RasterStack with the niche variables
-nicheStack <- stack(list.files(system.file("extdata",
-                   package = "ntbox"),
-                   pattern = ".asc$",full.names = TRUE))
+nicheStack <- raster::stack(list.files(system.file("extdata",
+                                       package = "ntbox"),
+                                       pattern = ".asc$",
+                                       full.names = TRUE))
 # Fitting the ellipsoid model
  ellipsoidMod <- ellipsoidfit(nicheStack,
                           covar_centroid$centroid,

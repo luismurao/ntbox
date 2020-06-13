@@ -1,6 +1,6 @@
 #' Binomial significance test for ecological niche models.
 #'
-#' @description binomial_test: significance estimation of a niche model by using the comulative binomial probability of success of predecting correctly an occurrence given the validation data and the proportional area predicted as present in the niche model.
+#' @description binomial_test: significance estimation of a niche model by using the cumulative binomial probability of success of predicting correctly an occurrence given the validation data and the proportional area predicted as present in the niche model.
 #' @param binary_model A binary prediction map of the geographical distribution of a species.
 #' @param validation_data A numerical matrix or data.frame containing coordinates of the occurrences used to test
 #' the model to be evaluated; columns must be: longitude and latitude.
@@ -41,8 +41,9 @@ binomial_test <- function(binary_model,validation_data){
       nasId <- attr(pred_vals,"na.action")
 
       if(length(nasId)>0L)
-        cat(length(nasId),
-            "validation data were omited because there are NA values (occurrences not in the prediction)")
+        cat(length(nasId),paste("validation data were omited because",
+                                "there are NA values (occurrences not",
+                                "in the prediction)\n\n"))
 
       occs_table <- table(pred_vals)
       ocss_fail <-  occs_table[1]
@@ -64,3 +65,4 @@ binomial_test <- function(binary_model,validation_data){
     return()
   }
 }
+

@@ -2,9 +2,9 @@
 #' @description The function finds out which variables have strong
 #' correlations according to a correlation threshold. The output
 #' returns a list of variables names that can summarize the information
-#' and removes the variables that are redundant.
+#' and removes redundant variables.
 #' @param cor_mat A correlation matrix.
-#' @param threshold Threshold valuefrom which it is considered that the correlation is high.
+#' @param threshold Threshold value from which it is considered that the correlation is high.
 #' @param verbose Verbose output.
 #' @return Returns a vector with variable names that can summarize the information.
 #' @export
@@ -14,6 +14,7 @@
 #'                                      "nichekmeansCluster.csv",
 #'                                       package = "ntbox"))[,-(1:3)]
 #' environ_cors <- cor(environ_data)
+#' correlation_finder(cor_mat = environ_cors ,threshold = 0.7,verbose = FALSE)
 #' correlation_finder(cor_mat = environ_cors ,threshold = 0.7,verbose = TRUE)
 #' }
 
@@ -54,7 +55,7 @@ correlation_finder <- function(cor_mat,threshold,verbose=TRUE){
 
     if(verbose){
       cat('*****************************************************************\n\n')
-      cat(' Here is a list of variables that can summarize your niche\n')
+      cat(' Here is a list of variables that can summarize your enviromental\n')
       cat(' information, according to the threshold of',threshold,":\n\n")
       cat(' ',descriptors,'\n\n')
       cat('*****************************************************************\n\n')

@@ -8,7 +8,7 @@
 #' \dontrun{
 #' ## RasterStack with the niche variables
 #' nicheStack <- rlayers_ntb(list.files(system.file("extdata",
-#'                                      package = "ntbox"),
+#'                                                  package = "ntbox"),
 #'                                      pattern = ".asc$",full.names = TRUE))
 #' }
 
@@ -38,7 +38,8 @@ rlayers_ntb <- function(layers_path){
   }
 
   else{
-    warning(paste("Raster Layers in\n", layers_path,"\nhave to have the same extent and resolution"))
+    warning(paste("Raster Layers in\n",
+                  layers_path,"\nhave to have the same extent and resolution"))
     return(NULL)
   }
 

@@ -9,7 +9,8 @@ sample_envbg(
   nbg,
   nprop = NULL,
   coordinates = FALSE,
-  cellIDs = FALSE
+  cellIDs = FALSE,
+  rseed = NULL
 )
 }
 \arguments{
@@ -22,6 +23,8 @@ sample_envbg(
 \item{coordinates}{Logical. If TRUE cell coordinates will be retuerned}
 
 \item{cellIDs}{Logical. If TRUE cell IDs will be retuerned}
+
+\item{rseed}{Random seed number. Default NULL}
 }
 \description{
 Generate environmental background data is a function similar
@@ -31,13 +34,13 @@ niche modeling.
 \examples{
 \dontrun{
 wcpath <- list.files(system.file("extdata/bios",
-                     package = "ntbox"),
+                                 package = "ntbox"),
                      pattern = ".tif$",
                      full.names = TRUE)
 
 envlayers <- raster::stack(wcpath)
-vals <- envbg(envlayers,nbg = 3583)
+vals <- sample_envbg(envlayers,nbg = 3583)
 # Using a proportion of data
-vals <- envbg(envlayers,nprop = 0.20)
+vals <- sample_envbg(envlayers,nprop = 0.20)
 }
 }

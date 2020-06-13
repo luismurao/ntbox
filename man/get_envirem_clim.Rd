@@ -15,7 +15,7 @@ get_envirem_clim(
 )
 }
 \arguments{
-\item{period}{Time period. Posible values are: "current" ( 1960 - 1990),"holo" (Mid-Holocene ~ 6000 years ago),"lgm" (Last Glacial Maximum ~ 22000 years ago).}
+\item{period}{Period. Possible values are: "current" ( 1960 - 1990),"holo" (Mid-Holocene ~ 6000 years ago),"lgm" (Last Glacial Maximum ~ 22000 years ago).}
 
 \item{gcm}{Global circulation model. Posible values: NULL, "ccsm4", "miroc_esm", and, "mpi_esm_p".}
 
@@ -23,14 +23,14 @@ get_envirem_clim(
 
 \item{resolution}{Resolution of layers. Posible values are "10arcmin","5arcmin","2.5arcmin", and, "30arcsec".}
 
-\item{fmt}{File format. Posible values are "bil" and "geotiff".}
+\item{fmt}{File format. Possible values are "bil" and "geotiff".}
 
-\item{sv_dir}{Path to the directory where the layers will be saved. Default is the working directory of R session.}
+\item{sv_dir}{Path to the directory where the layers will be saved. The default is the working directory of the R session.}
 
 \item{load2r}{Logical. Load layers into R?}
 }
 \description{
-Get bioclimati layers from envirem for present and pass scenarios
+Get bioclimatic layers from ENVIREM for present and past scenarios
 }
 \details{
 For more details visit \url{https://envirem.github.io/}
@@ -55,7 +55,7 @@ clim_eu_lgm_ccsm4_10min <- get_envirem_clim(period="lgm",
 }
 }
 \references{
-Title P.O., Bemmels J.B. 2018. ENVIREM: an expanded set of bioclimatic and topographic variables increases flexibility and improves performance of ecological niche modeling. Ecography. 41:291-307.
+Title P.O., Bemmels J.B. 2018. ENVIREM: an expanded set of bioclimatic and topographic variables increases flexibility and improves the performance of ecological niche modeling. Ecography. 41:291-307.
 }
 \seealso{
 \code{\link[ntbox]{get_chelsa}}, \code{\link[ntbox]{get_envirem_elev}},\code{\link[ntbox]{get_bio_oracle}}

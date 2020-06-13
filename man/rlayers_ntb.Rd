@@ -20,7 +20,7 @@ all  \code{\link[raster]{raster-package}} formats are accepted (see \code{\link[
 \dontrun{
 ## RasterStack with the niche variables
 nicheStack <- rlayers_ntb(list.files(system.file("extdata",
-                                     package = "ntbox"),
+                                                 package = "ntbox"),
                                      pattern = ".asc$",full.names = TRUE))
 }
 }

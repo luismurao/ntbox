@@ -11,7 +11,7 @@ exdet_multvar(M_stack, G_stack, G_mold = NULL)
 
 \item{G_stack}{a RasterStack or a Matrix of variables representing areas or scenarios to which models will be transferred. If G_stack is matrix it should contain the values of environmental variables as get it from \code{\link[raster]{getValues}} function.}
 
-\item{G_mold}{a Raster representing the extent of the projection area. This is only necessary when G_stack is of class matrix; G_mold will we used as a mold to save the NT1 values computed by exdet_univa function.}
+\item{G_mold}{a Raster representing the extent of the projection area. This is only necessary when G_stack is of class matrix; G_mold will we use as a mold to save the NT1 values computed by exdet_univa function.}
 }
 \value{
 NT2 metric (multivariate extrapolation) as a raster object.
@@ -25,11 +25,11 @@ Mesgaran, M.B., Cousens, R.D. & Webber, B.L. (2014) Here be dragons: a tool for 
 }
 \examples{
 m_stack <- raster::stack(list.files(system.file("extdata",
-                                    package = "ntbox"),
+                                                package = "ntbox"),
                                     pattern = "M_layers.tif$",
                                     full.names = TRUE))
 g_stack <- raster::stack(list.files(system.file("extdata",
-                                    package = "ntbox"),
+                                                package = "ntbox"),
                                     pattern = "G_layers.tif$",
                                     full.names = TRUE))
 

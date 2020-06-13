@@ -5,7 +5,7 @@
 #' @param occlim Occurrence data search limit.
 #' @param writeFile Write gibif data into a csv
 #' @param leafletplot Logical, if TRUE the records will be plotted on a leaflet map.
-#' @param showCluster Logical. Display geographic cluster on the leaflet map.
+#' @param showClusters Logical. Display geographic cluster on the leaflet map.
 #' @return Returns a data.frame with coordinate data from species
 #' @export
 #' @import leaflet
@@ -26,7 +26,7 @@
 #'
 searh_gbif_data <- function(genus,species,occlim=10000,
                             writeFile=FALSE,leafletplot=FALSE,
-                            showCluster=FALSE){
+                            showClusters=FALSE){
 
   # Check if species data is on working directory
   file_name <- tolower(paste0(genus,"_",
@@ -61,6 +61,7 @@ searh_gbif_data <- function(genus,species,occlim=10000,
     names(data_gbif_1) <- names(data_gbif)
     data_gbif <- as.data.frame(data_gbif_1)
     #  Send a warning menssage if the species is not in GBIF
+    data_gbif[["ntboxID"]] <- 1:nrow(data_gbif)
 
     if(length(data_gbif)==0L){
       data_gbif <- NULL
@@ -71,7 +72,7 @@ searh_gbif_data <- function(genus,species,occlim=10000,
     if(is.data.frame(data_gbif) && leafletplot){
       data_gbif$leaflet_info <- paste("<b>Species: </b>",
                                       data_gbif$species,"</a><br/>",
-                                      "<b>rowID:</b>",1:nrow(data_gbif),
+                                      "<b>ntboxID:</b>",data_gbif$ntboxID,
                                       "<br/><b>Record key:</b>",data_gbif$key,
                                       "<br/><b>Identified on: </b>",
                                       data_gbif$dateIdentified,
@@ -86,7 +87,7 @@ searh_gbif_data <- function(genus,species,occlim=10000,
                                   popup= ~leaflet_info,
                                   fillOpacity = 0.25,
                                   radius = 7,
-                                  clusterOptions = ifelse(showCluster,
+                                  clusterOptions = ifelse(showClusters,
                                                           leaflet::markerClusterOptions(),
                                                           NA))
 

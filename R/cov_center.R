@@ -1,6 +1,6 @@
 #' Function to compute the Minimum Volume covariance Matrix of an ellipsoid niche model.
-#' @description Function to compute the covariance matrix, the niche centroid and volume of an
-#' ellipsoid model. It uses the values of the niche variables of the ocurrences points.
+#' @description Function to compute the covariance matrix, the niche centroid, and volume of an ellipsoid model.
+#' ellipsoid model. It uses the values of the niche variables of the occurrence points.
 #' @param data A data.frame or a matrix with the numeric values of the variables
 #' that will be used to model the niche.
 #' @param mve A logical value. If TRUE a minimum volume ellipsoid will be computed using
@@ -10,7 +10,7 @@
 #' @param vars A numeric or a string vector specifying the columns indexes/names of the variables of the input data which will be used to fit the ellipsoid model. If NULL the user will be asked to enter the indexes.
 #' interactively
 #' @return Returns a list containing the centroid of the ellipsoid, the covariance matrix based on
-#' the input data, ellipsoid volume, semi-axis length and axis coordinates.
+#' the input data, ellipsoid volume, semi-axis length, and axis coordinates.
 #' @export
 #' @examples
 #' environ_data <- read.csv(system.file("extdata",
@@ -33,6 +33,7 @@
 #'             alpha=0.4,col="blue")
 #' rgl::points3d(environ_data[,c("bio5","bio6","bio12")])
 #' }
+
 
 cov_center <- function (data, mve = TRUE, level, vars = NULL)
 {

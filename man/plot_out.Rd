@@ -2,7 +2,7 @@
 % Please edit documentation in R/mop.R
 \name{plot_out}
 \alias{plot_out}
-\title{Detection of environmental values ouside the calibration area of a model}
+\title{Detection of environmental values outside the calibration area of a model}
 \usage{
 plot_out(M1, G1)
 }

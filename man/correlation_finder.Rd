@@ -9,7 +9,7 @@ correlation_finder(cor_mat, threshold, verbose = TRUE)
 \arguments{
 \item{cor_mat}{A correlation matrix.}
 
-\item{threshold}{Threshold valuefrom which it is considered that the correlation is high.}
+\item{threshold}{Threshold value from which it is considered that the correlation is high.}
 
 \item{verbose}{Verbose output.}
 }
@@ -20,7 +20,7 @@ Returns a vector with variable names that can summarize the information.
 The function finds out which variables have strong
 correlations according to a correlation threshold. The output
 returns a list of variables names that can summarize the information
-and removes the variables that are redundant.
+and removes redundant variables.
 }
 \examples{
 \dontrun{
@@ -28,6 +28,7 @@ environ_data <- read.csv(system.file("extdata",
                                      "nichekmeansCluster.csv",
                                       package = "ntbox"))[,-(1:3)]
 environ_cors <- cor(environ_data)
+correlation_finder(cor_mat = environ_cors ,threshold = 0.7,verbose = FALSE)
 correlation_finder(cor_mat = environ_cors ,threshold = 0.7,verbose = TRUE)
 }
 }

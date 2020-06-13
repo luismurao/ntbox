@@ -14,9 +14,9 @@ spca(
 )
 }
 \arguments{
-\item{layers_stack}{A RasterStack of envrionmental variables}
+\item{layers_stack}{A RasterStack of environmental variables}
 
-\item{layers_to_proj}{A RasterStack of the envrionmental variables that will be projected (default NULL). If provided
+\item{layers_to_proj}{A RasterStack of the environmental variables that will be projected (default NULL). If provided
 the function will project the PCA for those layers by using the PCA object computed for the \code{layers_stack}. It can also use the PCA object
 stored in \code{pca_obj}.}
 
@@ -31,7 +31,7 @@ and just wants to project the PCA on the \code{layers_to_proj} object.}
 \item{sv_proj_dir}{A directory where the PCs projection will be saved. If NULL the PCs will be written inside sv_dir.}
 }
 \value{
-A list containing either the raster stack with Pricipal Components of \code{layers_stack} or \code{layers_to_proj},
+A list containing either the raster stack with Principal Components of \code{layers_stack} or \code{layers_to_proj},
 a barplot of the cumulative and explained variance of each compoent of \code{layers_stack} and a \code{\link[stats]{prcomp}} object(\code{pca_obj}).
 }
 \description{
@@ -54,7 +54,7 @@ raster::plot(pcs$pc_layers)
 
 \dontrun{
 # -------------------------------------------------------------------
-# PCA projection  without saving.
+# PCA projection without saving.
 
 layers_to_proj <- raster::stack(list.files(system.file("extdata",
                                                       package = "ntbox"),

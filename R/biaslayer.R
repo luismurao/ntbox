@@ -24,16 +24,24 @@
 #' raster::plot(biasBirds)
 #'
 biaslayer <- function(occs_df,longitude, latitude, raster_mold){
+  rbias <- raster_mold
   ll_ras <- raster::rasterize(occs_df[,c(longitude,latitude)],
                               raster_mold, 1)
+  no_na <- which(!is.na(raster_mold[]))
+
   ll_rasIDs <- which(raster::getValues(ll_ras) %in% 1)
   occ_T <- sp::coordinates(ll_ras)[ll_rasIDs,]
 
   dens <- MASS::kde2d(occ_T[,1], occ_T[,2],
-                      n = c(nrow(ll_ras),
-                            ncol(ll_ras)))
+                      n = c(ncol(ll_ras),
+                            nrow(ll_ras)))
   biasLayer <- raster::raster(dens)
   if(!all(dim(biasLayer)[1:2] == dim(raster_mold)[1:2]))
-    biasLayer <- raster::resample(biasLayer,raster_mold)
-  return(biasLayer)
+    rbias <- raster::resample(biasLayer,raster_mold)
+  else{
+    rbias[no_na] <- biasLayer[no_na]
+  }
+  names(rbias) <- "BiasLayer"
+
+  return(rbias)
 }

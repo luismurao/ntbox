@@ -1,23 +1,24 @@
 #' Partial ROC calculation for Niche Models
 #'
-#' @description pROC applies partial ROC tests to continues niche models.
+#' @description pROC applies partial ROC tests to continuous niche models.
 #'
 #' @param continuous_mod a RasterLayer or a numeric vector of the ecological niche model to be evaluated. If a numeric vector is provided it should contain the values of the predicted suitability.
-#' @param test_data A numerical matrix, data.frame or numeric vector. If is data.frame or matrix it should contain coordinates of the occurrences used to test the ecological niche model to be evaluated; columns must be: longitude and latitude. If numeric vector it should contain the values of the predicted suitability.
-#' @param E_percent (numeric) value from 0 to 100 that will be used as threshold (E);
+#' @param test_data A numerical matrix, data.frame, or a numeric vector. If it is data.frame or matrix it should contain coordinates of the occurrences used to test the ecological niche model to be evaluated; columns must be: longitude and latitude. If numeric vector it should contain the values of the predicted suitability.
+#' @param E_percent (numeric) value from 0 to 100 that will be used as a threshold (E);
 #' default = 5.
 #' @param boost_percent (numeric) value from 0 to 100 representing the percent of testing data
 #' to be used for performing the bootstrap process for calculating the partial ROC;
 #' default = 50.
 #' @param n_iter (numeric) number of bootstrap iterations to be performed;
 #' default = 1000.
+#' @param rseed Logical. Whether or not to set a random seed. Default FALSE.
 #' @param parallel Logical to specify if the computation will be done in parallel. default=TRUE.
-#' @param ncores Numeric; number of cores to be used for parallelization.
+#' @param ncores Numeric; the number of cores to be used for parallelization.
 #' @return A data.frame containing the AUC values and AUC ratios calculated for each iteration.
 #' @details Partial ROC is calculated following Peterson et al.
 #' (2008; \url{http://dx.doi.org/10.1016/j.ecolmodel.2007.11.008}). This function is a modification
 #' of the PartialROC funcion, available at \url{https://github.com/narayanibarve/ENMGadgets}.
-#' @references Peterson,A.T. et al. (2008) Rethinking receiver operating characteristic analysis applications in ecological niche modeling. Ecol. Modell., 213, 63–72.
+#' @references Peterson, A.T. et al. (2008) Rethinking receiver operating characteristic analysis applications in ecological niche modeling. Ecol. Modell., 213, 63–72.
 #' @examples
 #' # Load a continuous model
 #' conti_model <- raster::raster(system.file("extdata",
@@ -46,7 +47,7 @@
 pROC <- function(continuous_mod,test_data,
                  n_iter=1000,E_percent=5,
                  boost_percent=50,
-                 parallel=FALSE,ncores=4){
+                 parallel=FALSE,ncores=4,rseed=FALSE){
 
   if (class(continuous_mod) == "RasterLayer") {
     if (continuous_mod@data@min == continuous_mod@data@max) {
@@ -70,9 +71,9 @@ pROC <- function(continuous_mod,test_data,
 
   tomult <- as.numeric(paste0("1e+",ndigits))
   test_value <- test_data*tomult
-  test_value <- round(as.vector(test_value),1)
+  test_value <- round(as.vector(test_value))
 
-  vals2 <- round(vals*tomult,1)
+  vals2 <- round(vals*tomult)
   classpixels <- as.data.frame(base::table(vals2),
                                stringsAsFactors = F)
   names(classpixels) <- c("value",
@@ -87,10 +88,10 @@ pROC <- function(continuous_mod,test_data,
                    percentpixels = ~totpixperclass/sum(count)) %>%
     dplyr::arrange(value)
 
-  if(nrow(classpixels)>1500){
-    classpixels <- classpixels %>%
-      dplyr::sample_n(1500) %>% dplyr::arrange(value)
-  }
+  #if(nrow(classpixels)>1500){
+  #  classpixels <- classpixels %>%
+  #    dplyr::sample_n(1500) %>% dplyr::arrange(value)
+  #}
 
   error_sens <- 1 - (E_percent/100)
   models_thresholds <- classpixels[, "value"]
@@ -107,7 +108,8 @@ pROC <- function(continuous_mod,test_data,
                          fractional_area,
                          test_value,
                          n_data, n_samp,
-                         error_sens) {
+                         error_sens,rseed=NULL) {
+    if(is.numeric(rseed)) set.seed(rseed)
 
     rowsID <- sample(x = n_data,
                      size = n_samp,
@@ -117,19 +119,32 @@ pROC <- function(continuous_mod,test_data,
     omssion_matrix <- big_classpixels > test_value1
     sensibility <- 1 - colSums(omssion_matrix)/n_samp
     xyTable <- data.frame(fractional_area, sensibility)
-    less_ID <- which(xyTable$sensibility <= error_sens)
-    xyTable <- xyTable[-less_ID, ]
+    xyTable <- rbind(xyTable,c(0,0))
     xyTable <- xyTable[order(xyTable$fractional_area,
                              decreasing = F),]
+    auc_model <- trapozoid_roc(xyTable$fractional_area,
+                               xyTable$sensibility)
+    if(error_sens>0){
+      less_ID <- which(xyTable$sensibility <= error_sens)
+      xyTable <- xyTable[-less_ID, ]
+      auc_pmodel <- trapozoid_roc(xyTable$fractional_area,
+                                  xyTable$sensibility)
 
-    auc_pmodel <- trapozoid_roc(xyTable$fractional_area,
-                                xyTable$sensibility)
+      auc_prand <- trapozoid_roc(xyTable$fractional_area,
+                                 xyTable$fractional_area)
 
-    auc_prand <- trapozoid_roc(xyTable$fractional_area,
-                               xyTable$fractional_area)
+    }
+    else{
+      auc_pmodel <- auc_model
+      auc_prand <- 0.5
+
+    }
+
+
 
     auc_ratio <- auc_pmodel/auc_prand
-    auc_table <- data.frame(auc_pmodel,
+    auc_table <- data.frame(auc_model,
+                            auc_pmodel,
                             auc_prand,
                             auc_ratio)
     return(auc_table)
@@ -154,7 +169,7 @@ pROC <- function(continuous_mod,test_data,
                                     fractional_area,
                                     test_value,
                                     n_data, n_samp,
-                                    error_sens))
+                                    error_sens,rseed=i))
       }
     }
     partial_AUC <- as.list(roc_env)
@@ -166,26 +181,30 @@ pROC <- function(continuous_mod,test_data,
   }
   else {
     partial_AUC <- 1:n_iter %>%
-      purrr::map_df(~calc_aucDF(big_classpixels,
-                                fractional_area,
-                                test_value,
-                                n_data,
-                                n_samp,
-                                error_sens))
+      purrr::map_df(function(i){
+        proc <- calc_aucDF(big_classpixels,
+                           fractional_area,
+                           test_value,
+                           n_data,
+                           n_samp,
+                           error_sens,rseed = i)
+      })
   }
-  mauc <- mean(partial_AUC$auc_ratio, na.rm = TRUE)
+  mauc <-  mean(partial_AUC$auc_model, na.rm = TRUE)
+  maucp <- mean(partial_AUC$auc_ratio, na.rm = TRUE)
   proc <- sum(partial_AUC$auc_ratio <= 1, na.rm = TRUE)/
     length(partial_AUC$auc_ratio[!is.na(partial_AUC$auc_ratio)])
 
-  p_roc <- c(mauc, proc)
-  names(p_roc) <- c(paste("Mean_AUC_ratio_at_",
+  p_roc <- c(mauc,maucp, proc)
+  names(p_roc) <- c("Mean_AUC",
+                    paste("Mean_pAUC_ratio_at_",
                           E_percent,
                           "%", sep = ""),
                     "P_value")
   p_roc_res <- list(pROC_summary = p_roc,
                     pROC_results = partial_AUC)
   return(p_roc_res)
-  }
+}
 
 
 proc_precision <- function(mod_vals,test_data){
@@ -213,3 +232,4 @@ proc_precision <- function(mod_vals,test_data){
   }
   return(ndigits)
 }
+

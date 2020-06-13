@@ -8,20 +8,21 @@
 #' @param nprop Proportion of environmental data to be sampled. Default NULL
 #' @param coordinates Logical. If TRUE cell coordinates will be retuerned
 #' @param cellIDs Logical. If TRUE cell IDs will be retuerned
+#' @param rseed Random seed number. Default NULL
 #' @examples
 #' \dontrun{
 #' wcpath <- list.files(system.file("extdata/bios",
-#'                      package = "ntbox"),
+#'                                  package = "ntbox"),
 #'                      pattern = ".tif$",
 #'                      full.names = TRUE)
 #'
 #' envlayers <- raster::stack(wcpath)
-#' vals <- envbg(envlayers,nbg = 3583)
+#' vals <- sample_envbg(envlayers,nbg = 3583)
 #' # Using a proportion of data
-#' vals <- envbg(envlayers,nprop = 0.20)
+#' vals <- sample_envbg(envlayers,nprop = 0.20)
 #' }
 #' @export
-sample_envbg <- function(envlayers,nbg,nprop=NULL,coordinates=FALSE,cellIDs=FALSE){
+sample_envbg <- function(envlayers,nbg,nprop=NULL,coordinates=FALSE,cellIDs=FALSE,rseed=NULL){
   if(class(envlayers) == "RasterStack" ||
      class(envlayers) == "RasterBrick"){
     envlayers <- raster::stack(envlayers)
@@ -35,6 +36,8 @@ sample_envbg <- function(envlayers,nbg,nprop=NULL,coordinates=FALSE,cellIDs=FALS
     else{
       npoints <- nbg
     }
+    if(!is.numeric(rseed))
+      set.seed(rseed)
     #cat("Number of points to be sampled:",npoints)
     toSamp <- sample(nona,size = npoints,replace = FALSE)
     canP <- raster::canProcessInMemory(l1,

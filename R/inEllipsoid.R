@@ -4,7 +4,7 @@
 #' @param centroid A numeric vector of centroids for each environmental variable
 #' @param eShape Shape matrix of the ellipsoid (can be a covariance matrix or a minimum volume ellipsoid).
 #' @param env_data A data frame with the environmental training data.
-#' @param level Proportion of points to be included in the ellipsoids. This paramter is equivalent to the error (E) proposed by Peterson et al. (2008).
+#' @param level Proportion of points to be included in the ellipsoids. This parameter is equivalent to the error (E) proposed by Peterson et al. (2008).
 #' @return A data.frame with 2 columns. The first "in_Ellipsoid" binary response with values 1 (inside the ellipsoid) and zeros (outside the ellipsoid); the second "mh_dist" Mahalanobis distance to centroid.
 #' @export
 #' @examples
@@ -18,7 +18,7 @@
 #' # Occurrence data for the giant hummingbird (Patagona gigas)
 #' pg <- utils::read.csv(system.file("extdata/p_gigas.csv",
 #'                                   package = "ntbox"))
-# Environmental data
+#' # Environmental data
 #' pg_env <- raster::extract(wc,pg[,c("longitude",
 #'                                       "latitude")],
 #'                              df=TRUE)
@@ -51,3 +51,4 @@ inEllipsoid <- function(centroid,eShape,env_data,level){
 
   return(in_Ellipsoid_mh)
 }
+

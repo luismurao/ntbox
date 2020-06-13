@@ -21,11 +21,11 @@ interactively}
 }
 \value{
 Returns a list containing the centroid of the ellipsoid, the covariance matrix based on
-the input data, ellipsoid volume, semi-axis length and axis coordinates.
+the input data, ellipsoid volume, semi-axis length, and axis coordinates.
 }
 \description{
-Function to compute the covariance matrix, the niche centroid and volume of an
-ellipsoid model. It uses the values of the niche variables of the ocurrences points.
+Function to compute the covariance matrix, the niche centroid, and volume of an ellipsoid model.
+ellipsoid model. It uses the values of the niche variables of the occurrence points.
 }
 \examples{
 environ_data <- read.csv(system.file("extdata",

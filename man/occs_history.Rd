@@ -10,7 +10,7 @@ occs_history(gbif_data)
 \item{gbif_data}{A data.frame with GBIF data}
 }
 \value{
-Returns a list with googleVis motin chart and a data.frame
+Returns a list with googleVis motion chart and a data.frame
 }
 \description{
 Visualize a time series of the history of GBIF records.

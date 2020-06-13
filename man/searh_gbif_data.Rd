@@ -10,7 +10,7 @@ searh_gbif_data(
   occlim = 10000,
   writeFile = FALSE,
   leafletplot = FALSE,
-  showCluster = FALSE
+  showClusters = FALSE
 )
 }
 \arguments{
@@ -24,7 +24,7 @@ searh_gbif_data(
 
 \item{leafletplot}{Logical, if TRUE the records will be plotted on a leaflet map.}
 
-\item{showCluster}{Logical. Display geographic cluster on the leaflet map.}
+\item{showClusters}{Logical. Display geographic cluster on the leaflet map.}
 }
 \value{
 Returns a data.frame with coordinate data from species

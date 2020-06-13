@@ -1,8 +1,8 @@
 #' spca: Principal Component Analysis for Spatial Data
 #'
 #' @description Performs PCA for a stack of raster layers.
-#' @param layers_stack A RasterStack of envrionmental variables
-#' @param layers_to_proj A RasterStack of the envrionmental variables that will be projected (default NULL). If provided
+#' @param layers_stack A RasterStack of environmental variables
+#' @param layers_to_proj A RasterStack of the environmental variables that will be projected (default NULL). If provided
 #' the function will project the PCA for those layers by using the PCA object computed for the `layers_stack`. It can also use the PCA object
 #' stored in `pca_obj`.
 #' @param pca_obj An object of class \code{\link[stats]{prcomp}} (default NULL). Usefull when the user already
@@ -11,7 +11,7 @@
 #' @param sv_dir A directory where the PCs will be saved. If NULL the PCs will not be written.
 #' @param sv_proj_dir  A directory where the PCs projection will be saved. If NULL the PCs will be written inside sv_dir.
 #' @param layers_format A raster format for writing PCA results (see \code{\link[raster]{writeFormats}}). Default = ".asc"
-#' @return A list containing either the raster stack with Pricipal Components of `layers_stack` or `layers_to_proj`,
+#' @return A list containing either the raster stack with Principal Components of `layers_stack` or `layers_to_proj`,
 #' a barplot of the cumulative and explained variance of each compoent of `layers_stack` and a \code{\link[stats]{prcomp}} object(`pca_obj`).
 #' @details spca uses the function \code{\link[stats]{prcomp}} of the `stats` package. If `sv_dir` is provided  the PCs
 #' and `pca_obj` will be stored on it. The names of the layers in `layers_to_proj` need to be named
@@ -33,7 +33,7 @@
 #'
 #' \dontrun{
 #' # -------------------------------------------------------------------
-#' # PCA projection  without saving.
+#' # PCA projection without saving.
 #'
 #' layers_to_proj <- raster::stack(list.files(system.file("extdata",
 #'                                                       package = "ntbox"),
@@ -75,7 +75,7 @@
 spca <- function(layers_stack,layers_to_proj=NULL,pca_obj=NULL,sv_dir=NULL,layers_format=".asc",sv_proj_dir=NULL){
 
   results <- list()
-
+  layers_stack <- raster::stack(layers_stack)
   if(class(layers_stack)=="RasterStack"){
 
     layers_vals <- raster::getValues(layers_stack)
@@ -137,7 +137,8 @@ spca <- function(layers_stack,layers_to_proj=NULL,pca_obj=NULL,sv_dir=NULL,layer
   if(class(layers_to_proj)=="RasterStack" && class(pca_obj) == "prcomp"){
 
     if(!all(names(layers_to_proj) == names(layers_pca)))
-      cat("Assuming that the layers that have the same position in the stack represent the same kind of variables\n\n")
+      cat(paste("Assuming that the layers that have the same position in the",
+                "stack represent the same kind of variables\n\n"))
 
     layers_to_proj <- layers_to_proj[[1:length(names(pca_obj$center))]]
 
@@ -179,9 +180,9 @@ spca <- function(layers_stack,layers_to_proj=NULL,pca_obj=NULL,sv_dir=NULL,layer
 
       if(exists("layers_path_proj")){
         1:length(layers_path_proj) %>%
-        purrr::map(~raster::writeRaster(layers_to_proj[[.x]],
-                                        layers_path_proj[.x],
-                                        overwrite=TRUE))
+          purrr::map(~raster::writeRaster(layers_to_proj[[.x]],
+                                          layers_path_proj[.x],
+                                          overwrite=TRUE))
       }
     }
     return(results)
@@ -192,7 +193,7 @@ spca <- function(layers_stack,layers_to_proj=NULL,pca_obj=NULL,sv_dir=NULL,layer
 }
 
 
-# This code is enterely adapted from
+# This code is entirely adapted from
 # https://www.r-graph-gallery.com/297-circular-barplot-with-groups/
 
 .plot_pca <- function(pca_summary){
@@ -260,7 +261,7 @@ spca <- function(layers_stack,layers_to_proj=NULL,pca_obj=NULL,sv_dir=NULL,layer
              fontface="bold", hjust=1) +
 
     geom_bar(aes_(x=~as.factor(id), y=~value,
-                 fill=~group), stat="identity",
+                  fill=~group), stat="identity",
              alpha=0.5) +
     ylim(-100,120) +
     theme_minimal() +
@@ -274,8 +275,8 @@ spca <- function(layers_stack,layers_to_proj=NULL,pca_obj=NULL,sv_dir=NULL,layer
     coord_polar() +
     geom_text(data=label_data,
               aes_(x=~id, y=~value+10,
-                  label=~paste(pca,"\n",value),
-                  hjust=~hjust), color="black",
+                   label=~paste(pca,"\n",value),
+                   hjust=~hjust), color="black",
               fontface="bold",alpha=0.6,
               size=2.5, angle= label_data$angle,
               inherit.aes = FALSE ) +

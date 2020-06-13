@@ -15,13 +15,15 @@ ellipsoid_selection(
   omr_criteria,
   parallel = F,
   comp_each = 100,
-  proc = FALSE
+  proc = FALSE,
+  proc_iter = 100,
+  rseed = TRUE
 )
 }
 \arguments{
 \item{env_train}{A data frame with the environmental training data.}
 
-\item{env_test}{A data frame with the environmental testing data. Default is NULL, if given the selection process will show the p-value of a binomial test.}
+\item{env_test}{A data frame with the environmental testing data. The default is NULL if given the selection process will show the p-value of a binomial test.}
 
 \item{env_vars}{A vector with the names of environmental variables to be used in the selection process.}
 
@@ -34,13 +36,17 @@ the function \code{\link[MASS]{cov.rob}} of the \pkg{MASS} package. If False the
 
 \item{env_bg}{Environmental data to compute the approximated prevalence of the model. The data should be a sample of the environmental layers of the calibration area.}
 
-\item{omr_criteria}{Omission rate criteria. Value of omission rate allowed for the selection process. Default NULL see details.}
+\item{omr_criteria}{Omission rate criteria. Value of the omission rate allowed for the selection process. Default NULL see details.}
 
-\item{parallel}{The computations will be run in parallel. Deafault FALSE}
+\item{parallel}{The computations will be run in parallel. Default FALSE}
 
 \item{comp_each}{Number of models to run in each job in the parallel computation. Default 100}
 
-\item{proc}{Logical, if TRUE a partial roc test will be run.}
+\item{proc}{Logical if TRUE a partial roc test will be run.}
+
+\item{proc_iter}{Numeric. The total number of iterations for the partial ROC bootstrap.}
+
+\item{rseed}{Logical. Whether or not to set a random seed for partial roc bootstrap. Default TRUE.}
 }
 \value{
 A data.frame with 5 columns: i) "fitted_vars" the names of variables that were fitted; ii) "om_rate" omission rates of the model; iii) "bg_prevalence" approximated prevalence of the model see details section; iv) The rank value of importance in model selection by omission rate; v) The rank value by prevalence after if the value of omr_criteria is passed.
@@ -49,11 +55,11 @@ A data.frame with 5 columns: i) "fitted_vars" the names of variables that were f
 Performs variable selection for ellipsoid models according to omission rates in the environmental space.
 }
 \details{
-Model selection occurs in environmental space (E-space). For each variable combination the omission rate (omr) in E-space is computed using the function \code{\link[ntbox]{inEllipsoid}}. The results will be ordered by omr and if the user specified the environmental background "env_bg" an estimated prevalence will be computed and the results will be ordered also by "bg_prevalence".
+Model selection occurs in environmental space (E-space). For each variable combination the omission rate (omr) in E-space is computed using the function \code{\link[ntbox]{inEllipsoid}}. The results will be ordered by omr and if the user-specified the environmental background "env_bg" an estimated prevalence will be computed and the results will be ordered also by "bg_prevalence".
 
-The number of variables to construct candidate models can be specified by the user in the parameter "nvarstest". Model selection will be run in parallel if the user specified more than one set of combinations and the total number of models to be tested is greater than 500.
-
+The number of variables to construct candidate models can be specified by the user in the parameter "nvarstest". Model selection will be run in parallel if the user-specified more than one set of combinations and the total number of models to be tested is greater than 500.
 If given"omr_criteria" and "bg_prevalence", the results will be shown pondering those models that met the "omr_criteria" by the value of "bg_prevalence".
+For more details and examples go to \code{\link[ntbox]{ellipsoid_omr}} help.
 }
 \examples{
 \dontrun{
@@ -70,6 +76,7 @@ pg <- utils::read.csv(system.file("extdata/p_gigas.csv",
 pgL <- base::split(pg,pg$type)
 pg_train <- pgL$train
 pg_test <- pgL$test
+# Environmental data for training and testing
 pg_etrain <- raster::extract(wc,pg_train[,c("longitude",
                                             "latitude")],
                              df=TRUE)
@@ -132,7 +139,7 @@ print(pg_proc$pROC_summary)
 }
 }
 \references{
-Peterson,A.T. et al. (2008) Rethinking receiver operating characteristic analysis applications in ecological niche modeling. Ecol. Modell., 213, 63–72.
+Peterson, A.T. et al. (2008) Rethinking receiver operating characteristic analysis applications in ecological niche modeling. Ecol. Modell., 213, 63–72.
 }
 \author{
 Luis Osorio-Olvera \href{mailto:luismurao@gmail.com}{luismurao@gmail.com}

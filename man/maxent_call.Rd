@@ -76,9 +76,9 @@ maxent_call(
 \arguments{
 \item{maxentjar_path}{Path to maxent.jar}
 
-\item{run_fromR}{Logical If TRUE, maxent will be excuted from the current R session.}
+\item{run_fromR}{Logical If TRUE, maxent will be executed from the current R session.}
 
-\item{wait}{Loogical If TRUE, R will wait until maxent fishes to run the model. Default TRUE.}
+\item{wait}{Logical If TRUE, R will wait until maxent fishes to run the model. Default TRUE.}
 
 \item{features}{A vector with features classes to fit the maxent model. Use "l" for "linear","q" for "quadratic", "p" for "product", "h" for "hinge"and "t" for "threshold".}
 
@@ -99,17 +99,17 @@ or all together in a .csv file in SWD format. Please enter a directory name or f
 
 \item{pictures}{Logical if TRUE creates a .png image for each output grid.}
 
-\item{jackknife}{Logical if TRUE measures importance of each environmental variable by training with each environmental variable first omitted, then used in isolation.}
+\item{jackknife}{Logical if TRUE measures the importance of each environmental variable by training with each environmental variable first omitted, then used in isolation.}
 
-\item{outputformat}{A character vector describing the type of output format to be written in model results. Representation of probabilities used in writing output grids. Posible output formats are cloglog, logistic, cumulative and raw.}
+\item{outputformat}{A character vector describing the type of output format to be written in model results. Representation of probabilities used in writing output grids. Possible output formats are cloglog, logistic, cumulative, and raw.}
 
-\item{randomseed}{Logial if TRUE, a different random seed will be used for each run, so a different random test/train partition will be made and a different random subset of the background will be used, if applicable.}
+\item{randomseed}{Logical if TRUE, a different random seed will be used for each run, so a different random test/train partition will be made and a different random subset of the background will be used, if applicable.}
 
 \item{logscale}{Logical If TRUE, all pictures of models will use a logarithmic scale for color-coding.}
 
 \item{warnings}{Logical If TRUE, pops up windows to warn about potential problems with input data. Regardless of this setting, warnings are always printed to the log file.}
 
-\item{askoverwrite}{Logical if TRUE, the output files that already exists will be overwritten.}
+\item{askoverwrite}{Logical if TRUE, the output files that already exist will be overwritten.}
 
 \item{skipifexists}{Logical if TRUE, skips the species without remaking the model.}
 
@@ -119,7 +119,7 @@ or all together in a .csv file in SWD format. Please enter a directory name or f
 
 \item{writemess}{Logical if TRUE, does MESS analysis when projecting}
 
-\item{randomtestpoints}{Numeric. Percentage of presence localities to be randomly set aside as test points, used to compute AUC, omission etc.}
+\item{randomtestpoints}{Numeric. Percentage of presence localities to be randomly set aside as test points used to compute AUC, omission, etc.}
 
 \item{betamultiplier}{Numeric. Regularization multiplier.  A higher number gives a more spread-out distribution.}
 
@@ -129,9 +129,9 @@ or all together in a .csv file in SWD format. Please enter a directory name or f
 
 \item{biastype}{Default 3. See \url{https://groups.google.com/forum/#!topic/maxent/bZYdlYmDG4s} for details.}
 
-\item{replicates}{Numeric. Number of replicate runs to do when cross-validating, bootstrapping or doing sampling with replacement runs.}
+\item{replicates}{Numeric. The number of replicate runs to do when cross-validating, bootstrapping, or doing sampling with replacement runs.}
 
-\item{replicatetype}{Character vector. Posible values are crossvalidate, bootstrap and subsample. If replicates > 1, do multiple runs of this type: Crossvalidate: samples divided into replicates folds; each fold in turn used for test data. Bootstrap: replicate sample sets chosen by sampling with replacement. Subsample: replicate sample sets chosen by removing random test percentage without replacement to be used for evaluation.}
+\item{replicatetype}{Character vector. Possible values are crossvalidate, bootstrap, and subsample. If replicates > 1, do multiple runs of this type: Crossvalidate: samples divided into replicates folds; each fold in turn used for test data. Bootstrap: replicate sample sets chosen by sampling with replacement. Subsample: replicate sample sets chosen by removing random test percentage without replacement to be used for evaluation.}
 
 \item{perspeciesresults}{Logical, if TRUE write separate maxentResults file for each species.}
 
@@ -143,21 +143,21 @@ or all together in a .csv file in SWD format. Please enter a directory name or f
 
 \item{addallsamplestobackground}{Logical if TRUE adds all samples to background.}
 
-\item{autorun}{Logical if TRUE starts running as soon as the the program starts up.}
+\item{autorun}{Logical if TRUE starts running as soon as the program starts up.}
 
 \item{writeplotdata}{Logical if TRUE writes plot data.}
 
 \item{fadebyclamping}{Logical if TRUE reduces prediction at each point in projections by the difference between clamped and non-clamped output at that point.}
 
-\item{extrapolate}{Logical If TRUE predicts to regions of environmental space outside the limits encountered during training}
+\item{extrapolate}{Logical, If TRUE predicts to regions of environmental space outside the limits encountered during training}
 
 \item{visible}{Logical If TRUE makes the Maxent user interface visible.}
 
-\item{autofeature}{Logical If TRUE Automatically selects which feature classes to use, based on number of training samples}
+\item{autofeature}{Logical If TRUE Automatically selects which feature classes to use, based on the number of training samples}
 
 \item{doclamp}{Logical If TRUE applies clamping when projecting}
 
-\item{outputgrids}{Logical If TRUE writes output grids.  Turning this off when doing replicate runs causes only the summary grids (average, std deviation etc.) to be written, not those for the individual runs.}
+\item{outputgrids}{Logical If TRUE writes output grids.  Turning this off when doing replicate runs causes only the summary grids (average, std deviation, etc.) to be written, not those for the individual runs.}
 
 \item{plots}{Logical If TRUE writes various plots for inclusion in .html output.}
 
@@ -165,31 +165,31 @@ or all together in a .csv file in SWD format. Please enter a directory name or f
 
 \item{maximumiterations}{Numeric. Stop training after this many iterations of the optimization algorithm.}
 
-\item{convergencethreshold}{Numeric. Stop training when the drop in log loss per iteration drops below this number.}
+\item{convergencethreshold}{Numeric. Stop training when they drop in log loss per iteration drops below this number.}
 
-\item{adjustsampleradius}{Numeric. Add this number of pixels to the radius of white/purple dots for samples on pictures of predictions. Negative values reduce size of dots.}
+\item{adjustsampleradius}{Numeric. Add this number of pixels to the radius of white/purple dots for samples on pictures of predictions. Negative values reduce the size of dots.}
 
-\item{threads}{Numeric. Number of processor threads to use.  Matching this number to the number of cores on your computer speeds up some operations, especially variable jackknifing.}
+\item{threads}{Numeric. The number of processor threads to use.  Matching this number to the number of cores on your computer speeds up some operations, especially variable jackknifing.}
 
-\item{lq2lqptthreshold}{Numeric. Number of samples at which product and threshold features start being used.}
+\item{lq2lqptthreshold}{Numeric. The number of samples at which product and threshold features start being used.}
 
-\item{l2lqthreshold}{Numeric. Number of samples at which quadratic features start being used.}
+\item{l2lqthreshold}{Numeric. The number of samples at which quadratic features start being used.}
 
-\item{hingethreshold}{Numeric. Number of samples at which hinge features start being used.}
+\item{hingethreshold}{Numeric. The number of samples at which hinge features start being used.}
 
 \item{beta_threshold}{Numeric. Regularization parameter to be applied to all threshold features; negative value enables automatic setting.}
 
 \item{beta_categorical}{Numeric. Regularization parameter to be applied to all categorical features; negative value enables automatic setting.}
 
-\item{beta_lqp}{Numeric. Regularization parameter to be applied to all linear, quadratic and product features; negative value enables automatic setting.}
+\item{beta_lqp}{Numeric. Regularization parameter to be applied to all linear, quadratic, and product features; negative value enables automatic setting.}
 
 \item{beta_hinge}{Numeric. Regularization parameter to be applied to all hinge features; negative value enables automatic setting.}
 
-\item{logfile}{File name to be used for writing debugging information about a run in output directory.}
+\item{logfile}{Filename to be used for writing debugging information about a run in the output directory.}
 
 \item{cache}{Logical If TRUE makes a .mxe cached version of ascii files, for faster access.}
 
-\item{defaultprevalence}{Numeric. Default prevalence of the species: probability of presence at ordinary occurrence points. See Elith et al., Diversity and Distributions, 2011 for details.}
+\item{defaultprevalence}{Numeric. Default prevalence of the species: the probability of presence at ordinary occurrence points. See Elith et al., Diversity and Distributions, 2011 for details.}
 
 \item{applythresholdrule}{Apply a threshold rule, generating a binary output grid in addition to the regular prediction grid.  Use the full name of the threshold rule in Maxent's html output as the argument.  For example, 'applyThresholdRule=Fixed cumulative value 1'.}
 
@@ -201,9 +201,9 @@ or all together in a .csv file in SWD format. Please enter a directory name or f
 
 \item{verbose}{Logical If TRUE gives a detailed diagnostics for debugging.}
 
-\item{allowpartialdata}{Logical If TRUE During model training, allow use of samples that have nodata values for one or more environmental variables..}
+\item{allowpartialdata}{Logical If TRUE During model training, allow the use of samples that have nodata values for one or more environmental variables..}
 
-\item{prefixes}{Logical If TRUE furing model training, allow use of samples that have nodata values for one or more environmental variables.}
+\item{prefixes}{Logical If TRUE during model training, allow the use of samples that have nodata values for one or more environmental variables.}
 
 \item{nodata}{Numeric. Default nodata value.}
 }
@@ -211,11 +211,11 @@ or all together in a .csv file in SWD format. Please enter a directory name or f
 A character vector with maxent`s parametrization.
 }
 \description{
-maxent_call Allows the user to introduce all the arguments that can be passed to MaxEnt. It also allows to run MaxEnt from R.
+maxent_call Allows the user to introduce all the arguments that can be passed to MaxEnt. It also allows running MaxEnt from R.
 }
 \details{
 The documentation of the parameters of this function are based on maxent´s help.
-For a detail documentation of the parameter that can be passed to maxent go to \url{https://github.com/mrmaxent/Maxent/blob/master/density/parameters.csv}.
+For detailed documentation of the parameter that can be passed to maxent go to \url{https://github.com/mrmaxent/Maxent/blob/master/density/parameters.csv}.
 }
 \examples{
 \dontrun{

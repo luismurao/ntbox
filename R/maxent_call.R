@@ -1,9 +1,9 @@
 #' maxent_call: Call maxent from R
 #'
-#' @description maxent_call Allows the user to introduce all the arguments that can be passed to MaxEnt. It also allows to run MaxEnt from R.
+#' @description maxent_call Allows the user to introduce all the arguments that can be passed to MaxEnt. It also allows running MaxEnt from R.
 #' @param maxentjar_path Path to maxent.jar
-#' @param run_fromR Logical If TRUE, maxent will be excuted from the current R session.
-#' @param wait Loogical If TRUE, R will wait until maxent fishes to run the model. Default TRUE.
+#' @param run_fromR Logical If TRUE, maxent will be executed from the current R session.
+#' @param wait Logical If TRUE, R will wait until maxent fishes to run the model. Default TRUE.
 #' @param features A vector with features classes to fit the maxent model. Use "l" for "linear","q" for "quadratic", "p" for "product", "h" for "hinge"and "t" for "threshold".
 #' @param memory_assigned A numeric value representing the RAM memory assigned to the process.
 #' @param environmentallayers Path to the directory containing environmental layers. Environmental variables can be in a directory containing one file per variable,
@@ -14,62 +14,62 @@
 #' @param projectionlayers Path to the directory containing the projection layer.
 #' @param responsecurves Logical if TRUE creates graphs showing how predicted relative probability of occurrence depends on the value of each environmental variable.
 #' @param pictures Logical if TRUE creates a .png image for each output grid.
-#' @param jackknife  Logical if TRUE measures importance of each environmental variable by training with each environmental variable first omitted, then used in isolation.
-#' @param outputformat A character vector describing the type of output format to be written in model results. Representation of probabilities used in writing output grids. Posible output formats are cloglog, logistic, cumulative and raw.
-#' @param randomseed Logial if TRUE, a different random seed will be used for each run, so a different random test/train partition will be made and a different random subset of the background will be used, if applicable.
+#' @param jackknife  Logical if TRUE measures the importance of each environmental variable by training with each environmental variable first omitted, then used in isolation.
+#' @param outputformat A character vector describing the type of output format to be written in model results. Representation of probabilities used in writing output grids. Possible output formats are cloglog, logistic, cumulative, and raw.
+#' @param randomseed Logical if TRUE, a different random seed will be used for each run, so a different random test/train partition will be made and a different random subset of the background will be used, if applicable.
 #' @param logscale Logical If TRUE, all pictures of models will use a logarithmic scale for color-coding.
 #' @param warnings Logical If TRUE, pops up windows to warn about potential problems with input data. Regardless of this setting, warnings are always printed to the log file.
-#' @param askoverwrite Logical if TRUE, the output files that already exists will be overwritten.
+#' @param askoverwrite Logical if TRUE, the output files that already exist will be overwritten.
 #' @param skipifexists Logical if TRUE, skips the species without remaking the model.
 #' @param removeduplicates Logical if TRUE, removes duplicate presence records.
 #' @param writeclampgrid Logical if TRUE, writes clamp grid when projecting.
 #' @param writemess Logical if TRUE, does MESS analysis when projecting
-#' @param randomtestpoints Numeric. Percentage of presence localities to be randomly set aside as test points, used to compute AUC, omission etc.
+#' @param randomtestpoints Numeric. Percentage of presence localities to be randomly set aside as test points used to compute AUC, omission, etc.
 #' @param betamultiplier Numeric. Regularization multiplier.  A higher number gives a more spread-out distribution.
 #' @param maximumbackground Numeric. Max number of background points.
 #' @param biasfile Path to the bias file. Sampling is assumed to be biased according to the sampling distribution given in this grid file. Values in this file must not be zero or negative.
 #' @param biastype Default 3. See \url{https://groups.google.com/forum/#!topic/maxent/bZYdlYmDG4s} for details.
-#' @param replicates Numeric. Number of replicate runs to do when cross-validating, bootstrapping or doing sampling with replacement runs.
-#' @param replicatetype Character vector. Posible values are crossvalidate, bootstrap and subsample. If replicates > 1, do multiple runs of this type: Crossvalidate: samples divided into replicates folds; each fold in turn used for test data. Bootstrap: replicate sample sets chosen by sampling with replacement. Subsample: replicate sample sets chosen by removing random test percentage without replacement to be used for evaluation.
+#' @param replicates Numeric. The number of replicate runs to do when cross-validating, bootstrapping, or doing sampling with replacement runs.
+#' @param replicatetype Character vector. Possible values are crossvalidate, bootstrap, and subsample. If replicates > 1, do multiple runs of this type: Crossvalidate: samples divided into replicates folds; each fold in turn used for test data. Bootstrap: replicate sample sets chosen by sampling with replacement. Subsample: replicate sample sets chosen by removing random test percentage without replacement to be used for evaluation.
 #' @param perspeciesresults Logical, if TRUE write separate maxentResults file for each species.
 #' @param writebackgroundpredictions Logical if TRUE, will write .csv file with predictions at background points.
 #' @param responsecurvesexponent Logical if TRUE, shows exponent in response curves.
 #' @param addsamplestobackground Logical if TRUE adds samples to background.
 #' @param addallsamplestobackground Logical if TRUE adds all samples to background.
-#' @param autorun Logical if TRUE starts running as soon as the the program starts up.
+#' @param autorun Logical if TRUE starts running as soon as the program starts up.
 #' @param writeplotdata Logical if TRUE writes plot data.
 #' @param fadebyclamping Logical if TRUE reduces prediction at each point in projections by the difference between clamped and non-clamped output at that point.
-#' @param extrapolate Logical If TRUE predicts to regions of environmental space outside the limits encountered during training
+#' @param extrapolate Logical, If TRUE predicts to regions of environmental space outside the limits encountered during training
 #' @param visible Logical If TRUE makes the Maxent user interface visible.
-#' @param autofeature Logical If TRUE Automatically selects which feature classes to use, based on number of training samples
+#' @param autofeature Logical If TRUE Automatically selects which feature classes to use, based on the number of training samples
 #' @param doclamp Logical If TRUE applies clamping when projecting
-#' @param outputgrids Logical If TRUE writes output grids.  Turning this off when doing replicate runs causes only the summary grids (average, std deviation etc.) to be written, not those for the individual runs.
+#' @param outputgrids Logical If TRUE writes output grids.  Turning this off when doing replicate runs causes only the summary grids (average, std deviation, etc.) to be written, not those for the individual runs.
 #' @param plots Logical If TRUE writes various plots for inclusion in .html output.
 #' @param appendtoresultsfile Logical If FALSE, maxentResults.csv file is reinitialized before each run.
 #' @param maximumiterations Numeric. Stop training after this many iterations of the optimization algorithm.
-#' @param convergencethreshold Numeric. Stop training when the drop in log loss per iteration drops below this number.
-#' @param adjustsampleradius Numeric. Add this number of pixels to the radius of white/purple dots for samples on pictures of predictions. Negative values reduce size of dots.
-#' @param threads Numeric. Number of processor threads to use.  Matching this number to the number of cores on your computer speeds up some operations, especially variable jackknifing.
-#' @param lq2lqptthreshold Numeric. Number of samples at which product and threshold features start being used.
-#' @param l2lqthreshold Numeric. Number of samples at which quadratic features start being used.
-#' @param hingethreshold Numeric. Number of samples at which hinge features start being used.
+#' @param convergencethreshold Numeric. Stop training when they drop in log loss per iteration drops below this number.
+#' @param adjustsampleradius Numeric. Add this number of pixels to the radius of white/purple dots for samples on pictures of predictions. Negative values reduce the size of dots.
+#' @param threads Numeric. The number of processor threads to use.  Matching this number to the number of cores on your computer speeds up some operations, especially variable jackknifing.
+#' @param lq2lqptthreshold Numeric. The number of samples at which product and threshold features start being used.
+#' @param l2lqthreshold Numeric. The number of samples at which quadratic features start being used.
+#' @param hingethreshold Numeric. The number of samples at which hinge features start being used.
 #' @param beta_threshold Numeric. Regularization parameter to be applied to all threshold features; negative value enables automatic setting.
 #' @param beta_categorical Numeric. Regularization parameter to be applied to all categorical features; negative value enables automatic setting.
-#' @param beta_lqp Numeric. Regularization parameter to be applied to all linear, quadratic and product features; negative value enables automatic setting.
+#' @param beta_lqp Numeric. Regularization parameter to be applied to all linear, quadratic, and product features; negative value enables automatic setting.
 #' @param beta_hinge Numeric. Regularization parameter to be applied to all hinge features; negative value enables automatic setting.
-#' @param logfile File name to be used for writing debugging information about a run in output directory.
+#' @param logfile Filename to be used for writing debugging information about a run in the output directory.
 #' @param cache Logical If TRUE makes a .mxe cached version of ascii files, for faster access.
-#' @param defaultprevalence Numeric. Default prevalence of the species: probability of presence at ordinary occurrence points. See Elith et al., Diversity and Distributions, 2011 for details.
+#' @param defaultprevalence Numeric. Default prevalence of the species: the probability of presence at ordinary occurrence points. See Elith et al., Diversity and Distributions, 2011 for details.
 #' @param applythresholdrule Apply a threshold rule, generating a binary output grid in addition to the regular prediction grid.  Use the full name of the threshold rule in Maxent's html output as the argument.  For example, 'applyThresholdRule=Fixed cumulative value 1'.
 #' @param togglelayertype Toggle selection of environmental layers whose names begin with this prefix (default: all selected).
 #' @param togglespeciesselected String Toggle selection of species whose names begin with this prefix (default: all selected)
 #' @param togglelayerselected String. Toggle selection of environmental layers whose names begin with this prefix (default: all selected)
 #' @param verbose Logical If TRUE gives a detailed diagnostics for debugging.
-#' @param allowpartialdata Logical If TRUE During model training, allow use of samples that have nodata values for one or more environmental variables..
-#' @param prefixes Logical If TRUE furing model training, allow use of samples that have nodata values for one or more environmental variables.
+#' @param allowpartialdata Logical If TRUE During model training, allow the use of samples that have nodata values for one or more environmental variables..
+#' @param prefixes Logical If TRUE during model training, allow the use of samples that have nodata values for one or more environmental variables.
 #' @param nodata Numeric. Default nodata value.
 #' @details The documentation of the parameters of this function are based on maxent´s help.
-#' For a detail documentation of the parameter that can be passed to maxent go to \url{https://github.com/mrmaxent/Maxent/blob/master/density/parameters.csv}.
+#' For detailed documentation of the parameter that can be passed to maxent go to \url{https://github.com/mrmaxent/Maxent/blob/master/density/parameters.csv}.
 #' @examples
 #' \dontrun{
 #' environmentallayers <- system.file("extdata",
@@ -209,15 +209,20 @@ maxent_call <- function(maxentjar_path,
                           ifelse(!is.null(testsamplesfile),
                                  paste0(" testsamplesfile=",testsamplesfile),""),
                           " outputdirectory=",outputdirectory,
-                          ifelse(is.null(projectionlayers) || !dir.exists(projectionlayers),"",
-                                 paste0(" projectionlayers=",normalizePath(projectionlayers))),
+                          ifelse(is.null(projectionlayers) ||
+                                   !dir.exists(projectionlayers),"",
+                                 paste0(" projectionlayers=",
+                                        normalizePath(projectionlayers))),
                           " ",selected_features,
                           " maximumbackground=", maximumbackground,
-                          ifelse(responsecurves," responsecurves=true"," responsecurves=false"),
+                          ifelse(responsecurves," responsecurves=true",
+                                 " responsecurves=false"),
                           ifelse(pictures," pictures=true"," pictures=false"),
                           ifelse(jackknife," jackknife=true"," jackknife=false"),
-                          ifelse(!outputformat %in% c("raw","cloglog","logistic","cumulative"),
-                                 " outputformat=cloglog", paste0(" outputformat=",outputformat)),
+                          ifelse(!outputformat %in% c("raw","cloglog","logistic",
+                                                      "cumulative"),
+                                 " outputformat=cloglog", paste0(" outputformat=",
+                                                                 outputformat)),
                           ifelse(randomseed," randomseed=true"," randomseed=false"),
                           ifelse(logscale," logscale=true",
                                  " logscale=false"),
@@ -256,44 +261,64 @@ maxent_call <- function(maxentjar_path,
                                                       "bootstrap",
                                                       "subsample"),
                                  paste0(" replicatetype=",
-                                        replicatetype)," replicatetype=crossvalidate"),
-                          ifelse(is.logical(perspeciesresults) && isTRUE(perspeciesresults),
-                                 paste0(" perspeciesresults=","true")," perspeciesresults=false"),
-                          ifelse(is.logical(writebackgroundpredictions) && isTRUE(writebackgroundpredictions),
-                                 paste0(" writebackgroundpredictions=","true")," writebackgroundpredictions=false"),
-                          ifelse(is.logical(responsecurvesexponent) && isTRUE(responsecurvesexponent),
-                                 paste0(" responsecurvesexponent=","true")," responsecurvesexponent=false"),
-                          ifelse(is.logical(addsamplestobackground) && isFALSE(addsamplestobackground),
-                                 paste0(" addsamplestobackground=","false")," addsamplestobackground=true"),
-                          ifelse(is.logical(addallsamplestobackground) && isTRUE(addsamplestobackground),
-                                 paste0(" addallsamplestobackground=","true")," addallsamplestobackground=false"),
+                                        replicatetype),
+                                 " replicatetype=crossvalidate"),
+                          ifelse(is.logical(perspeciesresults) &&
+                                   isTRUE(perspeciesresults),
+                                 paste0(" perspeciesresults=","true"),
+                                 " perspeciesresults=false"),
+                          ifelse(is.logical(writebackgroundpredictions) &&
+                                   isTRUE(writebackgroundpredictions),
+                                 paste0(" writebackgroundpredictions=","true"),
+                                 " writebackgroundpredictions=false"),
+                          ifelse(is.logical(responsecurvesexponent) &&
+                                   isTRUE(responsecurvesexponent),
+                                 paste0(" responsecurvesexponent=","true"),
+                                 " responsecurvesexponent=false"),
+                          ifelse(is.logical(addsamplestobackground) &&
+                                   isFALSE(addsamplestobackground),
+                                 paste0(" addsamplestobackground=","false"),
+                                 " addsamplestobackground=true"),
+                          ifelse(is.logical(addallsamplestobackground) &&
+                                   isTRUE(addsamplestobackground),
+                                 paste0(" addallsamplestobackground=","true"),
+                                 " addallsamplestobackground=false"),
                           ifelse(is.logical(writeplotdata) && isTRUE(writeplotdata),
-                                 paste0(" writeplotdata=","true")," writeplotdata=false"),
+                                 paste0(" writeplotdata=","true"),
+                                 " writeplotdata=false"),
                           ifelse(is.logical(fadebyclamping) && isTRUE(fadebyclamping),
-                                 paste0(" fadebyclamping=","true")," fadebyclamping=false"),
+                                 paste0(" fadebyclamping=","true"),
+                                 " fadebyclamping=false"),
                           ifelse(is.logical(extrapolate) && isTRUE(extrapolate),
-                                 paste0(" extrapolate=","true")," extrapolate=false"),
+                                 paste0(" extrapolate=","true"),
+                                 " extrapolate=false"),
                           ifelse(is.logical(visible) && isTRUE(visible),
                                  paste0(" visible=","true")," visible=false"),
                           ifelse(is.logical(autofeature) && isTRUE(autofeature),
-                                 paste0(" autofeature=","true")," autofeature=false"),
+                                 paste0(" autofeature=","true"),
+                                 " autofeature=false"),
                           ifelse(is.logical(doclamp) && isTRUE(doclamp),
                                  paste0(" doclamp=","true")," doclamp=false"),
                           ifelse(is.logical(outputgrids) && isTRUE(outputgrids),
                                  paste0(" outputgrids=","true")," outputgrids=false"),
                           ifelse(is.logical(plots) && isTRUE(plots),
                                  paste0(" plots=","true")," plots=false"),
-                          ifelse(is.logical(appendtoresultsfile) && isTRUE(appendtoresultsfile),
-                                 paste0(" appendtoresultsfile=","true")," appendtoresultsfile=false"),
+                          ifelse(is.logical(appendtoresultsfile) &&
+                                   isTRUE(appendtoresultsfile),
+                                 paste0(" appendtoresultsfile=","true"),
+                                 " appendtoresultsfile=false"),
                           ifelse(is.numeric(maximumiterations),
                                  paste0(" maximumiterations=",
-                                        maximumiterations)," maximumiterations=500"),
+                                        maximumiterations),
+                                 " maximumiterations=500"),
                           ifelse(is.numeric(convergencethreshold),
                                  paste0(" convergencethreshold=",
-                                        toupper(convergencethreshold))," convergencethreshold=1.0E-5"),
+                                        toupper(convergencethreshold)),
+                                 " convergencethreshold=1.0E-5"),
                           ifelse(is.numeric(adjustsampleradius),
                                  paste0(" adjustsampleradius=",
-                                        adjustsampleradius)," adjustsampleradius=0"),
+                                        adjustsampleradius),
+                                 " adjustsampleradius=0"),
                           ifelse(is.numeric(threads),
                                  paste0(" threads=",
                                         threads)," threads=1"),
@@ -311,7 +336,8 @@ maxent_call <- function(maxentjar_path,
                                         beta_threshold)," beta_threshold=-1.0"),
                           ifelse(beta_categorical < 0,
                                  paste0(" beta_categorical=",
-                                        beta_categorical)," beta_categorical=-1.0"),
+                                        beta_categorical),
+                                 " beta_categorical=-1.0"),
                           ifelse(beta_lqp < 0,
                                  paste0(" beta_lqp=",
                                         beta_lqp)," beta_lqp=-1.0"),
@@ -341,16 +367,21 @@ maxent_call <- function(maxentjar_path,
                           ifelse(is.character(togglelayertype),
                                  paste0(" togglelayertype=",togglelayertype),""),
                           ifelse(is.character(togglespeciesselected),
-                                 paste0(" togglespeciesselected=",togglespeciesselected),""),
+                                 paste0(" togglespeciesselected=",
+                                        togglespeciesselected),""),
                           ifelse(is.character(togglelayerselected),
-                                 paste0(" togglelayerselected=",togglelayerselected),""),
+                                 paste0(" togglelayerselected=",
+                                        togglelayerselected),""),
                           ifelse(is.logical(verbose) && isTRUE(verbose),
                                  paste0(" verbose=","true")," verbose=false"),
-                          ifelse(is.logical(allowpartialdata) && isTRUE(allowpartialdata),
-                                 paste0(" allowpartialdata=","true")," allowpartialdata=false"),
+                          ifelse(is.logical(allowpartialdata) &&
+                                   isTRUE(allowpartialdata),
+                                 paste0(" allowpartialdata=","true"),
+                                 " allowpartialdata=false"),
                           ifelse(is.logical(prefixes) && isTRUE(prefixes),
                                  paste0(" prefixes=","true")," prefixes=false"),
-                          ifelse(!is.null(nodata),paste0(" nodata=",nodata)," nodata=-9999"),
+                          ifelse(!is.null(nodata),paste0(" nodata=",nodata),
+                                 " nodata=-9999"),
                           ifelse(is.logical(autorun) && isTRUE(autorun),
                                  " autorun","")
   )

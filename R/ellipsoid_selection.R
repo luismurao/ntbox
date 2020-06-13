@@ -2,27 +2,29 @@
 #'
 #' @description Performs variable selection for ellipsoid models according to omission rates in the environmental space.
 #' @param env_train A data frame with the environmental training data.
-#' @param env_test A data frame with the environmental testing data. Default is NULL, if given the selection process will show the p-value of a binomial test.
+#' @param env_test A data frame with the environmental testing data. The default is NULL if given the selection process will show the p-value of a binomial test.
 #' @param env_vars A vector with the names of environmental variables to be used in the selection process.
 #' @param nvarstest A vector indicating the number of variables to fit the ellipsoids during model selection. It is allowed to test models with a different number of variables (i.e. nvarstest=c(3,6)).
 #' @param level Proportion of points to be included in the ellipsoids. This parameter is equivalent to the error (E) proposed by Peterson et al. (2008).
 #' @param mve A logical value. If TRUE a minimum volume ellipsoid will be computed using
 #' the function \code{\link[MASS]{cov.rob}} of the \pkg{MASS} package. If False the covariance matrix of the input data will be used.
-#' @param omr_criteria Omission rate criteria. Value of omission rate allowed for the selection process. Default NULL see details.
+#' @param omr_criteria Omission rate criteria. Value of the omission rate allowed for the selection process. Default NULL see details.
 #' @param env_bg Environmental data to compute the approximated prevalence of the model. The data should be a sample of the environmental layers of the calibration area.
-#' @param parallel The computations will be run in parallel. Deafault FALSE
-#' @param proc Logical, if TRUE a partial roc test will be run.
+#' @param parallel The computations will be run in parallel. Default FALSE
+#' @param proc Logical if TRUE a partial roc test will be run.
+#' @param proc_iter Numeric. The total number of iterations for the partial ROC bootstrap.
+#' @param rseed Logical. Whether or not to set a random seed for partial roc bootstrap. Default TRUE.
 #' @param comp_each Number of models to run in each job in the parallel computation. Default 100
 #' @return A data.frame with 5 columns: i) "fitted_vars" the names of variables that were fitted; ii) "om_rate" omission rates of the model; iii) "bg_prevalence" approximated prevalence of the model see details section; iv) The rank value of importance in model selection by omission rate; v) The rank value by prevalence after if the value of omr_criteria is passed.
-#' @details Model selection occurs in environmental space (E-space). For each variable combination the omission rate (omr) in E-space is computed using the function \code{\link[ntbox]{inEllipsoid}}. The results will be ordered by omr and if the user specified the environmental background "env_bg" an estimated prevalence will be computed and the results will be ordered also by "bg_prevalence".
+#' @details Model selection occurs in environmental space (E-space). For each variable combination the omission rate (omr) in E-space is computed using the function \code{\link[ntbox]{inEllipsoid}}. The results will be ordered by omr and if the user-specified the environmental background "env_bg" an estimated prevalence will be computed and the results will be ordered also by "bg_prevalence".
 #'
-#' The number of variables to construct candidate models can be specified by the user in the parameter "nvarstest". Model selection will be run in parallel if the user specified more than one set of combinations and the total number of models to be tested is greater than 500.
-#'
+#' The number of variables to construct candidate models can be specified by the user in the parameter "nvarstest". Model selection will be run in parallel if the user-specified more than one set of combinations and the total number of models to be tested is greater than 500.
 #' If given"omr_criteria" and "bg_prevalence", the results will be shown pondering those models that met the "omr_criteria" by the value of "bg_prevalence".
+#' For more details and examples go to \code{\link[ntbox]{ellipsoid_omr}} help.
 #' @export
 #' @import future
 #' @author Luis Osorio-Olvera <luismurao@gmail.com>
-#' @references Peterson,A.T. et al. (2008) Rethinking receiver operating characteristic analysis applications in ecological niche modeling. Ecol. Modell., 213, 63–72.
+#' @references Peterson, A.T. et al. (2008) Rethinking receiver operating characteristic analysis applications in ecological niche modeling. Ecol. Modell., 213, 63–72.
 #' @examples
 #' \dontrun{
 #' # Bioclimatic layers path
@@ -38,7 +40,7 @@
 #' pgL <- base::split(pg,pg$type)
 #' pg_train <- pgL$train
 #' pg_test <- pgL$test
-# Environmental data for training and testing
+#' # Environmental data for training and testing
 #' pg_etrain <- raster::extract(wc,pg_train[,c("longitude",
 #'                                             "latitude")],
 #'                              df=TRUE)
@@ -103,7 +105,8 @@
 #' }
 
 ellipsoid_selection <- function(env_train,env_test=NULL,env_vars,nvarstest,level=0.95,
-                                mve=TRUE,env_bg=NULL,omr_criteria,parallel=F,comp_each=100,proc=FALSE){
+                                mve=TRUE,env_bg=NULL,omr_criteria,parallel=F,comp_each=100,proc=FALSE,
+                                proc_iter=100,rseed=TRUE){
   n_vars <- length(env_vars)
   ntest <- sapply(nvarstest, function(x) choose(n_vars,x))
   nmodels <- sum(ntest)
@@ -132,7 +135,7 @@ ellipsoid_selection <- function(env_train,env_test=NULL,env_vars,nvarstest,level
         cb <- rbind(cb,na_mat)
       }
       return(cb)
-      })
+    })
     big_vars <- do.call(cbind,cvars)
 
     n_cores <- future::availableCores() -1
@@ -173,7 +176,8 @@ ellipsoid_selection <- function(env_train,env_test=NULL,env_vars,nvarstest,level
                               env_test = env_test,
                               env_bg = env_bg,
                               cf_level = 0.95,
-                              proc = proc)
+                              proc = proc,
+                              proc_iter,rseed=rseed)
           return(r1)
         })
         results_df <- do.call("rbind.data.frame",results_L)
@@ -207,9 +211,10 @@ ellipsoid_selection <- function(env_train,env_test=NULL,env_vars,nvarstest,level
                             env_test = env_test,
                             env_bg = env_bg,
                             cf_level = 0.95,
-                            proc = proc)
+                            proc = proc,
+                            proc_iter,rseed=rseed)
         return(r1)
-        })
+      })
       results_df <- do.call("rbind.data.frame",results_L)
       return(results_df)
     })
@@ -250,7 +255,7 @@ ellipsoid_selection <- function(env_train,env_test=NULL,env_vars,nvarstest,level
     }
     best_r <- rfinal[met_criteriaID_both,]
     if(proc){
-      best_r <- best_r[order(best_r$env_bg_aucratio,
+      best_r <- best_r[order(best_r$env_bg_paucratio,
                              decreasing = TRUE),]
     }
 
@@ -273,20 +278,61 @@ ellipsoid_selection <- function(env_train,env_test=NULL,env_vars,nvarstest,level
 #'
 #' @description Compute the omission rate of ellipspoid models
 #' @param env_data A data frame with the environmental data.
-#' @param env_test A data frame with the environmental testing data. Default is NULL, if given the selection process will show the p-value of a binomial test.
+#' @param env_test A data frame with the environmental testing data. The default is NULL if given the selection process will show the p-value of a binomial test.
 #' @param env_bg Environmental data to compute the approximated prevalence of the model. The data should be a sample of the environmental layers of the calibration area.
 #' @param cf_level Proportion of points to be included in the ellipsoids. This parameter is equivalent to the error (E) proposed by Peterson et al. (2008).
 #' @param mve A logical value. If TRUE a minimum volume ellipsoid will be computed using
 #' the function \code{\link[MASS]{cov.rob}} of the \pkg{MASS} package. If False the covariance matrix of the input data will be used.
-#' @param proc Logical, if TRUE a partial roc test will be run.
+#' @param proc Logical if TRUE a partial roc test will be run.
+#' @param proc_iter Numeric. The total number of iterations for the partial ROC bootstrap.
+#' @param rseed Logical. Whether or not to set a random seed for partial roc bootstrap. Default TRUE.
 #' @return A data.frame with 5 columns: i) "fitted_vars" the names of variables that were fitted; ii) "om_rate" omission rates of the model; iii) "bg_prevalence" approximated prevalence of the model see details section.
 #' @export
-ellipsoid_omr <- function(env_data,env_test=NULL,env_bg,cf_level,mve=TRUE,proc=FALSE){
+#' @examples
+#' \dontrun{
+#' # Bioclimatic layers path
+#' wcpath <- list.files(system.file("extdata/bios",
+#'                                 package = "ntbox"),
+#'                     pattern = ".tif$",full.names = TRUE)
+#' # Bioclimatic layers
+#' wc <- raster::stack(wcpath)
+#' # Occurrence data for the giant hummingbird (Patagona gigas)
+#' pg <- utils::read.csv(system.file("extdata/p_gigas.csv",
+#'                                   package = "ntbox"))
+#' # Split occs in train and test
+#' pgL <- base::split(pg,pg$type)
+#' pg_train <- pgL$train
+#' pg_test <- pgL$test
+#' # Environmental data for training and testing
+#' pg_etrain <- raster::extract(wc,pg_train[,c("longitude",
+#'                                             "latitude")],
+#'                              df=TRUE)
+#' pg_etrain <- pg_etrain[,-1]
+#' pg_etest <- raster::extract(wc,pg_test[,c("longitude",
+#'                                           "latitude")],
+#'                             df=TRUE)
+#' pg_etest <- pg_etest[,-1]
+#'
+#' # Non-correlated variables
+#' env_varsL <- ntbox::correlation_finder(cor(pg_etrain),
+#'                                        threshold = 0.8,
+#'                                        verbose = F)
+#' env_vars <- env_varsL$descriptors
+#' env_bg <- raster::sampleRandom(wc,10000)
+#' ellip_eval <- ellipsoid_omr(env_data=pg_etrain[,c("bio01","bio07","bio12")],
+#'                             env_test=pg_etest[,c("bio01","bio07","bio12")],
+#'                             env_bg = env_bg[,c("bio01","bio07","bio12")],
+#'                             cf_level = 0.97,
+#'                             mve=TRUE,proc=TRUE,
+#'                             proc_iter=100,rseed=TRUE)
+#' print(ellip_eval)
+#' }
+ellipsoid_omr <- function(env_data,env_test=NULL,env_bg,cf_level,mve=TRUE,proc=FALSE,proc_iter=100,rseed=TRUE){
   emd <- try(ntbox::cov_center(data = env_data,
                                mve = mve,
                                level = cf_level,
                                vars = 1:ncol(env_data)),
-                               silent = TRUE)
+             silent = TRUE)
 
   message1 <- attr(emd,"class")== "try-error"
   if(length(message1)>0L)
@@ -312,7 +358,7 @@ ellipsoid_omr <- function(env_data,env_test=NULL,env_bg,cf_level,mve=TRUE,proc=F
     occs_table[[failsID]]
   }
   else{
-   0
+    0
   }
 
   a_train <-  occs_fail
@@ -345,7 +391,7 @@ ellipsoid_omr <- function(env_data,env_test=NULL,env_bg,cf_level,mve=TRUE,proc=F
       occs_table_test[[failsID]]
     }
     else{
-     0
+      0
     }
     a_test <-  occs_fail_test
     omrate_test <- a_test /nrow( in_etest)
@@ -396,12 +442,14 @@ ellipsoid_omr <- function(env_data,env_test=NULL,env_bg,cf_level,mve=TRUE,proc=F
                               pval_bin=p_bin)
       if(proc){
         proc <- ntbox::pROC(suits_bg,test_data = suits_val,
-                            n_iter = 500)
-        pval_proc <- proc$pROC_summary[2]
-        mean_auratio <- proc$pROC_summary[1]
+                            n_iter = proc_iter,rseed = rseed)
+        pval_proc <- proc$pROC_summary[3]
+        mean_aucratio <- proc$pROC_summary[2]
+        mean_auc <- proc$pROC_summary[1]
         d_results <-data.frame( d_results,
                                 pval_proc,
-                                env_bg_aucratio= mean_auratio)
+                                env_bg_paucratio= mean_aucratio,
+                                env_bg_auc = mean_auc)
       }
 
 

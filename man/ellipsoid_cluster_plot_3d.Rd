@@ -2,7 +2,7 @@
 % Please edit documentation in R/ellipsoid_cluster_plot_3d.R
 \name{ellipsoid_cluster_plot_3d}
 \alias{ellipsoid_cluster_plot_3d}
-\title{Function to plot clusters in 3-dimsensions.}
+\title{Function to plot clusters in 3-dimensions.}
 \usage{
 ellipsoid_cluster_plot_3d(
   niche_data,
@@ -46,10 +46,10 @@ the function \code{\link[MASS]{cov.rob}} of the \pkg{MASS} package. If False the
 \item{cex1}{Point size}
 }
 \value{
-Returns a list of the ellipsoid metada for each cluster.
+Returns a list of the ellipsoid metadata for each cluster.
 }
 \description{
-Plot cluster data in 3D by modelling them as an Ellipsoid.
+Plot cluster data in 3D by modeling them as an Ellipsoid.
 }
 \details{
 The output of this function is the same of the \code{\link[ntbox]{cov_center}} function.

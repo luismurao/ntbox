@@ -13,7 +13,7 @@ clean_dup(data, longitude, latitude, threshold = 0)
 
 \item{latitude}{A character vector of the column name of latitude.}
 
-\item{threshold}{A numerc value representig the euclidean distance between coordinates
+\item{threshold}{A numeric value representing the Euclidean distance between coordinates
 to be considered a duplicate.}
 }
 \value{
@@ -42,4 +42,5 @@ ambystoma_tigrinum_clean <- clean_dup(ambystoma_tigrinum,
 dim(ambystoma_tigrinum)
 dim(ambystoma_tigrinum_clean)
 }
+
 }

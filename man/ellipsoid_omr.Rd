@@ -10,13 +10,15 @@ ellipsoid_omr(
   env_bg,
   cf_level,
   mve = TRUE,
-  proc = FALSE
+  proc = FALSE,
+  proc_iter = 100,
+  rseed = TRUE
 )
 }
 \arguments{
 \item{env_data}{A data frame with the environmental data.}
 
-\item{env_test}{A data frame with the environmental testing data. Default is NULL, if given the selection process will show the p-value of a binomial test.}
+\item{env_test}{A data frame with the environmental testing data. The default is NULL if given the selection process will show the p-value of a binomial test.}
 
 \item{env_bg}{Environmental data to compute the approximated prevalence of the model. The data should be a sample of the environmental layers of the calibration area.}
 
@@ -25,11 +27,55 @@ ellipsoid_omr(
 \item{mve}{A logical value. If TRUE a minimum volume ellipsoid will be computed using
 the function \code{\link[MASS]{cov.rob}} of the \pkg{MASS} package. If False the covariance matrix of the input data will be used.}
 
-\item{proc}{Logical, if TRUE a partial roc test will be run.}
+\item{proc}{Logical if TRUE a partial roc test will be run.}
+
+\item{proc_iter}{Numeric. The total number of iterations for the partial ROC bootstrap.}
+
+\item{rseed}{Logical. Whether or not to set a random seed for partial roc bootstrap. Default TRUE.}
 }
 \value{
 A data.frame with 5 columns: i) "fitted_vars" the names of variables that were fitted; ii) "om_rate" omission rates of the model; iii) "bg_prevalence" approximated prevalence of the model see details section.
 }
 \description{
 Compute the omission rate of ellipspoid models
+}
+\examples{
+\dontrun{
+# Bioclimatic layers path
+wcpath <- list.files(system.file("extdata/bios",
+                                package = "ntbox"),
+                    pattern = ".tif$",full.names = TRUE)
+# Bioclimatic layers
+wc <- raster::stack(wcpath)
+# Occurrence data for the giant hummingbird (Patagona gigas)
+pg <- utils::read.csv(system.file("extdata/p_gigas.csv",
+                                  package = "ntbox"))
+# Split occs in train and test
+pgL <- base::split(pg,pg$type)
+pg_train <- pgL$train
+pg_test <- pgL$test
+# Environmental data for training and testing
+pg_etrain <- raster::extract(wc,pg_train[,c("longitude",
+                                            "latitude")],
+                             df=TRUE)
+pg_etrain <- pg_etrain[,-1]
+pg_etest <- raster::extract(wc,pg_test[,c("longitude",
+                                          "latitude")],
+                            df=TRUE)
+pg_etest <- pg_etest[,-1]
+
+# Non-correlated variables
+env_varsL <- ntbox::correlation_finder(cor(pg_etrain),
+                                       threshold = 0.8,
+                                       verbose = F)
+env_vars <- env_varsL$descriptors
+env_bg <- raster::sampleRandom(wc,10000)
+ellip_eval <- ellipsoid_omr(env_data=pg_etrain[,c("bio01","bio07","bio12")],
+                            env_test=pg_etest[,c("bio01","bio07","bio12")],
+                            env_bg = env_bg[,c("bio01","bio07","bio12")],
+                            cf_level = 0.97,
+                            mve=TRUE,proc=TRUE,
+                            proc_iter=100,rseed=TRUE)
+print(ellip_eval)
+}
 }

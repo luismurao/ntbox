@@ -27,7 +27,7 @@ get_chelsa(
 
 \item{rcp}{Representative Concentration Pathway. Posible values are "rcp26","rcp45","rcp85".}
 
-\item{sv_dir}{Path to the directory where the layers will be saved. Default is the working directory of R session.}
+\item{sv_dir}{Path to the directory where the layers will be saved. The default is the working directory of the R session.}
 
 \item{load2r}{Logical. Load layers into R?}
 

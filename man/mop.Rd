@@ -19,7 +19,7 @@ mop(
 
 \item{G_stack}{a RasterStack of variables representing areas or scenarios to which models will be transferred.}
 
-\item{percent}{(numeric) percent of values sampled from te calibration region to calculate the MOP.}
+\item{percent}{(numeric) percent of values sampled from the calibration region to calculate the MOP.}
 
 \item{comp_each}{(numeric) compute distance matrix for a each fixed number of rows (default = 2000).}
 
@@ -42,15 +42,15 @@ mop calculates a Mobility-Oriented Parity
 \details{
 The MOP is calculated following Owens et al.
 (2013; \url{https://doi.org/10.1016/j.ecolmodel.2013.04.011}). This function is a modification
-of the MOP funcion, available at \url{https://github.com/narayanibarve/ENMGadgets}.The value of the comp_each parameter dependes on the RAM memory aviable for the process; the computation can be faster if the user choose a bigger value for this parameter but you have to becarefull on memory use.
+of the MOP function, available at \url{https://github.com/narayanibarve/ENMGadgets}.The value of the comp_each parameter depends on the RAM memory available for the process; the computation can be faster if the user chooses a bigger value for this parameter but you have to be careful on memory use.
 }
 \examples{
 m_stack <- raster::stack(list.files(system.file("extdata",
-                                    package = "ntbox"),
+                                                package = "ntbox"),
                                     pattern = "M_layers.tif$",
                                     full.names = TRUE))
 g_stack <- raster::stack(list.files(system.file("extdata",
-                                    package = "ntbox"),
+                                                package = "ntbox"),
                                     pattern = "G_layers.tif$",
                                     full.names = TRUE))
 

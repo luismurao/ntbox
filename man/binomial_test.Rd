@@ -16,7 +16,7 @@ the model to be evaluated; columns must be: longitude and latitude.}
 A data.frame with 6 columns: (i) npixels_in_pred (numbre of pixeles in the prediction), (ii) npixels_pp (numbre of pixeles predicted as presences), (iii) prop_area_pp (proportional area predicted as presences), (iv) n_success (number of presences correctly predicted as presences), (v) n_fails (number of presences predicted as absences), and (vi) p_value (a value between 0-1 representing statistical significance of the niche model).
 }
 \description{
-binomial_test: significance estimation of a niche model by using the comulative binomial probability of success of predecting correctly an occurrence given the validation data and the proportional area predicted as present in the niche model.
+binomial_test: significance estimation of a niche model by using the cumulative binomial probability of success of predicting correctly an occurrence given the validation data and the proportional area predicted as present in the niche model.
 }
 \details{
 According to Anderson et al,(2003) The test is "employed to determine whether test points fall into regions of predicted presence more often than expected by chance, given the proportion of map pixels predicted present by the model". See

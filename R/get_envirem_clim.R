@@ -1,15 +1,15 @@
 #' get_envirem_clim: Get bioclimatic data from envirem
-#' @description Get bioclimati layers from envirem for present and pass scenarios
-#' @param period Time period. Posible values are: "current" ( 1960 - 1990),"holo" (Mid-Holocene ~ 6000 years ago),"lgm" (Last Glacial Maximum ~ 22000 years ago).
+#' @description Get bioclimatic layers from ENVIREM for present and past scenarios
+#' @param period Period. Possible values are: "current" ( 1960 - 1990),"holo" (Mid-Holocene ~ 6000 years ago),"lgm" (Last Glacial Maximum ~ 22000 years ago).
 #' @param gcm Global circulation model. Posible values: NULL, "ccsm4", "miroc_esm", and, "mpi_esm_p".
 #' @param region Geographic region. Posibles values are: "Africa", "Australia", "Eurasia", "Europe", "global", "NAmerica", "NewWorld", "Pacific", and, "SAmerica".
 #' @param resolution Resolution of layers. Posible values are "10arcmin","5arcmin","2.5arcmin", and, "30arcsec".
-#' @param fmt File format. Posible values are "bil" and "geotiff".
-#' @param sv_dir Path to the directory where the layers will be saved. Default is the working directory of R session.
+#' @param fmt File format. Possible values are "bil" and "geotiff".
+#' @param sv_dir Path to the directory where the layers will be saved. The default is the working directory of the R session.
 #' @param load2r Logical. Load layers into R?
 #' @seealso \code{\link[ntbox]{get_chelsa}}, \code{\link[ntbox]{get_envirem_elev}},\code{\link[ntbox]{get_bio_oracle}}
 #' @details For more details visit \url{https://envirem.github.io/}
-#' @references Title P.O., Bemmels J.B. 2018. ENVIREM: an expanded set of bioclimatic and topographic variables increases flexibility and improves performance of ecological niche modeling. Ecography. 41:291-307.
+#' @references Title P.O., Bemmels J.B. 2018. ENVIREM: an expanded set of bioclimatic and topographic variables increases flexibility and improves the performance of ecological niche modeling. Ecography. 41:291-307.
 #' @export
 #' @examples
 #' \dontrun{
@@ -82,7 +82,10 @@ get_envirem_clim <- function(period,gcm=NULL,region,resolution,fmt,sv_dir=getwd(
     utils::unzip(fname_path,exdir=dirname)
     if(load2r)
       clim_stack <- ntbox::rlayers_ntb(dirname)
-    citation_inf <- "Title P.O., Bemmels J.B. 2018. ENVIREM: an expanded set of bioclimatic and topographic variables increases flexibility and improves performance of ecological niche modeling. Ecography. 41:291-307."
+    citation_inf <- paste("Title P.O., Bemmels J.B. 2018. ENVIREM: an expanded",
+                          "set of bioclimatic and topographic variables",
+                          "increases flexibility and improves performance of",
+                          "ecological niche modeling. Ecography. 41:291-307.")
   }
   else
     warning(paste("No climate data for:",
@@ -91,5 +94,4 @@ get_envirem_clim <- function(period,gcm=NULL,region,resolution,fmt,sv_dir=getwd(
     message(paste("Please cite as:\n",citation_inf))
   return(clim_stack)
 }
-
 
