@@ -1,0 +1,66 @@
+destination: docs
+
+template:
+  params:
+    bootswatch: cerulean
+
+reference:
+  - title: Launch the GUI
+    desc: Graphical User Interface
+    contents:
+    - "run_ntbox"
+  - title: Setting & getting environmental data
+    desc:  Find an appropiate source of E-data and read it in R.
+    contents:
+    - starts_with("get_")
+    - "rlayers_ntb"
+  - title: Geographic data
+    desc: Look for GBIF data (https://www.gbif.org/), curate from spatial duplictes
+        estimate a bias layer.
+    contents:
+    - "searh_gbif_data"
+    - "occs_history"
+    - "clean_dup"
+    - "biaslayer"
+  - title: Niche space (exploration and filtering)
+    contents:
+    - "correlation_finder"
+    - "ellipsoid_cluster_plot_3d"
+    - "inEllipsoid"
+    - "sample_envbg"
+  - title: Ecological Niche Modeling
+    desc: Ellispoid modeling functions and MaxEnt calls
+    contents:
+    - "cov_center"
+    - "ellipsoidfit"
+    - "ellipsoid_selection"
+    - "maxent_call"
+    - "swd_format"
+  - title: SDM performance
+    desc: Model evaluation and thresholding
+    contents:
+    - "bin_model"
+    - "binomial_test"
+    - "confu_mat_optim"
+    - "ellipsoid_omr"
+    - "omission_rate"
+    - "pROC"
+  - title: Extrapolation risk assessment
+    desc: Tools to explore extrapolation risk in ENM
+    contents:
+    - "exdet_univar"
+    - "exdet_multvar"
+    - "mop"
+    - "ntb_mess"
+  - title: GIS tools
+    desc: Transform into Principal Componets you E-layers
+    contents:
+    - "spca"
+  - title: Helper functions
+    desc: Functions that perform calculations inside other functions
+    contents:
+    - "nc"
+    - "plot_out"
+    - "trapozoid_roc"
+
+

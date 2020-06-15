@@ -1,0 +1,97 @@
+---
+title: "Obtaining and cleaning geographic data"
+output: 
+    rmarkdown::html_vignette
+bibliography: library.bib
+vignette: >
+  %\VignetteIndexEntry{gdata_cleaning}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.width = 4,
+  fig.height = 4
+)
+library(dplyr)
+options(rmarkdown.html_vignette.check_title = FALSE)
+```
+
+```{r setup}
+library(ntbox)
+library(dplyr)
+```
+
+
+
+## Geographic data
+
+In this example we will dowonland ocrrence data for *Leopardus wiedii* 
+from the Global Biodiversity Information Facility (https://www.gbif.org) 
+and explore what is the provenance and date of collecting these points. Then
+we will remove sptial duplicates.
+
+
+## Searching the data
+
+```{r gbif, echo=TRUE,eval=T}
+dAll_a <- ntbox::searh_gbif_data(genus = "Leopardus",
+                                 species = "wiedii",
+                                 occlim = 5000,
+                                 leafletplot = TRUE)
+```
+```{r}
+cat("Total number of occurrence data found:",nrow(dAll_a))
+```
+
+## Data curation 
+
+In this example we filter those records starting in 1950.
+
+```{r echo=TRUE, eval=TRUE}
+dAll_b <- ntbox::clean_dup(dAll_a,longitude = "longitude","latitude",
+                           threshold = 0)
+cat("Total number of occurrence data affter cleanining spatial duplicates:",
+    nrow(dAll_b))
+
+dAll_c <- dAll_b %>% dplyr::filter(year>=1950)
+cat("Total number of occurrence data for periods >=1950:",
+    nrow(dAll_c))
+
+```
+
+
+```{r }
+m <- leaflet::leaflet(dAll_c)
+m <- m %>% leaflet::addTiles()
+m <- m %>% leaflet::addCircleMarkers(lng = ~longitude, 
+                                     lat = ~latitude, 
+                                     popup = ~leaflet_info, 
+                                     fillOpacity = 0.25, 
+                                     radius = 7,col="green")
+m
+```
+
+
+Remove wired occurrences. Click on the pop-up to display gbif information (available when the downloaded data comes from `search_gbif` function), the points that are outside the distribution are the one on San Francisco (this comes from a collection; rowID=632), the record on Florida (rowID=508,489), and the ones that in the sea (544,595). 
+
+
+```{r echo=TRUE,eval=TRUE,fig.width=4,fig.height=4}
+# Indixes of the wired data (can change depending the date of the gbif query)
+to_rmIDs <- c(636,493,512,544,595)
+to_rm <- which(dAll_c$ntboxID %in% to_rmIDs)
+dAll <- dAll_c[-to_rm,]
+m <- leaflet::leaflet(dAll)
+m <- m %>% leaflet::addTiles()
+m <- m %>% leaflet::addCircleMarkers(lng = ~longitude, 
+                                     lat = ~latitude, 
+                                     popup = ~leaflet_info, 
+                                     fillOpacity = 0.25, 
+                                     radius = 7,col="green")
+m
+```
+
+

@@ -2,26 +2,42 @@ Package: ntbox
 Type: Package
 Title: From Getting Biodiversity Data to Evaluating Species Distribution Models in a Friendly GUI Environment
 Version: 0.5.1.4
-Date: 2020-06-14
+Date: 2020-06-15
 Authors@R: c(person("Luis", "Osorio-Olvera", 
                      email = "luismurao@gmail.com",
                      role = c("aut", "cre"),
                      comment = c(ORCID = "0000-0003-0701-5398")),
              person("Jorge", "Soberón", 
                      email = "soberon@ku.edu",
-                     role = "aut",
+                     role = "ctb",
                      comment = c(ORCID = "0000-0003-2160-4148")),
-             person("Vijay", "Barve", email = "vijay.barve@gmail.com", 
-                     role = "aut",
-                     comment = c(ORCID = "0000-0002-4852-2567")),
-             person("Narayani", "Barve", 
-                    email = "narayani.ku@gmail.com", 
-                    role = "aut",
-                    comment = c(ORCID = "0000-0002-7893-8774")),
-             person("Manuel", "Falconi", 
+             person("Andres", "Lira-Noriega", 
+                    email = "andres.lira@inecol.mx", 
+                    role = "ctb",
+                    comment = c(ORCID = "0000-0002-3219-0019")),
+            person("Manuel", "Falconi", 
                     email = "mjfalconi@gmail.com", 
-                    role = "aut",
-                    comment = c(ORCID = "0000-0002-4296-7258")))
+                    role = "ctb",
+                    comment = c(ORCID = "0000-0002-4296-7258")),
+            person("Townsend", "Peterson", 
+                    email = "town@ku.edu", 
+                    role = "ctb",
+                    comment = c(ORCID = "0000-0003-0243-2379")),
+            person("Rusby G.", "Contreras-Díaz", 
+                    email = "rusby.contreras.diaz@gmail.com", 
+                    role = "ctb",
+                    comment = c(ORCID = "0000-0002-0569-8984")),
+            person("Enrique", "Martínez-Meyer", 
+                    email = "emm@ib.unam.mx", 
+                    role = "ctb",
+                    comment = c(ORCID = "0000-0003-1184-9264")),
+            person("Vijay", "Barve", email = "vijay.barve@gmail.com", 
+                   role = "ctb",
+                   comment = c(ORCID = "0000-0002-4852-2567")),
+            person("Narayani", "Barve", 
+                   email = "narayani.ku@gmail.com", 
+                   role = "ctb",
+                   comment = c(ORCID = "0000-0002-7893-8774")))
 Description: NicheToolbox is an R package with a friendly Graphical User Interface (GUI)
              developed using shiny framework that aims to facilitate the process of building 
              niche models and estimate the species distributions.

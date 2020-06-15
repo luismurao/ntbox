@@ -1,0 +1,239 @@
+---
+title: "An introduction to ellipsoid model selection"
+output: 
+    rmarkdown::html_vignette
+bibliography: library.bib
+vignette: >
+  %\VignetteIndexEntry{ellipsoid_selection}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+options(rmarkdown.html_vignette.check_title = FALSE)
+
+```
+
+```{r setup}
+library(ntbox)
+```
+
+We demonstrate the use of the model selection protocol implemented in ntbox by using occurrence data for the giant hummingbird (*Patagona gigas*). The occurrence records and the modeling layers are available in the `ntbox` package (if you haven't installed it go to this [link](https://luismurao.github.io/ntbox_installation_notes.html) where you will find the installation notes for each of the operating systems).
+
+
+
+![Fig. 1 *Patagona gigas* taken from [wikimedia](https://upload.wikimedia.org/wikipedia/commons/7/79/Patagona_gigas.jpg)](https://upload.wikimedia.org/wikipedia/commons/7/79/Patagona_gigas.jpg)
+
+## The R packages
+
+Let's load the `R` packages that we are going to use in our session
+
+```{r}
+library(ntbox)
+library(raster)
+library(rgl)
+library(stringr)
+set.seed(111)
+```
+
+
+
+## Loading the occurrence data 
+
+With the following commands, you can load into your `R` session the geographic records
+
+```{r paged.print=TRUE}
+# Occurrence data for the giant hummingbird (Patagona gigas)
+pg <- utils::read.csv(system.file("extdata/p_gigas.csv",
+                                  package = "ntbox"))
+
+head(pg)
+```
+
+
+As you can see in the table there are 4 columns: "species", "longitude" and "latitude" and "type" (with train or test as factors). The data points with the train labels are going to be used for model calibration and the test points will be used for selection.
+
+## Bioclimatic layers
+
+Let's load the environmental information and display it
+
+```{r}
+# Bioclimatic layers path
+wcpath <- list.files(system.file("extdata/bios",
+                                package = "ntbox"),
+                    pattern = ".tif$",full.names = TRUE)
+
+wc <- raster::stack(wcpath)
+
+plot(wc[[1]])
+```
+
+
+The environmental information is for South America and here we will project our niche model ...
+
+## Split occurrence 
+
+Now we split the occurrence data into train and test using the type variable; the choice of the data is normally done using different partition methods, but in our case, the data previously was split using a random partition.
+
+
+```{r}
+# Split occs in train and test
+pgL <- base::split(pg,pg$type)
+pg_train <- pgL$train
+pg_test <- pgL$test
+```
+
+## Extract the environmental information
+
+The following code extracts the environmental information for both train and test data
+
+```{r}
+pg_etrain <- raster::extract(wc,pg_train[,c("longitude",
+                                            "latitude")],
+                             df=TRUE)
+pg_etrain <- pg_etrain[,-1]
+
+head(pg_etrain)
+
+pg_etest <- raster::extract(wc,pg_test[,c("longitude",
+                                          "latitude")],
+                            df=TRUE)
+pg_etest <- pg_etest[,-1]
+
+head(pg_etest)
+```
+
+
+## Non-correlated variables
+
+Select the non-correlated variables using a threshold correlation value of 0.8
+
+```{r}
+env_varsL <- ntbox::correlation_finder(cor(pg_etrain,method = "spearman"),
+                                       threshold = 0.8,
+                                       verbose = F)
+
+env_vars <- env_varsL$descriptors
+print(env_vars )
+```
+
+## Specify the number of variables to fit the model
+
+Now we specify the number of variables to fit the ellipsoid models; in the example, we will fit for 3,5, and 6 dimensions
+
+```{r}
+nvarstest <- c(3,5,6)
+
+```
+
+## The level parameter
+
+This parameter is to specify the proportion of training points that will be used to fit the minimum volume ellipsoid [@VanAelst2009].
+
+```{r}
+# Level
+level <- 0.99
+```
+
+
+## Environmental background to compute the approximated AUC ratio
+
+This background data is just to compute the partial ROC test 
+
+```{r}
+env_bg <- ntbox::sample_envbg(wc,10000)
+```
+
+## Set the omission rate criteria 
+
+For selecting the model we will use an arbitrary value of 6 percent of omission; it is not a rule but accepted omission rates are those bellow 10%. We will ask the function to return the partial ROC value [@Peterson2008]
+
+```{r}
+omr_criteria <- 0.06
+proc <- TRUE
+```
+
+
+## Model calibration and selection protocol
+
+To calibrate the models `ntbox` estimates all combinations ($C^n_k$) of $n$ variables, 
+taken $k$ at a time for each $k= 2,3,\dots, m$, where $m$ is lesser than $n$. 
+It is known that 
+
+$$\displaystyle C^n_k =\frac {n!}{k!(n-k)!}.$$
+
+Now we just need to use the function `ellipsoid_selection` to run the model calibration and selection protocol.
+
+```{r}
+
+e_selct <- ntbox::ellipsoid_selection(env_train = pg_etrain,
+                                      env_test = pg_etest,
+                                      env_vars = env_vars,
+                                      level = level,
+                                      nvarstest = nvarstest,
+                                      env_bg = env_bg,
+                                      omr_criteria= omr_criteria,
+                                      proc = proc)
+
+```
+
+Let's see the first 20 rows of the results
+
+```{r}
+head(e_selct,20)
+```
+
+
+With the following lines of code, I am going to display the model in the first row of the table
+
+```{r eval=FALSE}
+# Best ellipsoid model for "omr_criteria" 
+bestvarcomb <- stringr::str_split(e_selct$fitted_vars,",")[[1]]
+
+# Ellipsoid model (environmental space)
+best_mod <- ntbox::cov_center(pg_etrain[,bestvarcomb],
+                              mve = T,
+                              level = 0.99,
+                              vars = 1:length(bestvarcomb))
+
+
+# Projection model in geographic space
+
+mProj <- ntbox::ellipsoidfit(wc[[bestvarcomb]],
+                             centroid = best_mod$centroid,
+                             covar = best_mod$covariance,
+                             level = 0.99,size = 3)
+raster::plot(mProj$suitRaster)
+points(pg[,c("longitude","latitude")],pch=20,cex=0.5)
+
+```
+
+
+```{r echo=FALSE}
+# Best ellipsoid model for "omr_criteria" 
+bestvarcomb <- stringr::str_split(e_selct$fitted_vars,",")[[1]]
+
+# Ellipsoid model (environmental space)
+best_mod <- ntbox::cov_center(pg_etrain[,bestvarcomb],
+                              mve = T,
+                              level = 0.99,
+                              vars = 1:length(bestvarcomb))
+
+
+# Projection model in geographic space
+
+mProj <- ntbox::ellipsoidfit(wc[[bestvarcomb]],
+                             centroid = best_mod$centroid,
+                             covar = best_mod$covariance,
+                             level = 0.99,size = 3)
+rglwidget()
+raster::plot(mProj$suitRaster)
+points(pg[,c("longitude","latitude")],pch=20,cex=0.5)
+
+```
+
+## References
