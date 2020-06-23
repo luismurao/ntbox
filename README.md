@@ -35,9 +35,13 @@ run_ntbox()
 The package has three vignettes: a complete reference of the [GUI](https://luismurao.github.io/ntbox/articles/gui_reference.html), one for the [ellipsoid calibration and selection](https://luismurao.github.io/ntbox/articles/ellipsoid_selection.html) using R commands and one on how to obtain and clean [GBIF data](https://luismurao.github.io/ntbox/articles/GBIF_data_curation.html)
 
 
-# Reference guide
+# GUI reference guide
 
 Here you can find the reference guide for the Graphical user interface https://luismurao.github.io/ntbox_user_guide.html
+
+# Help pages
+
+Users can fin help for all `ntbox` functions at https://luismurao.github.io/ntbox/
 
 
 # Acknowledgements
