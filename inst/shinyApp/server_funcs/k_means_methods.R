@@ -53,14 +53,51 @@ niche_data_k_means <- eventReactive(input$load_kmeas_vars,{
 # Geographic data
 
 geographic_data <- reactive({
-  if(input$datasetM == "gbif_dat" && !is.null(data_gbif()) && input$kmeans_data_from == "wWorld")
-    return(data_gbif())
-  if(input$datasetM == "updata" && !is.null(data_user_clean()) && input$kmeans_data_from == "wWorld")
-    return(data_user_clean())
-  if(input$datasetM == "gbif_dat" && !is.null(occ_extract_from_mask()) && input$kmeans_data_from == "mLayers")
-    return(data_gbif()[occ_extract_from_mask()$xy_data_index,])
-  if(input$datasetM == "updata"  && !is.null(occ_extract_from_mask()) && input$kmeans_data_from == "mLayers")
-    return(data_user_clean()[occ_extract_from_mask()$xy_data_index,])
+  if(input$datasetM == "gbif_dat" && !is.null(data_gbif()) && input$kmeans_data_from == "wWorld"){
+    geodata <- data_gbif()
+    try({
+      if(!is.null(data_partition()$type)){
+        #print("Error en 1")
+        geodata <- data.frame(geodata,train_test = data_partition()$type)
+
+      }
+    },silent = F)
+    return(geodata)
+  }
+
+  if(input$datasetM == "updata" && !is.null(data_user_clean()) && input$kmeans_data_from == "wWorld"){
+    geodata <- data_user_clean()
+    try({
+      if(!is.null(data_partition()$type)){
+        geodata <- data.frame(geodata,train_test = data_partition()$type)
+        #print("Error en 2")
+      }
+    },silent = F)
+    return(geodata)
+  }
+  if(input$datasetM == "gbif_dat" && !is.null(occ_extract_from_mask()) && input$kmeans_data_from == "mLayers"){
+    geodata <- data_gbif()[-occ_extract_from_mask()$xy_data_index,]
+    try({
+      if(!is.null(data_partition()$type)){
+        print(length(occ_extract_from_mask()$xy_data_index))
+        #print("Error en 3")
+        geodata <- data.frame(geodata,train_test = data_partition()$type)
+
+      }
+    },silent = F)
+
+    return(geodata)
+  }
+
+  if(input$datasetM == "updata"  && !is.null(occ_extract_from_mask()) && input$kmeans_data_from == "mLayers"){
+    geo_data <- data_user_clean()[-occ_extract_from_mask()$xy_data_index,]
+    try({
+      if(!is.null(data_partition()$type)){
+        geodata <- data.frame(geodata,train_test = data_partition()$type)
+        #print("Error en 4")
+      }
+    },silent = F)
+  }
   else
     return(NULL)
 })
@@ -89,6 +126,8 @@ kmeans_df <- reactive({
       geo_dat <- niche_data_xy[,(1:2)]
 
       kmeans_data <- data.frame(geo_dat,cluster = cluster,niche_data)
+
+
       return(kmeans_data)
     }
     if(input$kmeans_data_from == "wWorld"){
@@ -115,7 +154,6 @@ kmeans_df <- reactive({
 
       if(class(emessage)=="try-error")
         return()
-
 
       return(kmeans_data)
 
