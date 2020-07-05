@@ -37,6 +37,7 @@ shinyUI(
                         tabPanel("K-means",ui_kmeans)
              ),
              navbarMenu("ENM",
+                        tabPanel("Ellipsoid selection",ui_eselect),
                         tabPanel("Ellipsoids",ellipsoid_models_c ),
                         tabPanel("Bioclim",bioclim_ui),
                         tabPanel("Model projection",ntb_models)
