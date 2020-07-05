@@ -12,6 +12,7 @@ bioclim_ui <- sidebarLayout(position = "left",
                                             choices = c("All raster extent"="wWorld",
                                                         "Your shapefile of M"="mLayers")),
                                 selectInput(inputId = "biosBioclim","Select the variables",choices = NULL,multiple = TRUE),
+                                uiOutput("brand"),
                                 conditionalPanel("input.trainBio == 'wWorld' && input.selectMBio == 'wWorld'",
                                                  actionButton("run_bioclim_all_all_train",
                                                               label = "Run Bioclim 1")
