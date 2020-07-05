@@ -122,21 +122,21 @@ cat("##### Ellipsoid projection in E")
 plot_function <- system.file("shinyApp/helpers/ellipsoid_3D_plot.R",
                              package = "ntbox")
 source(plot_function)
-
+vars_used <- names(ellipsoid_metadata$centroid)
 if(length(ellipsoid_metadata$centroid) == 3){
   ellipsoid_obj <- ellip_model_all_rast_all_train()
   suits <-ellipsoid_obj$suits[,"suitability"]
-  data <- ellipsoid_obj$suits[,input$biosEllip]
+  data <- ellipsoid_obj$suits[,vars_used]
   covar <- ellipsoid_metadata$covariance
   centroid <- ellipsoid_metadata$centroid
   ellipsoid_plot_3d(suits = suits,
                     data = data,covar = covar,
                     centroid = centroid,
-                    xlab1 = input$biosEllip[1],
-                    ylab1 = input$biosEllip[2])
+                    xlab1 = vars_used[1],
+                    ylab1 = vars_used[2])
   rglwidget()
 } else{
-  multi.hist(occ_extract()$data[,input$biosEllip],
+  multi.hist(occ_extract()$data[,vars_used],
                  dcol= c("blue","red"),dlty=c("dotted", "solid"))
 }
 ```
@@ -197,21 +197,21 @@ cat("##### Ellipsoid projection in E")
 plot_function <- system.file("shinyApp/helpers/ellipsoid_3D_plot.R",
                              package = "ntbox")
 source(plot_function)
-
+vars_used <- names(ellipsoid_metadata$centroid)
 if(length(ellipsoid_metadata$centroid) == 3){
   ellipsoid_obj <- ellip_model_all_rast_m_train()
   suits <-ellipsoid_obj$suits[,"suitability"]
-  data <- ellipsoid_obj$suits[,input$biosEllip]
+  data <- ellipsoid_obj$suits[,vars_used]
   covar <- ellipsoid_metadata$covariance
   centroid <- ellipsoid_metadata$centroid
   ellipsoid_plot_3d(suits = suits,
                     data = data,covar = covar,
                     centroid = centroid,
-                    xlab1 = input$biosEllip[1],
-                    ylab1 = input$biosEllip[2])
+                    xlab1 = vars_used[1],
+                    ylab1 = vars_used[2])
   rglwidget()
 } else{
-  multi.hist(occ_extract()$data[,input$biosEllip],
+  multi.hist(occ_extract()$data[,vars_used],
                  dcol= c("blue","red"),dlty=c("dotted", "solid"))
 }
 ```
@@ -275,21 +275,21 @@ cat("##### Ellipsoid projection in E")
 plot_function <- system.file("shinyApp/helpers/ellipsoid_3D_plot.R",
                              package = "ntbox")
 source(plot_function)
-
+vars_used <- names(ellipsoid_metadata$centroid)
 if(length(ellipsoid_metadata$centroid) == 3){
   ellipsoid_obj <- ellip_model_m_rast_all_train()
   suits <-ellipsoid_obj$suits[,"suitability"]
-  data <- ellipsoid_obj$suits[,input$biosEllip]
+  data <- ellipsoid_obj$suits[,vars_used]
   covar <- ellipsoid_metadata$covariance
   centroid <- ellipsoid_metadata$centroid
   ellipsoid_plot_3d(suits = suits,
                     data = data,covar = covar,
                     centroid = centroid,
-                    xlab1 = input$biosEllip[1],
-                    ylab1 = input$biosEllip[2])
+                    xlab1 = vars_used[1],
+                    ylab1 = vars_used[2])
   rglwidget()
 } else{
-  multi.hist(occ_extract()$data[,input$biosEllip],
+  multi.hist(occ_extract()$data[,vars_used],
                  dcol= c("blue","red"),dlty=c("dotted", "solid"))
 }
 ```
@@ -352,21 +352,21 @@ cat("##### Ellipsoid projection in E")
 plot_function <- system.file("shinyApp/helpers/ellipsoid_3D_plot.R",
                              package = "ntbox")
 source(plot_function)
-
+vars_used <- names(ellipsoid_metadata$centroid)
 if(length(ellipsoid_metadata$centroid) == 3){
   ellipsoid_obj <-ellip_model_m_rast_m_train()
   suits <-ellipsoid_obj$suits[,"suitability"]
-  data <- ellipsoid_obj$suits[,input$biosEllip]
+  data <- ellipsoid_obj$suits[,vars_used]
   covar <- ellipsoid_metadata$covariance
   centroid <- ellipsoid_metadata$centroid
   ellipsoid_plot_3d(suits = suits,
                     data = data,covar = covar,
                     centroid = centroid,
-                    xlab1 = input$biosEllip[1],
-                    ylab1 = input$biosEllip[2])
+                    xlab1 = vars_used[1],
+                    ylab1 = vars_used[2])
   rglwidget()
 } else{
-  multi.hist(occ_extract()$data[,input$biosEllip],
+  multi.hist(occ_extract()$data[,vars_used],
                  dcol= c("blue","red"),dlty=c("dotted", "solid"))
 }
 ```
