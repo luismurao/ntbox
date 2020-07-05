@@ -9,6 +9,9 @@ leafMapDynamic_gis <- reactive({
     leaflet.extras::addDrawToolbar(
       targetGroup='draw',
       editOptions = leaflet.extras::editToolbarOptions(selectedPathOptions = leaflet.extras::selectedPathOptions()))
+  if(!is.null(gtoolsPolygonU()) && input$up_polygon){
+    map <- map %>% addPolygons(data=gtoolsPolygonU(),col="darkgreen")
+  }
   return(map)
 })
 
@@ -255,9 +258,13 @@ output$pca_plot <- renderPlot({
 
 #})
 
-gtoolsPolygon <- reactive( {
+
+
+
+
+gtoolsPolygonGUI <- reactive( {
   l_featuers <- input$dyMap_gis_draw_all_features
-  if(!is.null(l_featuers)){
+  if(!is.null(l_featuers) && isFALSE(input$up_polygon)){
     ntb_polygons <- ldraw2sp(leaflet_draw = l_featuers)
     if(!is.character(ntb_polygons))
       ntb_polygons$area_sqkm <- raster::area(ntb_polygons) / 1000000
@@ -266,7 +273,28 @@ gtoolsPolygon <- reactive( {
 
 })
 
+volumes <- getVolumes()
 
+gtoolsPolygonU <- reactive({
+  if(input$up_polygon && !is.null(is.null(input$polygis_user))){
+    shinyFileChoose(input, "polygis_user", roots = volumes, session = session)
+    file_selected<-parseFilePaths(volumes, input$polygis_user)
+    a <- try({
+      ntb_polygons <- maptools::readShapePoly(file_selected$datapath)
+      return(ntb_polygons)
+    },silent = TRUE)
+    return()
+  }
+})
+
+gtoolsPolygon <- reactive({
+  if(input$up_polygon && !is.null(gtoolsPolygonU())){
+    return(gtoolsPolygonU())
+  }
+  if(isFALSE(input$up_polygon) && !is.null(gtoolsPolygonGUI())){
+    return(gtoolsPolygonGUI())
+  }
+})
 
 # Read polygons
 
@@ -284,6 +312,7 @@ gtoolsPolygon <- reactive( {
 
 output$coords_gis_polygon <- renderPrint({
   if(!is.null(gtoolsPolygon())){
+    #print(input$polygis_user$datapath)
     print(gtoolsPolygon())
   }
 })
@@ -357,14 +386,19 @@ mask_layers_proj <- reactive({
 
 observeEvent(input$save_gtoolspoly,{
   # Save polygon
-  if(class(gtoolsPolygon()) =="SpatialPolygonsDataFrame" && !is.null(workflowDir()) && nchar(workflowDir()) > 0L){
+  if(class(gtoolsPolygon()) =="SpatialPolygonsDataFrame" &&
+     !is.null(workflowDir()) && nchar(workflowDir()) > 0L){
+
     file_dir <- file.path(workflowDir(),"ntb_gistools_polygon")
     if(!dir.exists(file_dir))
       dir.create(file_dir)
     poly_name <- paste0("polygon_sv_",
                         format(Sys.time(),
                                "%y_%d_%m"))
-    writeOGR(gtoolsPolygon(), file_dir, poly_name, driver="ESRI Shapefile",overwrite_layer = T)
+    try({
+      writeOGR(gtoolsPolygon(), file_dir, poly_name,
+               driver="ESRI Shapefile",overwrite_layer = T)
+    },silent = TRUE)
 
   }
 })
