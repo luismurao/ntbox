@@ -13,16 +13,38 @@ ellipsoid_models_c <- sidebarLayout(position = "left",
                                                   "Select a region to project
                                                   the ellipsoid",
                                                   choices = NULL),
-                                      selectInput(inputId = "biosEllip",
-                                                  "Select the variables",
-                                                  choices = NULL,
-                                                  multiple = TRUE),
+
+
+                                      uiOutput("erand"),
+
+
+                                      #conditionalPanel("input.tableM == true",
+                                      #                 actionButton("importM","Import")
+                                      #                 ),
+                                      #conditionalPanel("input.tableW == true",
+                                      #                 actionButton("importW","Import")
+                                      #),
+
+                                      conditionalPanel("input.selectShape == 'wWorld'",
+                                                       selectInput(inputId = "biosEllipW",
+                                                                   "Select the variables",
+                                                                   choices = NULL,
+                                                                   multiple = TRUE)
+
+                                                       ),
+                                      conditionalPanel("input.selectShape == 'mLayers'",
+                                                       selectInput(inputId = "biosEllipM",
+                                                                   "Select the variables",
+                                                                   choices = NULL,
+                                                                   multiple = TRUE)
+
+                                      ),
+
                                       numericInput("prop_points",
                                                    "Proportion of niche points
                                                    inside the ellipsoid",
                                                    value = 0.95,
                                                    min = 0.5,max=0.99),
-
 
                                       h5("Run your model"),
                                       conditionalPanel("input.selectM ==
@@ -70,5 +92,9 @@ ellipsoid_models_c <- sidebarLayout(position = "left",
 
                                     ),
                                     mainPanel(
+                                      conditionalPanel("input.selectShape == 'wWorld'",
+                                                       DT::dataTableOutput("showStableW")),
+                                      conditionalPanel("input.selectShape == 'mLayers'",
+                                                       DT::dataTableOutput("showStableM")),
                                       uiOutput("ellip_models_plots")
                                     ))
