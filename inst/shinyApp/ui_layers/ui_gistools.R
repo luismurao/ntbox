@@ -19,6 +19,15 @@ gistools <- div(class="outer",
                                 br(),
                                 p("In this section you can perform some basic GIS operations on your Niche layers."),
                                 busyIndicator("Computation In progress",wait = 0),
+                                checkboxInput("up_polygon","Upload your polygon",value = FALSE),
+
+                                conditionalPanel("input.up_polygon==true",
+                                                 shinyFilesButton("polygis_user", "Choose a shp file" ,
+                                                                  title = "Please select a shapefile:",
+                                                                  multiple = FALSE,
+                                                                  buttonType = "default",
+                                                                  class = NULL)
+                                                 ),
 
                                 #HTML('
                                 #     <ul style="list-style-type:square">
