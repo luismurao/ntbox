@@ -64,7 +64,7 @@ occ_extract_from_mask <- eventReactive(input$run_extract,{
 
     data_env <- data.frame(raster::extract(define_M_raster(),
                                            data_to_extract()))
-    data_env_xy <- cbind( data_to_extract(),data_env)
+    data_env_xy <- data.frame( data_to_extract(),data_env)
     data_env_xy <- na.omit(data_env_xy)
     data_env <- data_env_xy[,-(1:2)]
     xy_data <-data_env_xy[ ,1:2]
@@ -82,7 +82,7 @@ occ_extract_from_mask <- eventReactive(input$run_extract,{
     #  data_env_xy  <- data.frame(xy_data,data_env)
     #  data_env <- data_env_xy[,-c(1,2)]
     #}
-    print(data_env_xy)
+    #print(data_env_xy)
 
     return(list(data=data_env,
                 xy_data=xy_data,
@@ -135,8 +135,31 @@ data_extraction <- reactive({
 })
 
 
+data_partition <- reactive({
+  if(!is.null(data_extraction())){
+    if(input$extracted_area == "all_area"){
+      db <- data.frame(occ_extract()$xy_data,data_extraction())
+    }
+    if(input$extracted_area == "polygon_of_M"){
+      db <- data.frame(occ_extract_from_mask()$xy_data,data_extraction())
+    }
+    if(input$rpartition){
+
+      rprop <- as.numeric(input$rtestprop)
+      ndata <- nrow(data_extraction())
+      ntrain <- ceiling(ndata*rprop)
+      trainID <- sample(ndata,size = ntrain)
+      db$type <- "test"
+      db$type[trainID] <- "train"
+    }
+    #print(db)
+    return(db)
+  }
+})
+
 
 output$dataM <- renderDataTable({
+  #if(!is.null(data_partition())) print(data_partition())
   if(is.null(rasterLayers())) {
     message <- "Load niche layers in AppSettings section"
     data_niche <- data.frame(No_Data = message)
@@ -224,9 +247,9 @@ options = list(aLengthMenu = c(5, 10, 25,
 output$downloadExtraction <- downloadHandler(
   filename = function() return(paste0(input$genus,"_",input$species,"niche_data.csv")),
   content = function(file) {
-    if(!is.null(data_extraction())){
+    if(!is.null(data_partition())){
       ## Leyendo los datos de la especie e escriendolos en un .csv
-      write.csv(data_extraction(),file,row.names = FALSE)
+      write.csv(data_partition(),file,row.names = FALSE)
     }
   }
 )
