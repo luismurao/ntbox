@@ -15,6 +15,7 @@ source("server_funcs/binary_map_methods.R",local =T)
 source("server_funcs/bin_test_methods.R",local =T)
 source("server_funcs/extrapolation_methods.R",local=T)
 source("server_funcs/gistools_methods.R",local =T)
+source("server_funcs/ellipsoid_selection_methods.R",local =T)
 source("helpers/ldraw2sp.R",local = TRUE)
 
 #volumes <- c(path.expand('~'))
@@ -908,15 +909,22 @@ observeEvent(input$saveState, {
 
     if(!is.null(mve_obj_all()) || !is.null(mve_obj_m())){
 
-      rmarkdown::render(input = enm_report_path,
-                        output_format = html_document(pandoc_args = c("+RTS",
-                                                                      "-K64m",
-                                                                      "-RTS"),
-                                                      self_contained = FALSE,
-                                                      highlight="haddock",
-                                                      toc = TRUE,
-                                                      theme = "readable"),
-                        output_file = enm_report_save)
+      try({
+
+        rmarkdown::render(input = enm_report_path,
+                          output_format = html_document(pandoc_args = c("+RTS",
+                                                                        "-K64m",
+                                                                        "-RTS"),
+                                                        self_contained = FALSE,
+                                                        highlight="haddock",
+                                                        toc = TRUE,
+                                                        theme = "readable"),
+                          output_file = enm_report_save)
+
+
+      },silent = T)
+
+
 
       #model_name <- paste0()
       #raster::writeRaster(ellipsoid_obj$suitRaster,)
