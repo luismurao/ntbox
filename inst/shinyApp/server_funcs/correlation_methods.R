@@ -17,14 +17,16 @@ corr_table <- reactive({
     if(!is.null(occ_extract()) && input$cor_data_from == "mWorld"){
       niche_data <- occ_extract()$data
       cor_table <- cor(niche_data,
-                       use = "pairwise.complete.obs")
+                       use = "pairwise.complete.obs",
+                       method = input$cor_method)
       return(cor_table)
     }
 
     if(!is.null(occ_extract_from_mask()) && input$cor_data_from == "mLayers"){
       niche_data <- occ_extract_from_mask()$data
       cor_table <- cor(niche_data,
-                       use = "pairwise.complete.obs")
+                       use = "pairwise.complete.obs",
+                       method = input$cor_method)
       return(cor_table)
     }
 
