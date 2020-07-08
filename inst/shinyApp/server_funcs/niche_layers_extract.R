@@ -60,11 +60,19 @@ data_to_extract <- reactive({
 
 occ_extract_from_mask <- eventReactive(input$run_extract,{
 
-  if(!is.null(define_M_raster()) && !is.null(data_to_extract())){
+  if(!is.null(define_M_raster()) && !is.null(data_poly())){
+
+    if(input$datasetM == "gbif_dat" && !is.null(data_gbif())){
+      d1 <- data_poly()[,c(input$xLongitudeGBIF,input$yLatitudeGBIF)]
+    }
+    if(input$datasetM == "updata" && !is.null(data_user_clean())){
+      d1 <- data_poly()[,c(input$xLongitudeUser,input$yLatitudeUser)]
+    }
+
 
     data_env <- data.frame(raster::extract(define_M_raster(),
-                                           data_to_extract()))
-    data_env_xy <- data.frame( data_to_extract(),data_env)
+                                           d1))
+    data_env_xy <- data.frame( d1,data_env)
     data_env_xy <- na.omit(data_env_xy)
     data_env <- data_env_xy[,-(1:2)]
     xy_data <-data_env_xy[ ,1:2]
@@ -96,18 +104,27 @@ occ_extract_from_mask <- eventReactive(input$run_extract,{
 
 occ_extract <- eventReactive(input$run_extract,{
   if(!is.null(data_to_extract()) && !is.null(rasterLayers())){
+
+    if(input$datasetM == "updata" && !is.null(data_user_clean())){
+      d1 <- data_user_clean()[,c(input$xLongitudeUser,input$yLatitudeUser)]
+    }
+
+    if(input$datasetM == "gbif_dat" && !is.null(data_gbif())){
+      d1 <- data_gbif()[,c(input$xLongitudeGBIF,input$yLatitudeGBIF)]
+    }
+
     data_env <- data.frame(raster::extract(rasterLayers(),
-                                             data_to_extract()))
+                                             d1))
     data_env <- na.omit(data_env)
     xy_data_index <- attr(data_env,"na.action")
 
     if(length(xy_data_index)>0L){
-      xy_data <- data_to_extract()[-xy_data_index,]
+      xy_data <- d1[-xy_data_index,]
       data_env_xy  <- data.frame(data_env, xy_data)
 
     }
     else{
-      data_env_xy  <- data.frame(data_to_extract(),data_env)
+      data_env_xy  <- data.frame(d1,data_env)
       data_env_xy <- na.omit(data_env_xy)
       data_env <- data_env_xy[,-c(1,2)]
       xy_data <- data_env_xy[,c(1,2)]

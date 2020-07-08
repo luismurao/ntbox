@@ -421,28 +421,101 @@ leaf_bio_m_m_train <- reactive({
 
 to_plot_model <- reactive({
   if(input$proj_model1 == "Ellipsoid_all_extent_shape_W"){
-    return(leaf_ellip_all_all_train())
+
+    map <- leaf_ellip_all_all_train()
+    longitude <- occ_extract()$xy_data[,1]
+    latitude <-  occ_extract()$xy_data[,2]
+    if(input$showOccs){
+      map <- map %>% leaflet::addCircleMarkers(lng = longitude,
+                                               lat = latitude,
+                                               color = "red",
+                                               opacity = 0.25)
+    }
+    return(map)
   }
   else if(input$proj_model1 == "Ellipsoid_all_extent_shape_M"){
-    return(leaf_ellip_all_m_train())
+    map <- leaf_ellip_all_m_train()
+    longitude <- occ_extract_from_mask()$xy_data[,1]
+    latitude <-  occ_extract_from_mask()$xy_data[,2]
+    if(input$showOccs){
+      map <- map %>% leaflet::addCircleMarkers(lng = longitude,
+                                               lat = latitude,
+                                               color = "red",
+                                               opacity = 0.25)
+    }
+    return(map)
   }
   else if(input$proj_model1 == "Ellipsoid_m_extent_shape_W"){
-    return(leaf_ellip_m_all_train())
+    map <- leaf_ellip_m_all_train()
+    longitude <- occ_extract()$xy_data[,1]
+    latitude <-  occ_extract()$xy_data[,2]
+    if(input$showOccs){
+      map <- map %>% leaflet::addCircleMarkers(lng = longitude,
+                                               lat = latitude,
+                                               color = "red",
+                                               opacity = 0.25)
+    }
+    return(map)
   }
   else if(input$proj_model1 == "Ellipsoid_m_extent_shape_M"){
-    return(leaf_ellip_m_m_train())
+    map <- leaf_ellip_m_m_train()
+    longitude <- occ_extract_from_mask()$xy_data[,1]
+    latitude <-  occ_extract_from_mask()$xy_data[,2]
+    if(input$showOccs){
+      map <- map %>% leaflet::addCircleMarkers(lng = longitude,
+                                               lat = latitude,
+                                               color = "red",
+                                               opacity = 0.25)
+    }
+    return(map)
   }
   else if(input$proj_model1 == "Bioclim_all_extent_shape_W"){
-    return(leaf_bio_all_all_train())
+    map <- leaf_bio_all_all_train()
+    longitude <- occ_extract()$xy_data[,1]
+    latitude <-  occ_extract()$xy_data[,2]
+    if(input$showOccs){
+      map <- map %>% leaflet::addCircleMarkers(lng = longitude,
+                                               lat = latitude,
+                                               color = "red",
+                                               opacity = 0.25)
+    }
+    return(map)
   }
   else if(input$proj_model1 == "Bioclim_all_extent_shape_M"){
-    return(leaf_bio_all_m_train())
+    map <- leaf_bio_all_m_train()
+    longitude <- occ_extract_from_mask()$xy_data[,1]
+    latitude <-  occ_extract_from_mask()$xy_data[,2]
+    if(input$showOccs){
+      map <- map %>% leaflet::addCircleMarkers(lng = longitude,
+                                               lat = latitude,
+                                               color = "red",
+                                               opacity = 0.25)
+    }
+    return(map)
   }
   else if(input$proj_model1 == "Bioclim_m_extent_shape_W"){
-    return(leaf_bio_m_all_train())
+    map <- leaf_bio_m_all_train()
+    longitude <- occ_extract()$xy_data[,1]
+    latitude <-  occ_extract()$xy_data[,2]
+    if(input$showOccs){
+      map <- map %>% leaflet::addCircleMarkers(lng = longitude,
+                                               lat = latitude,
+                                               color = "red",
+                                               opacity = 0.25)
+    }
+    return(map)
   }
   else if(input$proj_model1 == "Bioclim_m_extent_shape_M"){
-    return(leaf_bio_m_m_train())
+    map <- leaf_bio_m_m_train()
+    longitude <- occ_extract_from_mask()$xy_data[,1]
+    latitude <-  occ_extract_from_mask()$xy_data[,2]
+    if(input$showOccs){
+      map <- map %>% leaflet::addCircleMarkers(lng = longitude,
+                                               lat = latitude,
+                                               color = "red",
+                                               opacity = 0.25)
+    }
+    return(map)
   }
 
   else{
