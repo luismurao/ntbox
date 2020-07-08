@@ -19,7 +19,8 @@ ntb_models <-  div(class="outer",
                                  h4("ENModels projections\n in G"),
                                  busyIndicator("Computation In progress",wait = 0),
 
-                                 selectInput("proj_model1",label = "Select model",choices = NULL)
+                                 selectInput("proj_model1",label = "Select model",choices = NULL),
+                                 checkboxInput("showOccs",label = "Show occurrences",value = T)
                                  #uiOutput("showMapGo")
 
                    )
