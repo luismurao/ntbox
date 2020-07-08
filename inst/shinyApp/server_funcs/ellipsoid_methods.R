@@ -104,14 +104,14 @@ vars_selectedM <- reactive({
 
 observe({
   if(input$selectShape == 'wWorld' && !isFALSE(vars_selectedW())){
-    print(vars_selectedW())
+    #print(vars_selectedW())
     var_suggest <- vars_selectedW()
     updateSelectInput(session,"biosEllipW",
                       choices = names(data_extraction()),
                       selected = var_suggest)
   }
   if(input$selectShape == 'mLayers'  && !isFALSE(vars_selectedM())){
-    print(vars_selectedM())
+    #print(vars_selectedM())
     var_suggest <- vars_selectedM()
     updateSelectInput(session,"biosEllipM",
                       choices = names(data_extraction()),
@@ -244,7 +244,10 @@ ellip_model_all_rast_m_train <- eventReactive(input$selectBios_all_m_train,{
 
 # Plot the model in Enverionmental Space (All raster area)
 observe({
-  print(names(ellip_model_all_rast_all_train()$suits))
+  if(!is.null(ellip_model_all_rast_all_train()$suits)){
+    print(names(ellip_model_all_rast_all_train()$suits))
+  }
+
 })
 
 plot_ellipsoid_all_all_train <- eventReactive(input$selectBios_all_all_train,{

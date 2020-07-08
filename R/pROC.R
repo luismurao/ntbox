@@ -80,12 +80,12 @@ pROC <- function(continuous_mod,test_data,
                           "count")
   classpixels$value <- as.numeric(classpixels$value)
   classpixels <- data.frame(stats::na.omit(classpixels))
-
+  value <- count <- totpixperclass <- NULL
   classpixels <- classpixels %>%
-    dplyr::mutate_(value = ~rev(value),
-                   count = ~rev(count),
-                   totpixperclass = ~cumsum(count),
-                   percentpixels = ~totpixperclass/sum(count)) %>%
+    dplyr::mutate(value  = rev(value),
+                   count = rev(count),
+                   totpixperclass = cumsum(count),
+                   percentpixels = totpixperclass/sum(count)) %>%
     dplyr::arrange(value)
 
   #if(nrow(classpixels)>1500){
@@ -163,13 +163,14 @@ pROC <- function(continuous_mod,test_data,
     for (i in 1:length(n_runs)) {
       x <- as.character(i)
       roc_env[[x]] %<-% {
+        library(Rcpp)
         x1 <- 1:n_runs[i]
         auc_matrix1 <- x1 %>%
           purrr::map_df(~calc_aucDF(big_classpixels,
                                     fractional_area,
                                     test_value,
                                     n_data, n_samp,
-                                    error_sens,rseed=i))
+                                    error_sens,rseed=NULL))
       }
     }
     partial_AUC <- as.list(roc_env)

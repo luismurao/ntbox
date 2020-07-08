@@ -161,9 +161,11 @@ ellipsoid_selection <- function(env_train,env_test=NULL,env_vars,nvarstest,level
       x <- as.numeric(paso)
       #fname <- file.path(dir1,paste0("eselection_",x,".txt"))
       #if(x>n_cores) core <- 1
+
       cat("Doing calibration from model ",kkk[x],"to ",kkk[x + 1] - 1,
           "in process ",x,"\n\n")
       model_select[[paso]] %<-% {
+        library(Rcpp)
         seq_model <- kkk[x]:(kkk[x + 1] - 1)
         combs_v <- as.matrix(big_vars[,seq_model])
 

@@ -1,8 +1,8 @@
 Package: ntbox
 Type: Package
 Title: From Getting Biodiversity Data to Evaluating Species Distribution Models in a Friendly GUI Environment
-Version: 0.6.0.0
-Date: 2020-07-05
+Version: 0.6.0.1
+Date: 2020-07-07
 Authors@R: c(person("Luis", "Osorio-Olvera", 
                      email = "luismurao@gmail.com",
                      role = c("aut", "cre"),
@@ -104,4 +104,4 @@ Roxygen: list(markdown = TRUE)
 LinkingTo: Rcpp
 Suggests: animation (>= 2.5)
 VignetteBuilder: knitr
-RoxygenNote: 7.1.0
+RoxygenNote: 7.1.1
