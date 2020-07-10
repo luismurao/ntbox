@@ -59,43 +59,32 @@ data_to_extract <- reactive({
 
 
 occ_extract_from_mask <- eventReactive(input$run_extract,{
+  print(input$run_extract)
+  if(input$extracted_area == "polygon_of_M"){
+    if(!is.null(define_M_raster())){
+      if(input$datasetM == "gbif_dat" && !is.null(data_gbif())){
+        d1 <- data_gbif()[,c(input$xLongitudeGBIF,input$yLatitudeGBIF)]
+      }
+      if(input$datasetM == "updata" && !is.null(data_user_clean())){
+        d1 <- data_user_clean()[,c(input$xLongitudeUser,input$yLatitudeUser)]
+      }
 
-  if(!is.null(define_M_raster()) && !is.null(data_poly())){
 
-    if(input$datasetM == "gbif_dat" && !is.null(data_gbif())){
-      d1 <- data_poly()[,c(input$xLongitudeGBIF,input$yLatitudeGBIF)]
+      data_env <- data.frame(raster::extract(define_M_raster(),
+                                             d1))
+      data_env_xy <- data.frame( d1,data_env)
+      data_env_xy <- na.omit(data_env_xy)
+      data_env <- data_env_xy[,-(1:2)]
+      xy_data <-data_env_xy[ ,1:2]
+      xy_data_index <- attr(data_env_xy,"na.action")
+
+
+      return(list(data=data_env,
+                  xy_data=xy_data,
+                  xy_data_index=xy_data_index,
+                  data_env_xy=data_env_xy))
     }
-    if(input$datasetM == "updata" && !is.null(data_user_clean())){
-      d1 <- data_poly()[,c(input$xLongitudeUser,input$yLatitudeUser)]
-    }
-
-
-    data_env <- data.frame(raster::extract(define_M_raster(),
-                                           d1))
-    data_env_xy <- data.frame( d1,data_env)
-    data_env_xy <- na.omit(data_env_xy)
-    data_env <- data_env_xy[,-(1:2)]
-    xy_data <-data_env_xy[ ,1:2]
-    xy_data_index <- attr(data_env_xy,"na.action")
-
-
-    #if(length(xy_data_index)>0L){
-    #  print(xy_data_index )
-    #  xy_data <-data_env_xy[xy_data_index ,1:2]
-    #  data_env_xy  <- data.frame(xy_data,data_env[data_env_xy,])
-
-    #}
-    #else{
-    #  xy_data <-data_env_xy[ ,1:2]
-    #  data_env_xy  <- data.frame(xy_data,data_env)
-    #  data_env <- data_env_xy[,-c(1,2)]
-    #}
-    #print(data_env_xy)
-
-    return(list(data=data_env,
-                xy_data=xy_data,
-                xy_data_index=xy_data_index,
-                data_env_xy=data_env_xy))
+    return()
   }
   else
     return(NULL)
