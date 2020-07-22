@@ -43,6 +43,15 @@ Here you can find the reference guide for the Graphical user interface https://l
 
 Users can fin help for all `ntbox` functions at https://luismurao.github.io/ntbox/
 
+# References
+
+Please cite as
+
+Osorio‐Olvera, L., Lira‐Noriega, A., Soberón, J., Townsend Peterson, A., Falconi, M., Contreras‐Díaz, R.G., Martínez‐Meyer, E., Barve, V. and Barve, N. (2020), ntbox: an R package with graphical user interface for modeling and evaluating multidimensional ecological niches. Methods Ecol Evol. Accepted Author Manuscript. doi:10.1111/2041-210X.13452
+
+The paper of the application is accesible from
+
+https://besjournals.onlinelibrary.wiley.com/doi/10.1111/2041-210X.13452
 
 # Acknowledgements
 
