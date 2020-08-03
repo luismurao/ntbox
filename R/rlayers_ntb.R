@@ -43,8 +43,9 @@ rlayers_ntb <- function(layers_path){
 
   if(class(emess) != "try-error"){
   warning(paste("Raster Layers in\n",
-                layers_path,"\n Some layer(s) have non-significally different",
-                  "resolution\n"))
+                layers_path,"\n Some layer(s) have a resolution that is",
+                  "not significantly different\n"))
+    print(resol)
     return(raster_stack)
   }
   else{
