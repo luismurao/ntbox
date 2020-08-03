@@ -14,10 +14,12 @@
 
 rlayers_ntb <- function(layers_path){
   # Regular expression to cheack for rasters layer with different formats
-  ras_formats <- "(*.asc$)|(*.bil$)|(*.sdat$)|(*.rst$)|(*.nc$)|(*.tif$)|(*.envi$)|(*.img$)"
-  layers_paths <- list.files(layers_path,
-                             pattern = ras_formats,
-                             full.names = TRUE)
+  ras_formats <- "(.asc$)|(.bil$)|(.sdat$)|(.rst$)|(.nc$)|(.tif$)|(.envi$)|(.img$)"
+
+  pos_ids <- which(stringr::str_detect(string = layers_path,
+                                 pattern = ras_formats))
+
+  layers_paths <- layers_path[pos_ids]
   # Read raster layers
   layers_list <- lapply(layers_paths, raster::raster)
   # Check resolution and extent
