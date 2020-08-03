@@ -14,10 +14,10 @@
 
 rlayers_ntb <- function(layers_path){
   # Regular expression to cheack for rasters layer with different formats
-  ras_formats <- "(*.asc$)|(*.bil$)|(*.sdat$)|(*.rst$)|(*.nc$)|(*.tif$)|(*.envi$)|(*.img$)"
+  ras_formats <- "(.asc$)|(.bil$)|(.sdat$)|(.rst$)|(.nc$)|(.tif$)|(.envi$)|(.img$)"
   layers_paths <- list.files(layers_path,
                              pattern = ras_formats,
-                             full.names = TRUE)
+                             full.names = T)
   # Read raster layers
   layers_list <- lapply(layers_paths, raster::raster)
   # Check resolution and extent
@@ -37,6 +37,16 @@ rlayers_ntb <- function(layers_path){
     return(raster_stack)
   }
 
+  emess <- try({
+    raster_stack <- raster::stack(c(layers_paths))
+  },silent = TRUE)
+
+  if(class(emess) != "try-error"){
+  warning(paste("Raster Layers in\n",
+                layers_path,"\n Some layer(s) have non-significally different",
+                  "resolution\n"))
+    return(raster_stack)
+  }
   else{
     warning(paste("Raster Layers in\n",
                   layers_path,"\nhave to have the same extent and resolution"))
