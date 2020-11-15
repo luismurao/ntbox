@@ -14,6 +14,9 @@
 
 Complete installation guide for Windows, Linux, and MacOS users https://luismurao.github.io/ntbox_installation_notes.html
 
+Installation notes in Spanish due to Rusby G. Contreras-Díaz
+https://luismurao.github.io/Instalacion_ntbox.html
+
 
 ```r
 if (!require('devtools')) install.packages('devtools')
