@@ -46,6 +46,8 @@ searh_gbif_data <- function(genus,species,occlim=10000,
 
     # GBIF data
     data_gbif <- data.frame(df_list$gbif$data[[1]])
+    if(nrow(data_gbif)==0L)
+      return(NULL)
     # Remove NA data from longitude
     data_gbif <- data_gbif[!is.na(data_gbif$longitude),]
     # Remove NA data from latitude
