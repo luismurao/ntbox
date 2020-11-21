@@ -185,8 +185,10 @@ leaf_ellip_all_all_train <- reactive({
 
   map <- leaflet() %>%
     addTiles(
-      urlTemplate = "//{s}.tiles.mapbox.com/v3/jcheng.map-5ebohr46/{z}/{x}/{y}.png",
-      attribution = 'Maps by <a href="http://www.mapbox.com/">Mapbox</a>'
+      urlTemplate = "https://basemap.nationalmap.gov/arcgis/rest/services/USGSTopo/MapServer/tile/{z}/{y}/{x}",
+      attribution =  'Tiles courtesy of the <a href="https://usgs.gov/">U.S. Geological Survey</a>'
+      #urlTemplate = "//{s}.tiles.mapbox.com/v3/jcheng.map-5ebohr46/{z}/{x}/{y}.png",
+      #attribution = 'Maps by <a href="http://www.mapbox.com/">Mapbox</a>'
     )
 
   if(!is.null(ellip_model_all_rast_all_train())){
@@ -215,8 +217,10 @@ leaf_ellip_all_m_train <- reactive({
 
   map <- leaflet() %>%
     addTiles(
-      urlTemplate = "//{s}.tiles.mapbox.com/v3/jcheng.map-5ebohr46/{z}/{x}/{y}.png",
-      attribution = 'Maps by <a href="http://www.mapbox.com/">Mapbox</a>'
+      urlTemplate = "https://basemap.nationalmap.gov/arcgis/rest/services/USGSTopo/MapServer/tile/{z}/{y}/{x}",
+      attribution =  'Tiles courtesy of the <a href="https://usgs.gov/">U.S. Geological Survey</a>'
+      #urlTemplate = "//{s}.tiles.mapbox.com/v3/jcheng.map-5ebohr46/{z}/{x}/{y}.png",
+      #attribution = 'Maps by <a href="http://www.mapbox.com/">Mapbox</a>'
     )
 
   if(!is.null(ellip_model_all_rast_m_train())){
@@ -245,8 +249,10 @@ leaf_ellip_m_all_train <- reactive({
 
   map <- leaflet() %>%
     addTiles(
-      urlTemplate = "//{s}.tiles.mapbox.com/v3/jcheng.map-5ebohr46/{z}/{x}/{y}.png",
-      attribution = 'Maps by <a href="http://www.mapbox.com/">Mapbox</a>'
+      urlTemplate = "https://basemap.nationalmap.gov/arcgis/rest/services/USGSTopo/MapServer/tile/{z}/{y}/{x}",
+      attribution =  'Tiles courtesy of the <a href="https://usgs.gov/">U.S. Geological Survey</a>'
+      #urlTemplate = "//{s}.tiles.mapbox.com/v3/jcheng.map-5ebohr46/{z}/{x}/{y}.png",
+      #attribution = 'Maps by <a href="http://www.mapbox.com/">Mapbox</a>'
     )
 
   if(!is.null(ellip_model_m_rast_all_train())){
@@ -275,8 +281,10 @@ leaf_ellip_m_m_train <- reactive({
 
   map <- leaflet() %>%
     addTiles(
-      urlTemplate = "//{s}.tiles.mapbox.com/v3/jcheng.map-5ebohr46/{z}/{x}/{y}.png",
-      attribution = 'Maps by <a href="http://www.mapbox.com/">Mapbox</a>'
+      urlTemplate = "https://basemap.nationalmap.gov/arcgis/rest/services/USGSTopo/MapServer/tile/{z}/{y}/{x}",
+      attribution =  'Tiles courtesy of the <a href="https://usgs.gov/">U.S. Geological Survey</a>'
+      #urlTemplate = "//{s}.tiles.mapbox.com/v3/jcheng.map-5ebohr46/{z}/{x}/{y}.png",
+      #attribution = 'Maps by <a href="http://www.mapbox.com/">Mapbox</a>'
     )
 
   if(!is.null(ellip_model_m_rast_m_train())){
@@ -304,8 +312,10 @@ leaf_bio_all_all_train <- reactive({
 
   map <- leaflet() %>%
     addTiles(
-      urlTemplate = "//{s}.tiles.mapbox.com/v3/jcheng.map-5ebohr46/{z}/{x}/{y}.png",
-      attribution = 'Maps by <a href="http://www.mapbox.com/">Mapbox</a>'
+      urlTemplate = "https://basemap.nationalmap.gov/arcgis/rest/services/USGSTopo/MapServer/tile/{z}/{y}/{x}",
+      attribution =  'Tiles courtesy of the <a href="https://usgs.gov/">U.S. Geological Survey</a>'
+      #urlTemplate = "//{s}.tiles.mapbox.com/v3/jcheng.map-5ebohr46/{z}/{x}/{y}.png",
+      #attribution = 'Maps by <a href="http://www.mapbox.com/">Mapbox</a>'
     )
 
   if(!is.null(bioclim_model_all_all_train())){
@@ -333,8 +343,10 @@ leaf_bio_all_m_train <- reactive({
 
   map <- leaflet() %>%
     addTiles(
-      urlTemplate = "//{s}.tiles.mapbox.com/v3/jcheng.map-5ebohr46/{z}/{x}/{y}.png",
-      attribution = 'Maps by <a href="http://www.mapbox.com/">Mapbox</a>'
+      urlTemplate = "https://basemap.nationalmap.gov/arcgis/rest/services/USGSTopo/MapServer/tile/{z}/{y}/{x}",
+      attribution =  'Tiles courtesy of the <a href="https://usgs.gov/">U.S. Geological Survey</a>'
+      #urlTemplate = "//{s}.tiles.mapbox.com/v3/jcheng.map-5ebohr46/{z}/{x}/{y}.png",
+      #attribution = 'Maps by <a href="http://www.mapbox.com/">Mapbox</a>'
     )
 
   if(!is.null(bioclim_model_all_m_train())){
@@ -363,8 +375,10 @@ leaf_bio_m_all_train <- reactive({
 
   map <- leaflet() %>%
     addTiles(
-      urlTemplate = "//{s}.tiles.mapbox.com/v3/jcheng.map-5ebohr46/{z}/{x}/{y}.png",
-      attribution = 'Maps by <a href="http://www.mapbox.com/">Mapbox</a>'
+      urlTemplate = "https://basemap.nationalmap.gov/arcgis/rest/services/USGSTopo/MapServer/tile/{z}/{y}/{x}",
+      attribution =  'Tiles courtesy of the <a href="https://usgs.gov/">U.S. Geological Survey</a>'
+      #urlTemplate = "//{s}.tiles.mapbox.com/v3/jcheng.map-5ebohr46/{z}/{x}/{y}.png",
+      #attribution = 'Maps by <a href="http://www.mapbox.com/">Mapbox</a>'
     )
 
   if(!is.null(bioclim_model_m_all_train())){
@@ -393,8 +407,10 @@ leaf_bio_m_m_train <- reactive({
 
   map <- leaflet() %>%
     addTiles(
-      urlTemplate = "//{s}.tiles.mapbox.com/v3/jcheng.map-5ebohr46/{z}/{x}/{y}.png",
-      attribution = 'Maps by <a href="http://www.mapbox.com/">Mapbox</a>'
+      urlTemplate = "https://basemap.nationalmap.gov/arcgis/rest/services/USGSTopo/MapServer/tile/{z}/{y}/{x}",
+      attribution =  'Tiles courtesy of the <a href="https://usgs.gov/">U.S. Geological Survey</a>'
+      #urlTemplate = "//{s}.tiles.mapbox.com/v3/jcheng.map-5ebohr46/{z}/{x}/{y}.png",
+      #attribution = 'Maps by <a href="http://www.mapbox.com/">Mapbox</a>'
     )
 
   if(!is.null(bioclim_model_m_m_train())){
@@ -521,8 +537,10 @@ to_plot_model <- reactive({
   else{
     map <- leaflet() %>%
       addTiles(
-        urlTemplate = "//{s}.tiles.mapbox.com/v3/jcheng.map-5ebohr46/{z}/{x}/{y}.png",
-        attribution = 'Maps by <a href="http://www.mapbox.com/">Mapbox</a>'
+        urlTemplate = "https://basemap.nationalmap.gov/arcgis/rest/services/USGSTopo/MapServer/tile/{z}/{y}/{x}",
+        attribution =  'Tiles courtesy of the <a href="https://usgs.gov/">U.S. Geological Survey</a>'
+        #urlTemplate = "//{s}.tiles.mapbox.com/v3/jcheng.map-5ebohr46/{z}/{x}/{y}.png",
+        #attribution = 'Maps by <a href="http://www.mapbox.com/">Mapbox</a>'
       )
     return(map)
   }
