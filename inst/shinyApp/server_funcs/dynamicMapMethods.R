@@ -7,8 +7,10 @@ leafMapDynamic_base <- reactive({
 
   map <- leaflet::leaflet() %>%
     leaflet::addTiles(
-      urlTemplate = "//{s}.tiles.mapbox.com/v3/jcheng.map-5ebohr46/{z}/{x}/{y}.png",
-      attribution = 'Maps by <a href="http://www.mapbox.com/">Mapbox</a>'
+      urlTemplate = "https://basemap.nationalmap.gov/arcgis/rest/services/USGSTopo/MapServer/tile/{z}/{y}/{x}",
+      attribution =  'Tiles courtesy of the <a href="https://usgs.gov/">U.S. Geological Survey</a>'
+      #urlTemplate = "//{s}.tiles.mapbox.com/v3/jcheng.map-5ebohr46/{z}/{x}/{y}.png",
+      #attribution = 'Maps by <a href="http://www.mapbox.com/">Mapbox</a>'
     ) %>% setView(lng = 0, lat = 0, zoom = 3) %>%
     leaflet.extras::addDrawToolbar(
       targetGroup='draw0',
@@ -46,13 +48,20 @@ leafMapDynamic <- reactive({
   if(is.null(data_set()))
     return(map)
 
+
+  if(input$dataset_dynMap == "gbif_dataset" &&
+     !is.null(dataDynamic())){
+    map_info <- dataDynamic()$leaflet_info
+  } else{
+    map_info <- dataDynamic()$dataID
+  }
   if(input$define_M == 0 && is.data.frame(dataDynamic())){
 
 
     map <- map %>%
       addCircleMarkers(lng = dataDynamic()[,data_set()$longitude],
                        lat = dataDynamic()[,data_set()$latitude],
-                       popup = dataDynamic()$dataID)
+                       popup = map_info)
 
     if(class(myPolygon()) == "SpatialPolygonsDataFrame" && input$define_M){
       map <- map %>% addPolygons(data=myPolygon(),col="darkgreen")
@@ -68,19 +77,34 @@ leafMapDynamic <- reactive({
       if(class(myPolygon()) == "SpatialPolygonsDataFrame" && input$define_M){
         map <- map %>% addPolygons(data=myPolygon(),col="darkgreen")
       }
+      if(input$dataset_dynMap == "gbif_dataset" &&
+         !is.null(data_poly())){
+        map_info <- data_poly()$leaflet_info
+      } else{
+        map_info <- data_poly()$dataID
+      }
+
       map <- map %>%
         addCircleMarkers(lng = data_poly()[,data_set()$longitude],
                          lat = data_poly()[,data_set()$latitude],
-                         popup = data_poly()$dataID)
+                         popup = map_info)
 
     }
     return(map)
   }
   if(input$define_M == 1 && is.data.frame(dataDynamic()) && input$points_in_poly==0){
+
+    if(input$dataset_dynMap == "gbif_dataset" &&
+       !is.null(dataDynamic())){
+      map_info <- dataDynamic()$leaflet_info
+    } else{
+      map_info <- dataDynamic()$dataID
+    }
+
     map <- map %>%
       addCircleMarkers(lng = dataDynamic()[,data_set()$longitude],
                  lat = dataDynamic()[,data_set()$latitude],
-                 popup = dataDynamic()$dataID)
+                 popup = map_info)
     if(class(myPolygon()) == "SpatialPolygonsDataFrame" && input$define_M){
       map <- map %>% addPolygons(data=myPolygon(),col="darkgreen")
     }

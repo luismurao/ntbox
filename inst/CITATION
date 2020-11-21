@@ -1,0 +1,31 @@
+citHeader("To cite ntbox in publications use:")
+
+citEntry(entry = "Article",
+        title        = "ntbox: an R package with graphical user interface for modeling and evaluating multidimensional ecological niches",
+        author       = personList(person("Luis","Osorio-Olvera"),
+                                  person("Andres","Lira-Noriega"),
+                                  person("Jorge","Soberón"),
+                                  person("Andrew Townsend","Peterson"),
+                                  person("Manuel","Falconi"),
+                                  person("Rusby G.","Contreras‐Díaz"),
+                                  person("Enrique","Martínez‐Meyer"),
+                                  person("Vijay","Barve"),
+                                  person("Narayani","Barve")),
+        journal      = "Methods in Ecology and Evolution",
+        year         = "2020",
+        volume       = "Accepted Author Manuscript",
+        number       = "",
+        month        = "",
+        publisher    = "Methods in Ecology and Evolution",
+        url          = "http://doi:10.1111/2041-210X.13452",
+        doi          = "doi:10.1111/2041-210X.13452",
+
+        textVersion  =
+        paste("Osorio‐Olvera, L., Lira‐Noriega, A., Soberón, J.,",
+              "Peterson, A.T., Falconi, M., Contreras‐Díaz, R.G.,",
+              "Martínez‐Meyer, E., Barve, V. and Barve, N.",
+              "ntbox: an R package with graphical user interface for modeling and",
+              "evaluating multidimensional ecological niches",
+              "Methods in Ecology and Evolution. Accepted Author Manuscript.",
+              "http://doi:10.1111/2041-210X.13452")
+              )

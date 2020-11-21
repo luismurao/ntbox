@@ -78,7 +78,7 @@ searh_gbif_data <- function(genus,species,occlim=10000,
                                       data_gbif$dateIdentified,
                                       "<br/><b>Record url: </b><a href='",
                                       data_gbif$references,
-                                      "'>click</a>")
+                                      "' target='_blank'>click</a>")
       m <- leaflet::leaflet(data_gbif)
       m <- m %>%
         leaflet::addTiles()
