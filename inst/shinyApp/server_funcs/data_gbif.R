@@ -5,6 +5,7 @@ data_gbif_search <- eventReactive(input$search_gbif_data,{
   test <- ntbox::searh_gbif_data(genus = "Ambystoma",
                                  species = "tigrinum",
                                  occlim = 1,
+                                 leafletplot = TRUE,
                                  writeFile = FALSE)
 
 
@@ -15,7 +16,7 @@ data_gbif_search <- eventReactive(input$search_gbif_data,{
   data <- ntbox::searh_gbif_data(genus = input$genus,
                                  species = input$species,
                                  occlim = input$occlim,
-                                 leafletplot = T,
+                                 leafletplot = TRUE,
                                  writeFile = FALSE)
 
   if(is.null(data)){
