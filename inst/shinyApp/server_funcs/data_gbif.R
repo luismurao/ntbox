@@ -15,6 +15,7 @@ data_gbif_search <- eventReactive(input$search_gbif_data,{
   data <- ntbox::searh_gbif_data(genus = input$genus,
                                  species = input$species,
                                  occlim = input$occlim,
+                                 leafletplot = T,
                                  writeFile = FALSE)
 
   if(is.null(data)){
@@ -110,7 +111,7 @@ data_gbif_sp <- shiny::eventReactive(input$clean_dup_gbif,{
                              data$dateIdentified,
                              "<br/><b>Record url: </b><a href='",
                              data$references,
-                             "'>click</a>")
+                             "' target='_blank'>click</a>")
   if(is.data.frame(data)){
     longitude <- input$xLongitudeGBIF
     latitude <-  input$yLatitudeGBIF
@@ -130,7 +131,7 @@ data_gbif_sp <- shiny::eventReactive(input$clean_dup_gbif,{
                                      data_clean$dateIdentified,
                                      "<br/><b>Record url: </b><a href='",
                                      data_clean$references,
-                                     "'>click</a>")
+                                     "' target='_blank'>click</a>")
     return(data_clean)
   }
 })
