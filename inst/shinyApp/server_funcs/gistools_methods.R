@@ -3,8 +3,10 @@ leafMapDynamic_gis <- reactive({
 
   map <- leaflet::leaflet() %>%
     leaflet::addTiles(
-      urlTemplate = "//{s}.tiles.mapbox.com/v3/jcheng.map-5ebohr46/{z}/{x}/{y}.png",
-      attribution = 'Maps by <a href="http://www.mapbox.com/">Mapbox</a>'
+      urlTemplate = "https://basemap.nationalmap.gov/arcgis/rest/services/USGSTopo/MapServer/tile/{z}/{y}/{x}",
+      attribution =  'Tiles courtesy of the <a href="https://usgs.gov/">U.S. Geological Survey</a>'
+      #urlTemplate = "//{s}.tiles.mapbox.com/v3/jcheng.map-5ebohr46/{z}/{x}/{y}.png",
+      #attribution = 'Maps by <a href="http://www.mapbox.com/">Mapbox</a>'
     ) %>% setView(lng = 0, lat = 0, zoom = 3) %>%
     leaflet.extras::addDrawToolbar(
       targetGroup='draw',
