@@ -16,7 +16,7 @@ omission_rate(model, threshold, occ_train, occ_test)
 \item{occ_test}{Test data with three columns: "sp_name", "longitude" and "latitude"}
 }
 \value{
-Returns a data.frame with the threshold value and the omission rate.
+Returns a data.frame with the threshold value, the corresponding suiitability value at that thereshold and the omission rate.
 }
 \description{
 Computes the omission rate value of a model given a threshold

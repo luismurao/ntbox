@@ -4,7 +4,7 @@
 #' @param threshold A numeric vector with the thresholds that will be used to compute the omission rates.
 #' @param occ_train Train data with three columns: "sp_name", "longitude" and "latitude"
 #' @param occ_test Test data with three columns: "sp_name", "longitude" and "latitude"
-#' @return Returns a data.frame with the threshold value and the omission rate.
+#' @return Returns a data.frame with the threshold value, the corresponding suiitability value at that thereshold and the omission rate.
 #' @export
 #' @importFrom magrittr %>%
 #' @examples
@@ -39,7 +39,8 @@ omission_rate <- function(model,threshold,occ_train,occ_test){
     suit_at_th <- stats::quantile(suit_cal,th)
     omr <- 1 - length(which(suit_evl>=suit_at_th ))/n_vals
     df_omr <- data.frame(threshold = th,
-                         omssion_rate=omr)
+                         suitability_val_at_th = suit_at_th,
+                         om_rate=omr)
     return(df_omr)
   })
   return(omission_rates)
