@@ -2,22 +2,22 @@
 data_gbif_search <- eventReactive(input$search_gbif_data,{
 
   # Test if the API is working
-  test <- ntbox::searh_gbif_data(genus = "Ambystoma",
-                                 species = "tigrinum",
-                                 occlim = 1,
-                                 leafletplot = TRUE,
-                                 writeFile = FALSE)
+  test <- ntbox::search_gbif_data(genus = "Ambystoma",
+                                  species = "tigrinum",
+                                  occlim = 1,
+                                  leafletplot = TRUE,
+                                  writeFile = FALSE)
 
 
   if(is.null(test)){
     return(0)
   }
 
-  data <- ntbox::searh_gbif_data(genus = input$genus,
-                                 species = input$species,
-                                 occlim = input$occlim,
-                                 leafletplot = TRUE,
-                                 writeFile = FALSE)
+  data <- ntbox::search_gbif_data(genus = input$genus,
+                                  species = input$species,
+                                  occlim = input$occlim,
+                                  leafletplot = TRUE,
+                                  writeFile = FALSE)
 
   if(is.null(data)){
     data <- paste("No occurrences found for",input$genus,

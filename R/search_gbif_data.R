@@ -6,6 +6,7 @@
 #' @param writeFile Write gibif data into a csv
 #' @param leafletplot Logical, if TRUE the records will be plotted on a leaflet map.
 #' @param showClusters Logical. Display geographic cluster on the leaflet map.
+#' @param ... Pass arguments to the function  \code{\link[spocc]{occ}}  from spocc
 #' @return Returns a data.frame with coordinate data from species
 #' @export
 #' @import leaflet
@@ -18,15 +19,15 @@
 #' # Species name
 #' species <- "tigrinum"
 #' # GBIF search
-#' ambystoma_tigrinum <- searh_gbif_data(genus,species,
-#'                                       occlim=100,
-#'                                       writeFile=FALSE)
+#' ambystoma_tigrinum <- search_gbif_data(genus,species,
+#'                                        occlim=100,
+#'                                        writeFile=FALSE)
 #' head(ambystoma_tigrinum[,1:5])
 #' }
 #'
-searh_gbif_data <- function(genus,species,occlim=10000,
-                            writeFile=FALSE,leafletplot=FALSE,
-                            showClusters=FALSE){
+search_gbif_data <- function(genus,species,occlim=10000,
+                             writeFile=FALSE,leafletplot=FALSE,
+                             showClusters=FALSE,...){
 
   # Check if species data is on working directory
   file_name <- tolower(paste0(genus,"_",
@@ -42,7 +43,7 @@ searh_gbif_data <- function(genus,species,occlim=10000,
                                          id = "Title")
 
     df_list <- spocc::occ(query = paste(genus,species),
-                          from = 'gbif',limit = occlim)
+                          from = 'gbif',limit = occlim,...)
 
     # GBIF data
     data_gbif <- data.frame(df_list$gbif$data[[1]])
