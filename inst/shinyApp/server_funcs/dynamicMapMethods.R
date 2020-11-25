@@ -51,7 +51,11 @@ leafMapDynamic <- reactive({
 
   if(input$dataset_dynMap == "gbif_dataset" &&
      !is.null(dataDynamic())){
-    map_info <- dataDynamic()$leaflet_info
+    map_info <- paste0(dataDynamic()$leaflet_info,
+                       "<br/><b>Map ID: </b> ",
+                       dataDynamic()$dataID)
+
+
   } else{
     map_info <- dataDynamic()$dataID
   }
@@ -79,7 +83,8 @@ leafMapDynamic <- reactive({
       }
       if(input$dataset_dynMap == "gbif_dataset" &&
          !is.null(data_poly())){
-        map_info <- data_poly()$leaflet_info
+        map_info <- paste0(data_poly()$leaflet_info,
+        "<br/><b>Map ID: </b> ",data_poly()$dataID)
       } else{
         map_info <- data_poly()$dataID
       }
@@ -96,7 +101,9 @@ leafMapDynamic <- reactive({
 
     if(input$dataset_dynMap == "gbif_dataset" &&
        !is.null(dataDynamic())){
-      map_info <- dataDynamic()$leaflet_info
+      map_info <- paste0(dataDynamic()$leaflet_info,
+                         "<br/><b>Map ID: </b> ",
+                         dataDynamic()$dataID)
     } else{
       map_info <- dataDynamic()$dataID
     }
