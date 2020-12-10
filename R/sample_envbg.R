@@ -46,7 +46,7 @@ sample_envbg <- function(envlayers,nbg,nprop=NULL,coordinates=FALSE,cellIDs=FALS
       env_bg <- envlayers[toSamp]
     }
     else{
-      future::plan(future::multiprocess)
+      future::plan(future::multisession)
       fnames <- sapply(envlayers@layers, function(x) x@file@name)
       fnames <- unique(fnames)
       indexL <- 1:raster::nlayers(envlayers)
