@@ -14,6 +14,7 @@ ellipsoid_selection(
   env_bg = NULL,
   omr_criteria,
   parallel = F,
+  ncores = NULL,
   comp_each = 100,
   proc = FALSE,
   proc_iter = 100,
@@ -39,6 +40,8 @@ the function \code{\link[MASS]{cov.rob}} of the \pkg{MASS} package. If False the
 \item{omr_criteria}{Omission rate criteria. Value of the omission rate allowed for the selection process. Default NULL see details.}
 
 \item{parallel}{The computations will be run in parallel. Default FALSE}
+
+\item{ncores}{The number of cores that will be used for the parallel process. By default ntbox will use the total number of available cores less one.}
 
 \item{comp_each}{Number of models to run in each job in the parallel computation. Default 100}
 

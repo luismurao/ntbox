@@ -1,8 +1,8 @@
 Package: ntbox
 Type: Package
 Title: From Getting Biodiversity Data to Evaluating Species Distribution Models in a Friendly GUI Environment
-Version: 0.6.1.0
-Date: 2020-11-21
+Version: 0.6.2.0
+Date: 2020-12-10
 Authors@R: c(person("Luis", "Osorio-Olvera", 
                      email = "luismurao@gmail.com",
                      role = c("aut", "cre"),
@@ -89,7 +89,7 @@ Imports:
     V8 (>= 1.5),
     rio (>= 0.5),
     future (>= 1.7.0),
-    furrr (>= 0.1.0),
+    furrr (>= 1.21.0),
     stringi (>= 1.1),
     purrr (>= 0.2.5),
     spocc (>= 0.7.0),

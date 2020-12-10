@@ -11,6 +11,7 @@
 #' @param omr_criteria Omission rate criteria. Value of the omission rate allowed for the selection process. Default NULL see details.
 #' @param env_bg Environmental data to compute the approximated prevalence of the model. The data should be a sample of the environmental layers of the calibration area.
 #' @param parallel The computations will be run in parallel. Default FALSE
+#' @param ncores The number of cores that will be used for the parallel process. By default ntbox will use the total number of available cores less one.
 #' @param proc Logical if TRUE a partial roc test will be run.
 #' @param proc_iter Numeric. The total number of iterations for the partial ROC bootstrap.
 #' @param rseed Logical. Whether or not to set a random seed for partial roc bootstrap. Default TRUE.
@@ -105,7 +106,8 @@
 #' }
 
 ellipsoid_selection <- function(env_train,env_test=NULL,env_vars,nvarstest,level=0.95,
-                                mve=TRUE,env_bg=NULL,omr_criteria,parallel=F,comp_each=100,proc=FALSE,
+                                mve=TRUE,env_bg=NULL,omr_criteria,parallel=F,ncores=NULL,
+                                comp_each=100,proc=FALSE,
                                 proc_iter=100,rseed=TRUE){
   n_vars <- length(env_vars)
   ntest <- sapply(nvarstest, function(x) choose(n_vars,x))
@@ -139,6 +141,11 @@ ellipsoid_selection <- function(env_train,env_test=NULL,env_vars,nvarstest,level
     big_vars <- do.call(cbind,cvars)
 
     n_cores <- future::availableCores() -1
+    if(ncores>n_cores || is.null(ncores)){
+      n_cores <- n_cores
+    } else{
+      n_cores <- ncores
+    }
     niter_big <- floor(nmodels/n_cores)
     if(niter_big>comp_each)
       niter_big <- comp_each
@@ -157,7 +164,10 @@ ellipsoid_selection <- function(env_train,env_test=NULL,env_vars,nvarstest,level
     globs <- c("env_train",
                "env_test",
                "env_bg")
-    future::plan(multisession(globals = ))
+    multisession(globals =c("env_train",
+                                 "env_test",
+                                 "env_bg"),
+                 workers = n_cores)
     model_select <- new.env()
 
 
@@ -166,10 +176,12 @@ ellipsoid_selection <- function(env_train,env_test=NULL,env_vars,nvarstest,level
       #fname <- file.path(dir1,paste0("eselection_",x,".txt"))
       #if(x>n_cores) core <- 1
 
-      cat("Doing calibration from model ",kkk[x],"to ",kkk[x + 1] - 1,
+      cat("Doing calibration from model ",
+          kkk[x],"to ",kkk[x + 1] - 1,
           "in process ",x,"\n\n")
       model_select[[paso]] %<-% {
         library(Rcpp)
+        library(ntbox)
         seq_model <- kkk[x]:(kkk[x + 1] - 1)
         combs_v <- as.matrix(big_vars[,seq_model])
 
