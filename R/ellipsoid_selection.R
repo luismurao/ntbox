@@ -166,7 +166,8 @@ ellipsoid_selection <- function(env_train,env_test=NULL,env_vars,nvarstest,level
                "env_bg")
     multisession(globals =c("env_train",
                                  "env_test",
-                                 "env_bg"),
+                                 "env_bg",
+                            "rseed","level"),
                  workers = n_cores)
     model_select <- new.env()
 
@@ -181,7 +182,6 @@ ellipsoid_selection <- function(env_train,env_test=NULL,env_vars,nvarstest,level
           "in process ",x,"\n\n")
       model_select[[paso]] %<-% {
         library(Rcpp)
-        library(ntbox)
         seq_model <- kkk[x]:(kkk[x + 1] - 1)
         combs_v <- as.matrix(big_vars[,seq_model])
 
@@ -190,12 +190,12 @@ ellipsoid_selection <- function(env_train,env_test=NULL,env_vars,nvarstest,level
           env_data0 <- stats::na.omit(env_train[,var_comb])
           env_test0 <- stats::na.omit(env_test[,var_comb])
           env_bg0 <-   stats::na.omit(env_bg[,var_comb])
-          r1 <- ellipsoid_omr(env_data = env_data0,
-                              env_test = env_test0,
-                              env_bg = env_bg0,
-                              cf_level = 0.95,
-                              proc = proc,
-                              proc_iter,rseed=rseed)
+          r1 <- ntbox::ellipsoid_omr(env_data = env_data0,
+                                     env_test = env_test0,
+                                     env_bg = env_bg0,
+                                     cf_level = level,
+                                     proc = proc,
+                                     proc_iter,rseed=rseed)
           return(r1)
         })
         results_df <- do.call("rbind.data.frame",results_L)
@@ -225,12 +225,12 @@ ellipsoid_selection <- function(env_train,env_test=NULL,env_vars,nvarstest,level
         env_data <- stats::na.omit(env_train[,var_comb])
         env_test <- stats::na.omit(env_test[,var_comb])
         env_bg <-   stats::na.omit(env_bg[,var_comb])
-        r1 <- ellipsoid_omr(env_data = env_data,
-                            env_test = env_test,
-                            env_bg = env_bg,
-                            cf_level = 0.95,
-                            proc = proc,
-                            proc_iter,rseed=rseed)
+        r1 <- ntbox::ellipsoid_omr(env_data = env_data,
+                                   env_test = env_test,
+                                   env_bg = env_bg,
+                                   cf_level = level,
+                                   proc = proc,
+                                   proc_iter,rseed=rseed)
         return(r1)
       })
       results_df <- do.call("rbind.data.frame",results_L)
@@ -387,10 +387,10 @@ ellipsoid_omr <- function(env_data,env_test=NULL,env_bg,cf_level,mve=TRUE,proc=F
                           nvars=length(emd$centroid),
                           om_rate_train= omrate_train)
   if(is.data.frame(env_test) || is.matrix(env_test)){
-    in_etest <-  inEllipsoid(centroid = emd$centroid,
-                             eShape = emd$covariance,
-                             env_data = env_test,
-                             level = cf_level)
+    in_etest <-  ntbox::inEllipsoid(centroid = emd$centroid,
+                                    eShape = emd$covariance,
+                                    env_data = env_test,
+                                    level = cf_level)
 
     suits_val <- exp(-0.5*( in_etest$mh_dist))
 
@@ -420,10 +420,10 @@ ellipsoid_omr <- function(env_data,env_test=NULL,env_bg,cf_level,mve=TRUE,proc=F
   if(!is.null(env_bg)){
 
     env_bg <- data.frame(env_bg)
-    in_ebg <-  inEllipsoid(centroid = emd$centroid,
-                           eShape = emd$covariance,
-                           env_data = env_bg,
-                           level = cf_level)
+    in_ebg <-  ntbox::inEllipsoid(centroid = emd$centroid,
+                                  eShape = emd$covariance,
+                                  env_data = env_bg,
+                                  level = cf_level)
     suits_bg <- exp(-0.5*in_ebg$mh_dist)
 
     bg_table <- table(c(in_ebg$in_Ellipsoid,in_e$in_Ellipsoid))
