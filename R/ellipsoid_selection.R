@@ -154,7 +154,10 @@ ellipsoid_selection <- function(env_train,env_test=NULL,env_vars,nvarstest,level
     long_k <- length(kkk)
     pasos <- 1:(length(kkk) - 1)
     pasosChar <- paste0(pasos)
-    future::plan(multisession)
+    globs <- c("env_train",
+               "env_test",
+               "env_bg")
+    future::plan(multisession(globals = ))
     model_select <- new.env()
 
 
@@ -172,12 +175,12 @@ ellipsoid_selection <- function(env_train,env_test=NULL,env_vars,nvarstest,level
 
         results_L <- lapply(1:ncol(combs_v),function(x_comb) {
           var_comb <- stats::na.omit(combs_v[,x_comb])
-          env_data <- stats::na.omit(env_train[,var_comb])
-          env_test <- stats::na.omit(env_test[,var_comb])
-          env_bg <-   stats::na.omit(env_bg[,var_comb])
-          r1 <- ellipsoid_omr(env_data = env_data,
-                              env_test = env_test,
-                              env_bg = env_bg,
+          env_data0 <- stats::na.omit(env_train[,var_comb])
+          env_test0 <- stats::na.omit(env_test[,var_comb])
+          env_bg0 <-   stats::na.omit(env_bg[,var_comb])
+          r1 <- ellipsoid_omr(env_data = env_data0,
+                              env_test = env_test0,
+                              env_bg = env_bg0,
                               cf_level = 0.95,
                               proc = proc,
                               proc_iter,rseed=rseed)
