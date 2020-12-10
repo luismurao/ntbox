@@ -154,8 +154,9 @@ ellipsoid_selection <- function(env_train,env_test=NULL,env_vars,nvarstest,level
     long_k <- length(kkk)
     pasos <- 1:(length(kkk) - 1)
     pasosChar <- paste0(pasos)
-    future::plan(multiprocess)
+    future::plan(multisession)
     model_select <- new.env()
+
 
     for (paso in pasosChar) {
       x <- as.numeric(paso)
