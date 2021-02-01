@@ -45,6 +45,7 @@ The MOP is calculated following Owens et al.
 of the MOP function, available at \url{https://github.com/narayanibarve/ENMGadgets}.The value of the comp_each parameter depends on the RAM memory available for the process; the computation can be faster if the user chooses a bigger value for this parameter but you have to be careful on memory use.
 }
 \examples{
+\dontrun{
 m_stack <- raster::stack(list.files(system.file("extdata",
                                                 package = "ntbox"),
                                     pattern = "M_layers.tif$",
@@ -54,8 +55,9 @@ g_stack <- raster::stack(list.files(system.file("extdata",
                                     pattern = "G_layers.tif$",
                                     full.names = TRUE))
 
-mop_res <- mop(M_stack = m_stack,
-               G_stack = g_stack, percent = 10,
-               comp_each=2000)
+mop_res <- ntbox::mop(M_stack = m_stack,
+                      G_stack = g_stack, percent = 10,
+                      comp_each=2000)
 raster::plot(mop_res)
+}
 }

@@ -4,6 +4,7 @@
 #' @description trapozoid_roc applies the trapezoidal integration for Partial ROC curve.
 #' @return Returns the area under the Partial ROC curve.
 #' @useDynLib ntbox
+#' @import Rcpp
 #' @export
 
 trapozoid_roc <- function(fract_area,sensibility){

@@ -89,7 +89,7 @@ Imports:
     V8 (>= 1.5),
     rio (>= 0.5),
     future (>= 1.7.0),
-    furrr (>= 1.21.0),
+    furrr (>= 0.2.0),
     stringi (>= 1.1),
     purrr (>= 0.2.5),
     spocc (>= 0.7.0),

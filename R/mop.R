@@ -22,6 +22,7 @@
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' m_stack <- raster::stack(list.files(system.file("extdata",
 #'                                                 package = "ntbox"),
 #'                                     pattern = "M_layers.tif$",
@@ -31,10 +32,11 @@
 #'                                     pattern = "G_layers.tif$",
 #'                                     full.names = TRUE))
 #'
-#' mop_res <- mop(M_stack = m_stack,
-#'                G_stack = g_stack, percent = 10,
-#'                comp_each=2000)
+#' mop_res <- ntbox::mop(M_stack = m_stack,
+#'                       G_stack = g_stack, percent = 10,
+#'                       comp_each=2000)
 #' raster::plot(mop_res)
+#' }
 
 mop <- function(M_stack, G_stack, percent = 10, comp_each = 2000, parallel = FALSE,normalized=TRUE,ncores=4) {
   mop_raster <- G_stack[[1]]
@@ -55,7 +57,7 @@ mop <- function(M_stack, G_stack, percent = 10, comp_each = 2000, parallel = FAL
   if(dim(m1)[2] != dim(m2)[2]) {
     stop("Stacks must have the same dimensions.")
   }
-  out_index <- plot_out(mValues,gValues)
+  out_index <- plot_out(M1 = mValues,G1 = gValues)
   steps <- seq(1, dim(m2)[1], comp_each)
   kkk <- c(steps,  dim(m2)[1] + 1)
   long_k <- length(kkk)
@@ -140,11 +142,11 @@ mop <- function(M_stack, G_stack, percent = 10, comp_each = 2000, parallel = FAL
 #' @export
 
 plot_out <- function (M1, G1) {
-  if(class(M1) == "RasterBrick" | class(M1) == "RasterStack" | class(M1) == "raster"){
+  if("RasterBrick" %in% class(M1) | "RasterStack"  %in% class(M1) | "raster" %in% class(M1)){
     M1 <- raster::values(M1)
   }
 
-  if(class(G1) == "RasterBrick" | class(G1) == "RasterStack" | class(G1) == "raster"){
+  if("RasterBrick" %in% class(G1) | "RasterStack"  %in% class(G1) | "raster" %in% class(G1)){
     G1 <- raster::values(G1)
   }
 

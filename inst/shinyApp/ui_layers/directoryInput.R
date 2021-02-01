@@ -1,3 +1,10 @@
+`%AND%` <- function(x, y) {
+  if (!is.null(x) && !isTRUE(is.na(x)))
+    if (!is.null(y) && !isTRUE(is.na(y)))
+      return(y)
+  return(NULL)
+}
+
 #' Choose a Folder Interactively (Mac OS X)
 #'
 #' Display a folder selection dialog under Mac OS X
@@ -79,7 +86,7 @@ directoryInput = function(inputId, label, value = NULL) {
 
     div(
       class = 'form-group directory-input-container',
-      shiny:::`%AND%`(label, tags$label(label)),
+      `%AND%`(label, tags$label(label)),
       div(
         span(
           class = 'col-xs-9 col-md-11',

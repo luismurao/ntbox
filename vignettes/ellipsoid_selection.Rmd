@@ -230,7 +230,10 @@ mProj <- ntbox::ellipsoidfit(wc[[bestvarcomb]],
                              centroid = best_mod$centroid,
                              covar = best_mod$covariance,
                              level = 0.99,size = 3)
-rglwidget()
+if(length(bestvarcomb)==3){
+  rglwidget()
+}
+
 raster::plot(mProj$suitRaster)
 points(pg[,c("longitude","latitude")],pch=20,cex=0.5)
 

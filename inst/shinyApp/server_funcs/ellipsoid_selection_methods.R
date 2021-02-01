@@ -1,17 +1,5 @@
 
 observe({
-  if(!is.null(data_extraction())){
-    # Suggest variables to fit ellipsoid accoring to strog correlations
-    if(!is.null(summs_corr_var()))
-      var_suggest <- summs_corr_var()$descriptors
-    else
-      var_suggest <- NULL
-    updateSelectInput(session,"biosEllipS",
-                      choices = names(data_extraction()),
-                      selected = var_suggest)
-    #updateSelectInput(session,)
-
-  }
   niche_proj  <- NULL
   if(!is.null(occ_extract())){
     niche_proj <- c(niche_proj,"All raster extent"="wWorld")
@@ -20,16 +8,32 @@ observe({
   if(!is.null(occ_extract_from_mask())){
     niche_proj <- c(niche_proj,"Your polygon of M"="mLayers")
   }
-  updateSelectInput(session, "selectShapeS",choices = niche_proj)
+
   if(!is.null(input$biosEllipS)){
     nvarsfit <- 2:length(input$biosEllipS)
     updateSelectInput(session, "nvars",choices = nvarsfit,
                       selected = nvarsfit[1])
   }
+  updateSelectInput(session, "selectShapeS",choices = niche_proj)
 
 
 })
 
+
+observe({
+  if(!is.null(data_extraction())){
+    # Suggest variables to fit ellipsoid accoring to strog correlations
+    if(!is.null(summs_corr_var()$descriptors))
+      var_suggest1 <- summs_corr_var()$descriptors
+    else
+      var_suggest1 <- names(data_extraction())
+    updateSelectInput(session,"biosEllipS",
+                      choices = names(data_extraction()),
+                      selected = var_suggest1)
+    #updateSelectInput(session,)
+
+  }
+})
 
 output$esrand <- renderUI({
   if(!is.null(data_partition()$type)){

@@ -38,10 +38,10 @@ we will remove sptial duplicates.
 ## Searching the data
 
 ```{r gbif, echo=TRUE,eval=T}
-dAll_a <- ntbox::searh_gbif_data(genus = "Leopardus",
-                                 species = "wiedii",
-                                 occlim = 5000,
-                                 leafletplot = TRUE)
+dAll_a <- ntbox::search_gbif_data(genus = "Leopardus",
+                                  species = "wiedii",
+                                  occlim = 5000,
+                                  leafletplot = TRUE)
 ```
 ```{r}
 cat("Total number of occurrence data found:",nrow(dAll_a))
