@@ -10,7 +10,9 @@ sample_envbg(
   nprop = NULL,
   coordinates = FALSE,
   cellIDs = FALSE,
-  rseed = NULL
+  rseed = NULL,
+  parallel = TRUE,
+  ncores = 4
 )
 }
 \arguments{
@@ -20,11 +22,15 @@ sample_envbg(
 
 \item{nprop}{Proportion of environmental data to be sampled. Default NULL}
 
-\item{coordinates}{Logical. If TRUE cell coordinates will be retuerned}
+\item{coordinates}{Logical. If TRUE cell coordinates will be returned}
 
-\item{cellIDs}{Logical. If TRUE cell IDs will be retuerned}
+\item{cellIDs}{Logical. If TRUE cell IDs will be returned}
 
 \item{rseed}{Random seed number. Default NULL}
+
+\item{parallel}{Logical. If TRUE the process will be performed in parallel}
+
+\item{ncores}{Number of workers to run the parallel process.}
 }
 \description{
 Generate environmental background data is a function similar

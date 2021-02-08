@@ -6,9 +6,11 @@
 #' @param envlayers A raster stack or brick.
 #' @param nbg Number of points for the background data
 #' @param nprop Proportion of environmental data to be sampled. Default NULL
-#' @param coordinates Logical. If TRUE cell coordinates will be retuerned
-#' @param cellIDs Logical. If TRUE cell IDs will be retuerned
+#' @param coordinates Logical. If TRUE cell coordinates will be returned
+#' @param cellIDs Logical. If TRUE cell IDs will be returned
 #' @param rseed Random seed number. Default NULL
+#' @param ncores Number of workers to run the parallel process.
+#' @import future
 #' @examples
 #' \dontrun{
 #' wcpath <- list.files(system.file("extdata/bios",
@@ -22,7 +24,8 @@
 #' vals <- sample_envbg(envlayers,nprop = 0.20)
 #' }
 #' @export
-sample_envbg <- function(envlayers,nbg,nprop=NULL,coordinates=FALSE,cellIDs=FALSE,rseed=NULL){
+sample_envbg <- function(envlayers,nbg,nprop=NULL,coordinates=FALSE,
+                         cellIDs=FALSE,rseed=NULL,ncores=4){
   if(class(envlayers) == "RasterStack" ||
      class(envlayers) == "RasterBrick"){
     envlayers <- raster::stack(envlayers)
@@ -45,20 +48,31 @@ sample_envbg <- function(envlayers,nbg,nprop=NULL,coordinates=FALSE,cellIDs=FALS
     if(canP){
       env_bg <- envlayers[toSamp]
     }
-    else{
-      future::plan(future::multisession)
+    else {
+      n_cores <- future::availableCores() -1
+      if(ncores>n_cores || is.null(ncores)){
+        n_cores <- n_cores
+      } else{
+        n_cores <- ncores
+      }
       fnames <- sapply(envlayers@layers, function(x) x@file@name)
       fnames <- unique(fnames)
       indexL <- 1:raster::nlayers(envlayers)
+      furrr::furrr_options(globals = c("fnames",
+                                       "toSamp",
+                                       "indexL"))
+      plan(multisession,workers=n_cores)
+      options(future.globals.maxSize= 8500*1024^2)
       env_bg <- furrr::future_map_dfc(indexL, function(x){
         if(length(fnames) == 1)
           r1 <- raster::raster(fnames,band=x)
         else
           r1 <- raster::raster(fnames[x])
-        d1 <- data.frame(r1[toSamp])
+        r2 <- r1[]
+        d1 <- data.frame(r2[toSamp])
         names(d1) <- names(r1)
         return(d1)
-      })
+      },.progress = TRUE)
       future::plan(future::sequential)
     }
     if(coordinates){

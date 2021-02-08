@@ -164,14 +164,13 @@ ellipsoid_selection <- function(env_train,env_test=NULL,env_vars,nvarstest,level
     globs <- c("env_train",
                "env_test",
                "env_bg")
-    multisession(globals =c("env_train",
-                                 "env_test",
-                                 "env_bg",
-                            "rseed","level"),
-                 workers = n_cores)
+    furrr::furrr_options(globals = c("env_train",
+                                     "env_test",
+                                     "env_bg",
+                                     "rseed","level"))
+    plan(multisession,workers=n_cores)
+    options(future.globals.maxSize= 8500*1024^2)
     model_select <- new.env()
-
-
     for (paso in pasosChar) {
       x <- as.numeric(paso)
       #fname <- file.path(dir1,paste0("eselection_",x,".txt"))
