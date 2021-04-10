@@ -167,7 +167,8 @@ ellipsoid_selection <- function(env_train,env_test=NULL,env_vars,nvarstest,level
     furrr::furrr_options(globals = c("env_train",
                                      "env_test",
                                      "env_bg",
-                                     "rseed","level"))
+                                     "rseed","level"),
+                         packages = c("Rcpp","ntbox"))
     plan(multisession,workers=n_cores)
     options(future.globals.maxSize= 8500*1024^2)
     model_select <- new.env()
@@ -180,7 +181,7 @@ ellipsoid_selection <- function(env_train,env_test=NULL,env_vars,nvarstest,level
           kkk[x],"to ",kkk[x + 1] - 1,
           "in process ",x,"\n\n")
       model_select[[paso]] %<-% {
-        library(Rcpp)
+
         seq_model <- kkk[x]:(kkk[x + 1] - 1)
         combs_v <- as.matrix(big_vars[,seq_model])
 
@@ -360,6 +361,14 @@ ellipsoid_omr <- function(env_data,env_test=NULL,env_bg,cf_level,mve=TRUE,proc=F
                        env_data = env_data,
                        level = cf_level)
 
+  fails_train_ids <- which(in_e$in_Ellipsoid== 0)
+
+  if(length(fails_train_ids)>0){
+    fails_train_ids <- paste0(fails_train_ids,collapse = ",")
+  } else {
+    fails_train_ids <- NA
+  }
+
   occs_table <- table( in_e$in_Ellipsoid)
 
   succsID <- which(names(occs_table) %in% "1")
@@ -367,14 +376,12 @@ ellipsoid_omr <- function(env_data,env_test=NULL,env_bg,cf_level,mve=TRUE,proc=F
 
   occs_succs <-  if(length(succsID)>0L){
     occs_table[[succsID]]
-  }
-  else{
+  } else{
     0
   }
   occs_fail <-  if(length(failsID)>0L){
     occs_table[[failsID]]
-  }
-  else{
+  } else{
     0
   }
 
@@ -384,12 +391,21 @@ ellipsoid_omr <- function(env_data,env_test=NULL,env_bg,cf_level,mve=TRUE,proc=F
   d_results <- data.frame(fitted_vars =paste(names(emd$centroid),
                                              collapse =  ","),
                           nvars=length(emd$centroid),
-                          om_rate_train= omrate_train)
+                          om_rate_train= omrate_train,
+                          non_pred_train_ids = fails_train_ids)
   if(is.data.frame(env_test) || is.matrix(env_test)){
     in_etest <-  ntbox::inEllipsoid(centroid = emd$centroid,
                                     eShape = emd$covariance,
                                     env_data = env_test,
                                     level = cf_level)
+
+    fails_test_ids <- which(in_etest$in_Ellipsoid== 0)
+
+    if(length(fails_train_ids)>0){
+      fails_test_ids <- paste0(fails_test_ids,collapse = ",")
+    } else {
+      fails_test_ids <- NA
+    }
 
     suits_val <- exp(-0.5*( in_etest$mh_dist))
 
@@ -400,20 +416,19 @@ ellipsoid_omr <- function(env_data,env_test=NULL,env_bg,cf_level,mve=TRUE,proc=F
 
     occs_succs_test <-  if(length(succsID)>0L){
       occs_table_test[[succsID]]
-    }
-    else{
+    } else{
       0
     }
     occs_fail_test <-  if(length(failsID)>0L){
       occs_table_test[[failsID]]
-    }
-    else{
+    } else{
       0
     }
     a_test <-  occs_fail_test
     omrate_test <- a_test /nrow( in_etest)
     d_results <- data.frame(d_results,
-                            om_rate_test=omrate_test)
+                            om_rate_test=omrate_test,
+                            non_pred_test_ids=fails_test_ids)
   }
 
   if(!is.null(env_bg)){
