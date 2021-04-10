@@ -41,6 +41,7 @@
 #'                     parallel=FALSE)
 #'
 #' @importFrom purrr map_df
+#' @import future
 #' @useDynLib ntbox
 #' @export
 
@@ -153,8 +154,11 @@ pROC <- function(continuous_mod,test_data,
 
   if (parallel) {
     n_cores <- ntbox::nc(ncores)
-    future::plan(tweak(multiprocess,
-                       workers = n_cores))
+
+    furrr::furrr_options(packages = c("Rcpp","ntbox"))
+    plan(multisession,workers=n_cores)
+    options(future.globals.maxSize= 8500*1024^2)
+
     roc_env <- new.env()
     niter_big <- floor(n_iter/n_cores)
     n_runs <- rep(niter_big, n_cores)
