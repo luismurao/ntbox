@@ -11,7 +11,6 @@ sample_envbg(
   coordinates = FALSE,
   cellIDs = FALSE,
   rseed = NULL,
-  parallel = TRUE,
   ncores = 4
 )
 }
@@ -27,8 +26,6 @@ sample_envbg(
 \item{cellIDs}{Logical. If TRUE cell IDs will be returned}
 
 \item{rseed}{Random seed number. Default NULL}
-
-\item{parallel}{Logical. If TRUE the process will be performed in parallel}
 
 \item{ncores}{Number of workers to run the parallel process.}
 }
