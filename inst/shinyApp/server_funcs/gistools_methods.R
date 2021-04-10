@@ -245,7 +245,7 @@ pcas_layers <- eventReactive(input$dopca,{
 })
 
 output$pca_plot <- renderPlot({
-  if(!is.null(pcas_layers)){
+  if(input$dopca>0 && !is.null(pcas_layers)){
     print(pcas_layers()$pca_plot)
   }
 })

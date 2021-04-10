@@ -78,10 +78,15 @@ spca <- function(layers_stack,layers_to_proj=NULL,pca_obj=NULL,sv_dir=NULL,layer
   layers_stack <- raster::stack(layers_stack)
   if(class(layers_stack)=="RasterStack"){
 
-    layers_vals <- raster::getValues(layers_stack)
+    layers_vals <- names(layers_stack) %>% purrr::map_dfc(function(x){
+      df1 <- data.frame(val = layers_stack[[x]][])
+      names(df1) <- x
+      return(df1)
+    })
+    layers_vals <- as.matrix(layers_vals)
     id_vals <- which(stats::complete.cases(layers_vals))
-    id_nas <- 1:dim(layers_vals)[1]
-    id_nas <- id_nas[-id_vals]
+    #id_nas <- 1:dim(layers_vals)[1]
+    #id_nas <- id_nas[-id_vals]
     layers_noNA <- layers_vals[id_vals,]
 
     if(class(pca_obj) != "prcomp"){
@@ -90,20 +95,23 @@ spca <- function(layers_stack,layers_to_proj=NULL,pca_obj=NULL,sv_dir=NULL,layer
     }
 
     pca_summary <- base::summary(pca_obj)
-    pca_plot <- .plot_pca(pca_summary)
+    pca_plot <- .plot_pca(pca_summary = pca_summary)
 
-    layers_pca <- layers_stack
-    names(layers_pca ) <- colnames(pca_obj$x)
-    if(length(names(layers_pca ))>9)
-      names(layers_pca)[1:9] <- paste0("PC0",1:9)
+    pca_layer <- layers_stack[[1]]
+    nombres_pcs <- colnames(pca_obj$x)
+    if(ncol(layers_vals)>9)
+      nombres_pcs[1:9] <- paste0("PC0",1:9)
     pca_estimate <- pca_obj$x
+    pca_values <- rep(NA,raster::ncell(layers_stack[[1]]))
 
-    colnames(pca_estimate) <- names(layers_pca)
+    colnames(pca_estimate) <- nombres_pcs
+    layers_pca <- seq_along(nombres_pcs) %>% purrr::map(function(x){
 
-    for(i in names(layers_pca)){
-      layers_pca [[i]][id_vals] <-  pca_estimate[,i]
-      layers_pca [[i]][id_nas] <-  NA
-    }
+      pca_values[id_vals] <- pca_estimate[,x]
+      pca_layer[] <- pca_values
+      return(pca_layer)
+    }) %>% raster::stack(.)
+    names(layers_pca) <- nombres_pcs
 
     results <- list(pc_layers=layers_pca,
                     pc_results=pca_obj,
@@ -145,8 +153,6 @@ spca <- function(layers_stack,layers_to_proj=NULL,pca_obj=NULL,sv_dir=NULL,layer
     names(layers_to_proj) <- names(pca_obj$center)
     proj_data <- raster::getValues(layers_to_proj)
     id_vals <- which(stats::complete.cases(proj_data))
-    id_nas <- 1:dim(proj_data)[1]
-    id_nas <- id_nas[-id_vals]
     proj_noNA <-  proj_data [id_vals,]
 
     pc_projDF <- stats::predict(pca_obj,newdata=proj_noNA)
@@ -154,10 +160,12 @@ spca <- function(layers_stack,layers_to_proj=NULL,pca_obj=NULL,sv_dir=NULL,layer
     if(length(colnames( pc_projDF ))>9)
       colnames(pc_projDF)[1:9] <- paste0("PC0",1:9)
 
-    for(i in 1:length(names(layers_to_proj))){
-      layers_to_proj [[i]][id_vals] <-  pc_projDF[,i]
-      layers_to_proj [[i]][id_nas] <-  NA
-    }
+    layers_to_proj <- seq_along(nombres_pcs) %>% purrr::map(function(x){
+      pca_values[id_vals] <- pc_projDF[,x]
+      pca_layer[] <- pca_values
+      return(pca_layer)
+    }) %>% raster::stack(.)
+
 
     names(layers_to_proj) <- colnames(pc_projDF)
     results$pcs_layers_projection <- layers_to_proj
@@ -203,13 +211,13 @@ spca <- function(layers_stack,layers_to_proj=NULL,pca_obj=NULL,sv_dir=NULL,layer
                each=length(colnames(pca_summary$importance))),
     value=c(pca_summary$importance[3,],pca_summary$importance[2,])*100
   )
-
+  group <- id <-  stat <- end <- NULL
   empty_bar <- 3
   to_add <- data.frame( matrix(NA, empty_bar*nlevels(data_pca$group), ncol(data_pca)) )
   colnames(to_add) <- colnames(data_pca)
   to_add$group <- rep(levels(data_pca$group), each=empty_bar)
   data_pca <- rbind(data_pca, to_add)
-  data_pca <- data_pca %>% arrange_(~group)
+  data_pca <- data_pca %>% dplyr::arrange(group)
   data_pca$id <- seq(1, nrow(data_pca))
 
   label_data <- data_pca
@@ -217,12 +225,11 @@ spca <- function(layers_stack,layers_to_proj=NULL,pca_obj=NULL,sv_dir=NULL,layer
   angle <- 90 - 360 * (label_data$id-0.5) /number_of_bar     #
   label_data$hjust<-ifelse( angle < -90, 1, 0)
   label_data$angle<-ifelse(angle < -90, angle+180, angle)
-
   base_data <- data_pca %>%
-    group_by_(~group) %>%
-    summarize(start=min(id), end=max(id) - empty_bar) %>%
-    rowwise() %>%
-    mutate_(title=~mean(c(start,end)))
+    dplyr::group_by(group) %>%
+    dplyr::summarize(start=min(id), end=max(id) - empty_bar) %>%
+    dplyr::rowwise() %>%
+    dplyr::mutate(title=mean(c(start,end)))
 
   grid_data <- base_data
   grid_data$end <- grid_data$end[ c( nrow(grid_data),
@@ -254,11 +261,11 @@ spca <- function(layers_stack,layers_to_proj=NULL,pca_obj=NULL,sv_dir=NULL,layer
                  inherit.aes = FALSE ) +
 
     # Add text showing the value of each 100/75/50/25 lines
-    annotate("text", x = rep(max(data_pca$id),4),
-             y = c(20, 40, 60, 80),
-             label = c("20", "40", "60", "80") ,
-             color="grey", size=3 , angle=0,
-             fontface="bold", hjust=1) +
+    #annotate("text", x = rep(max(data_pca$id),4),
+    #         y = c(20, 40, 60, 80),
+    #         label = c("20", "40", "60", "80") ,
+    #         color="#A8A8A8", size=3.5 , angle=0,
+    #         fontface="bold", hjust=1) +
 
     geom_bar(aes_(x=~as.factor(id), y=~value,
                   fill=~group), stat="identity",
@@ -278,7 +285,7 @@ spca <- function(layers_stack,layers_to_proj=NULL,pca_obj=NULL,sv_dir=NULL,layer
                    label=~paste(pca,"\n",value),
                    hjust=~hjust), color="black",
               fontface="bold",alpha=0.6,
-              size=2.5, angle= label_data$angle,
+              size=2.85, angle= label_data$angle,
               inherit.aes = FALSE ) +
 
     # Add base line information
