@@ -4,7 +4,7 @@ data_gbif_search <- eventReactive(input$search_gbif_data,{
   # Test if the API is working
   test <- ntbox::search_gbif_data(genus = "Ambystoma",
                                   species = "tigrinum",
-                                  occlim = 1,
+                                  occlim = 10,
                                   leafletplot = TRUE,
                                   writeFile = FALSE)
 

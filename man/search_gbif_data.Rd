@@ -42,7 +42,7 @@ genus <- "ambystoma"
 # Species name
 species <- "tigrinum"
 # GBIF search
-ambystoma_tigrinum <- search_gbif_data(genus,species,
+ambystoma_tigrinum <- ntbox::search_gbif_data(genus,species,
                                        occlim=100,
                                        writeFile=FALSE)
 head(ambystoma_tigrinum[,1:5])
