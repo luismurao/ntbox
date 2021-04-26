@@ -111,7 +111,7 @@ gistools <- div(class="outer",
                                                               c('.asc','.bil',
                                                                 '.tif','.nc',
                                                                 '.sdat','.img')),
-                                                 shiny::actionButton("dopca", "Go"),
+                                                 shiny::actionButton("dopca", "Do PCA"),
                                                  busyIndicator("Computation In progress",wait = 0),
                                                  plotOutput(outputId = "pca_plot",width = "400px",height = "400px")
                                                  )

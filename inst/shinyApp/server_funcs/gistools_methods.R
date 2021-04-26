@@ -209,8 +209,10 @@ pcas_layers <- eventReactive(input$dopca,{
   if(!dir.exists(wf_directory))
     dir.create(wf_directory)
   layers_selected <- input$layers2pc
-  if(nchar(input$projLayers_wd)>0L){
+  if(length(input$projLayers_wd)>0 && nchar(input$projLayers_wd)>0L){
     wf_directory_proj <- file.path(workflowDir(),input$projLayers_wd)
+  } else{
+    wf_directory_proj <- NULL
   }
 
   if(!is.null(input$rds_file)){
