@@ -224,8 +224,8 @@ proc_precision <- function(mod_vals,test_data){
   #                                  probs=0.1)
   partition_flag <- mean(c(min_vals,
                            percentil_test))
-
-  if (stringr::str_detect(partition_flag, "e")) {
+  fflag <- stringr::str_detect(partition_flag, "e")
+  if (length(fflag)>0L && fflag) {
     ndigits <- stringr::str_split(partition_flag, "e-")[[1]]
     ndigits <- as.numeric(ndigits)[2] #- 1
   }
