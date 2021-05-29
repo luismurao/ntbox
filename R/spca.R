@@ -75,8 +75,11 @@
 spca <- function(layers_stack,layers_to_proj=NULL,pca_obj=NULL,sv_dir=NULL,layers_format=".asc",sv_proj_dir=NULL){
 
   results <- list()
-  layers_stack <- raster::stack(layers_stack)
-  if(class(layers_stack)=="RasterStack"){
+  if(!is.null(layers_stack)){
+    layers_stack <- raster::stack(layers_stack)
+  }
+
+  if(class(layers_stack)=="RasterStack" && class(pca_obj) != "prcomp"){
 
     layers_vals <- names(layers_stack) %>% purrr::map_dfc(function(x){
       df1 <- data.frame(val = layers_stack[[x]][])
@@ -89,10 +92,8 @@ spca <- function(layers_stack,layers_to_proj=NULL,pca_obj=NULL,sv_dir=NULL,layer
     #id_nas <- id_nas[-id_vals]
     layers_noNA <- layers_vals[id_vals,]
 
-    if(class(pca_obj) != "prcomp"){
-      pca_obj <- stats::prcomp(x = layers_noNA,center = TRUE,
-                               scale. = TRUE)
-    }
+    pca_obj <- stats::prcomp(x = layers_noNA,center = TRUE,
+                             scale. = TRUE)
 
     pca_summary <- base::summary(pca_obj)
     pca_plot <- .plot_pca(pca_summary = pca_summary)
@@ -105,12 +106,12 @@ spca <- function(layers_stack,layers_to_proj=NULL,pca_obj=NULL,sv_dir=NULL,layer
     pca_values <- rep(NA,raster::ncell(layers_stack[[1]]))
 
     colnames(pca_estimate) <- nombres_pcs
-    layers_pca <- seq_along(nombres_pcs) %>% purrr::map(function(x){
+    layers_pca <- raster::stack(seq_along(nombres_pcs) %>% purrr::map(function(x){
 
       pca_values[id_vals] <- pca_estimate[,x]
       pca_layer[] <- pca_values
       return(pca_layer)
-    }) %>% raster::stack(.)
+    }))
     names(layers_pca) <- nombres_pcs
 
     results <- list(pc_layers=layers_pca,
@@ -144,6 +145,10 @@ spca <- function(layers_stack,layers_to_proj=NULL,pca_obj=NULL,sv_dir=NULL,layer
 
   if(class(layers_to_proj)=="RasterStack" && class(pca_obj) == "prcomp"){
 
+    nombres_pcs <- colnames(pca_obj$x)
+    if(ncol(layers_vals)>9)
+      nombres_pcs[1:9] <- paste0("PC0",1:9)
+
     if(!all(names(layers_to_proj) == names(layers_pca)))
       cat(paste("Assuming that the layers that have the same position in the",
                 "stack represent the same kind of variables\n\n"))
@@ -159,12 +164,13 @@ spca <- function(layers_stack,layers_to_proj=NULL,pca_obj=NULL,sv_dir=NULL,layer
 
     if(length(colnames( pc_projDF ))>9)
       colnames(pc_projDF)[1:9] <- paste0("PC0",1:9)
+    pca_values <- rep(NA,raster::ncell(layers_to_proj[[1]]))
 
-    layers_to_proj <- seq_along(nombres_pcs) %>% purrr::map(function(x){
+    layers_to_proj <- raster::stack(seq_along(nombres_pcs) %>% purrr::map(function(x){
       pca_values[id_vals] <- pc_projDF[,x]
       pca_layer[] <- pca_values
       return(pca_layer)
-    }) %>% raster::stack(.)
+    }))
 
 
     names(layers_to_proj) <- colnames(pc_projDF)
@@ -225,6 +231,7 @@ spca <- function(layers_stack,layers_to_proj=NULL,pca_obj=NULL,sv_dir=NULL,layer
   angle <- 90 - 360 * (label_data$id-0.5) /number_of_bar     #
   label_data$hjust<-ifelse( angle < -90, 1, 0)
   label_data$angle<-ifelse(angle < -90, angle+180, angle)
+  start <- NULL
   base_data <- data_pca %>%
     dplyr::group_by(group) %>%
     dplyr::summarize(start=min(id), end=max(id) - empty_bar) %>%
