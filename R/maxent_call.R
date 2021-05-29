@@ -163,21 +163,26 @@ maxent_call <- function(maxentjar_path,
                                         "maxent.jar"))
 
   maxentpath <- gsub(pattern = "[\\]","/",maxentpath)
+  maxentpath <- paste0("'",maxentpath,"'")
   environmentallayers <- normalizePath(environmentallayers)
   environmentallayers <- gsub(pattern = "[\\]","/",environmentallayers)
 
   #env_name <- unlist(stringr::str_split(environmentallayers ,dl))
   env_name <- gsub(pattern = "[\\]","/",environmentallayers)
   env_name <- unlist(stringr::str_split(environmentallayers,pattern = "/"))
+  environmentallayers <- paste0("'",environmentallayers,"'")
+
 
   ifelse(nchar(env_name[length(env_name)])>0L,
          env_name <- env_name[length(env_name)],
          env_name <- env_name[length(env_name)-1])
   samplesfile <- normalizePath(samplesfile)
   samplesfile <- gsub(pattern = "[\\]","/",samplesfile)
+  samplesfile <- paste0("'",samplesfile,"'")
   if(!is.null(testsamplesfile)){
     testsamplesfile <- normalizePath(testsamplesfile)
     testsamplesfile <- gsub(pattern = "[\\]","/",testsamplesfile)
+    testsamplesfile <- paste0("'",testsamplesfile,"'")
   }
 
   if(is.null(outputdirectory) || !dir.exists(outputdirectory)){
@@ -186,6 +191,7 @@ maxent_call <- function(maxentjar_path,
     outputdirectory <- normalizePath(outputdirectory)
   }
   outputdirectory <- gsub(pattern = "[\\]","/",outputdirectory)
+
 
   f_act <- paste(unlist(features),collapse = "")
 
@@ -201,6 +207,16 @@ maxent_call <- function(maxentjar_path,
   })
   outputdirectory <- normalizePath(outputdirectory)
   outputdirectory <- gsub(pattern = "[\\]","/",outputdirectory)
+  outputdirectory <- paste0("'",outputdirectory,"'")
+  if(!is.null(projectionlayers)){
+    projlayers <- unlist(
+      lapply(projectionlayers, function(x){
+        if(dir.exists(x)) return(normalizePath(x))
+      })
+    )
+    projectionlayers <- paste0("'",paste0(projlayers,collapse = ","),"'")
+  }
+
   maxent_call <-   paste0("java ","-mx",
                           memory_assigned,"m -jar ",
                           maxentpath," environmentallayers=",
@@ -209,10 +225,9 @@ maxent_call <- function(maxentjar_path,
                           ifelse(!is.null(testsamplesfile),
                                  paste0(" testsamplesfile=",testsamplesfile),""),
                           " outputdirectory=",outputdirectory,
-                          ifelse(is.null(projectionlayers) ||
-                                   !dir.exists(projectionlayers),"",
+                          ifelse(is.null(projectionlayers),"",
                                  paste0(" projectionlayers=",
-                                        normalizePath(projectionlayers))),
+                                        projectionlayers)),
                           " ",selected_features,
                           " maximumbackground=", maximumbackground,
                           ifelse(responsecurves," responsecurves=true",
@@ -251,7 +266,7 @@ maxent_call <- function(maxentjar_path,
                                  paste0(" biasfile=",{
                                    biasfile <- normalizePath(biasfile)
                                    biasfile <- gsub(pattern = "[\\]","/",biasfile)
-                                   biasfile})),
+                                   paste0("'",biasfile,"'")})),
                           ifelse(!file.exists(biasfile),"",
                                  paste0(" biastype=",biastype)),
                           ifelse(is.numeric(replicates),
