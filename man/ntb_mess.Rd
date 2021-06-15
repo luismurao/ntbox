@@ -27,8 +27,8 @@ g_stack <- raster::stack(list.files(system.file("extdata",
                                     pattern = "G_layers.tif$",
                                     full.names = TRUE))
 
-messVals <- ntb_mess(M_stack = m_stack,
-                     G_stack = g_stack)
+messVals <- ntbox::ntb_mess(M_stack = m_stack,
+                            G_stack = g_stack)
 raster::plot(messVals)
 }
 \references{

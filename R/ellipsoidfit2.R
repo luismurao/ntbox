@@ -44,7 +44,6 @@ ellipsoidfit2 <- function(envlayers,centroid,covar,level=0.95,
     resolution <- raster::res(envlayers)
     extention <- raster::extent(envlayers)
     env_vars <- raster::getValues(envlayers)
-    coordinates <- sp::coordinates(envlayers)
     suitRaster <- envlayers[[1]]
     names(suitRaster) <- "Suitability"
     nonaids <- which(!is.na(env_vars[,1]))
