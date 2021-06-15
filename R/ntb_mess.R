@@ -16,8 +16,8 @@
 #'                                     pattern = "G_layers.tif$",
 #'                                     full.names = TRUE))
 #'
-#' messVals <- ntb_mess(M_stack = m_stack,
-#'                      G_stack = g_stack)
+#' messVals <- ntbox::ntb_mess(M_stack = m_stack,
+#'                             G_stack = g_stack)
 #' raster::plot(messVals)
 ntb_mess <- function(M_stack, G_stack){
 
@@ -36,8 +36,8 @@ ntb_mess <- function(M_stack, G_stack){
   if(dim(gMat)[2] == dim(mMat)[2]){
 
     c1 <- 1:dim(mMat)[2] %>%
-      purrr::map(~.dismo_mess(gVar =gMat[,.x],
-                              mVar = mMat_sorted[,.x] ))
+      purrr::map(~.dismo_mess2(gVar =gMat[,.x],
+                               mVar = mMat_sorted[,.x] ))
     min_1 <- do.call(base::pmin, c1 )
     mess_res[] <- min_1
     names(mess_res) <- "MESS"
@@ -66,3 +66,20 @@ ntb_mess <- function(M_stack, G_stack){
 }
 
 
+.dismo_mess2 <- function(gVar,mVar){
+  nrowsM <-  length(mVar)
+  comp_list <- list(gVar,mVar)
+  intI <- do.call(base::findInterval, comp_list)
+  f<-100*intI/nrowsM
+  maxv <- max(comp_list[[2]])
+  minv <- min(comp_list[[2]])
+  #opt1 <- 100*(comp_list[[1]]-minv)/(maxv-minv)
+  #opt2 <- 2*f
+  #opt3 <- 2 * (100-f)
+  #opt4 <- 100*(maxv-comp_list[[1]])/(maxv-minv)
+  simi <- ifelse(f==0, 100*(comp_list[[1]]-minv)/(maxv-minv),
+                 ifelse(f<=50, 2*f,
+                        ifelse(f<100, 2 * (100-f),
+                               100*(maxv-comp_list[[1]])/(maxv-minv))))
+  return(simi)
+}
