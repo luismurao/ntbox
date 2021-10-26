@@ -72,140 +72,120 @@
 #' raster::plot(pcs_with_proj_sv$pcs_layers_projection)
 #' }
 
-spca <- function(layers_stack,layers_to_proj=NULL,pca_obj=NULL,sv_dir=NULL,layers_format=".asc",sv_proj_dir=NULL){
-
+spca <- function (layers_stack, layers_to_proj = NULL, pca_obj = NULL,
+                  sv_dir = NULL, layers_format = ".asc", sv_proj_dir = NULL)
+{
   results <- list()
-  if(!is.null(layers_stack)){
+  if (!is.null(layers_stack)) {
     layers_stack <- raster::stack(layers_stack)
   }
-
-  if(class(layers_stack)=="RasterStack" && class(pca_obj) != "prcomp"){
-
-    layers_vals <- names(layers_stack) %>% purrr::map_dfc(function(x){
+  if (class(layers_stack) == "RasterStack" && class(pca_obj) !=
+      "prcomp") {
+    id_vals <- which(!is.na(layers_stack[[1]][]))
+    layers_vals <- names(layers_stack) %>% purrr::map_dfc(function(x) {
       df1 <- data.frame(val = layers_stack[[x]][])
+      df1 <- df1[id_vals,]
       names(df1) <- x
       return(df1)
     })
-    layers_vals <- as.matrix(layers_vals)
-    id_vals <- which(stats::complete.cases(layers_vals))
-    #id_nas <- 1:dim(layers_vals)[1]
-    #id_nas <- id_nas[-id_vals]
-    layers_noNA <- layers_vals[id_vals,]
+    layers_noNA <- as.matrix(layers_vals)
 
-    pca_obj <- stats::prcomp(x = layers_noNA,center = TRUE,
+    #id_vals <- which(stats::complete.cases(layers_vals))
+    #layers_noNA <- layers_vals[id_vals, ]
+    pca_obj <- stats::prcomp(x = layers_noNA, center = TRUE,
                              scale. = TRUE)
-
     pca_summary <- base::summary(pca_obj)
     pca_plot <- .plot_pca(pca_summary = pca_summary)
-
     pca_layer <- layers_stack[[1]]
     nombres_pcs <- colnames(pca_obj$x)
-    if(ncol(layers_vals)>9)
-      nombres_pcs[1:9] <- paste0("PC0",1:9)
+    if (ncol(layers_noNA) > 9)
+      nombres_pcs[1:9] <- paste0("PC0", 1:9)
+    rm(layers_vals)
+    gc()
     pca_estimate <- pca_obj$x
-    pca_values <- rep(NA,raster::ncell(layers_stack[[1]]))
-
+    pca_values <- rep(NA, raster::ncell(layers_stack[[1]]))
     colnames(pca_estimate) <- nombres_pcs
-    layers_pca <- raster::stack(seq_along(nombres_pcs) %>% purrr::map(function(x){
-
-      pca_values[id_vals] <- pca_estimate[,x]
-      pca_layer[] <- pca_values
-      return(pca_layer)
-    }))
+    layers_pca <- raster::stack(seq_along(nombres_pcs) %>%
+                                  purrr::map(function(x) {
+                                    pca_values[id_vals] <- pca_estimate[, x]
+                                    pca_layer[] <- pca_values
+                                    return(pca_layer)
+                                  }))
     names(layers_pca) <- nombres_pcs
-
-    results <- list(pc_layers=layers_pca,
-                    pc_results=pca_obj,
-                    pca_plot=pca_plot)
-
-    if(!is.null(sv_dir) && dir.exists(sv_dir) && class(results$pc_layers) == "RasterStack"){
-      pca_obj_file <- file.path(sv_dir,
-                                paste0("pca_object",
-                                       format(Sys.time(),
-                                              "%y_%m_%d_%H_%M"),".rds"))
-
-      saveRDS(pca_obj, pca_obj_file)
-
+    results <- list(pc_layers = layers_pca, pc_results = pca_obj,
+                    pca_plot = pca_plot)
+    if (!is.null(sv_dir) && dir.exists(sv_dir) && class(results$pc_layers) ==
+        "RasterStack") {
       n_layers <- seq_along(names(layers_pca))
-      layers_path <- file.path(sv_dir,paste0(names(layers_pca),
-                                             layers_format))
-
-      pca_plot_path <- file.path(sv_dir,"pca_variance_exp.pdf")
-
-      ggplot2::ggsave(pca_plot_path,plot = pca_plot,
-                      width = 8,height = 8)
-
-
+      pca_plot_path <- file.path(sv_dir, "pca_variance_exp.pdf")
+      ggplot2::ggsave(pca_plot_path, plot = pca_plot, width = 8,
+                      height = 8)
+      layers_path <- file.path(sv_dir, paste0(names(layers_pca),
+                                              layers_format))
       n_layers %>% purrr::map(~raster::writeRaster(layers_pca[[.x]],
-                                                   layers_path[.x],
-                                                   overwrite=TRUE))
+                                                   layers_path[.x], overwrite = TRUE))
+      pca_obj_file <- file.path(sv_dir, paste0("pca_object",
+                                               format(Sys.time(), "%y_%m_%d_%H_%M"), ".rds"))
+      saveRDS(pca_obj, pca_obj_file)
 
     }
   }
-
-  if(class(layers_to_proj)=="RasterStack" && class(pca_obj) == "prcomp"){
-
+  if (class(layers_to_proj) == "RasterStack" && class(pca_obj) ==
+      "prcomp") {
     nombres_pcs <- colnames(pca_obj$x)
-    if(ncol(layers_vals)>9)
-      nombres_pcs[1:9] <- paste0("PC0",1:9)
-
-    if(!all(names(layers_to_proj) == names(layers_pca)))
+    if (raster::nlayers(layers_to_proj) > 9)
+      nombres_pcs[1:9] <- paste0("PC0", 1:9)
+    if (!all(names(layers_to_proj) == names(layers_pca)))
       cat(paste("Assuming that the layers that have the same position in the",
                 "stack represent the same kind of variables\n\n"))
-
     layers_to_proj <- layers_to_proj[[1:length(names(pca_obj$center))]]
-
     names(layers_to_proj) <- names(pca_obj$center)
-    proj_data <- raster::getValues(layers_to_proj)
-    id_vals <- which(stats::complete.cases(proj_data))
-    proj_noNA <-  proj_data [id_vals,]
+    id_vals <- which(!is.na(layers_to_proj[[1]][]))
+    proj_data <- names(layers_to_proj) %>% purrr::map_dfc(function(x) {
+      df1 <- data.frame(val = layers_to_proj[[x]][])
+      df1 <- df1[id_vals,]
+      names(df1) <- x
+      return(df1)
+    })
 
-    pc_projDF <- stats::predict(pca_obj,newdata=proj_noNA)
-
-    if(length(colnames( pc_projDF ))>9)
-      colnames(pc_projDF)[1:9] <- paste0("PC0",1:9)
-    pca_values <- rep(NA,raster::ncell(layers_to_proj[[1]]))
-
-    layers_to_proj <- raster::stack(seq_along(nombres_pcs) %>% purrr::map(function(x){
-      pca_values[id_vals] <- pc_projDF[,x]
-      pca_layer[] <- pca_values
-      return(pca_layer)
-    }))
-
-
+    proj_noNA <- as.matrix(proj_data)
+    rm(proj_data)
+    gc()
+    pc_projDF <- stats::predict(pca_obj, newdata = proj_noNA)
+    if (length(colnames(pc_projDF)) > 9)
+      colnames(pc_projDF)[1:9] <- paste0("PC0", 1:9)
+    pca_values <- rep(NA, raster::ncell(layers_to_proj[[1]]))
+    pca_layer <- layers_to_proj[[1]]
+    layers_to_proj <- raster::stack(seq_along(nombres_pcs) %>%
+                                      purrr::map(function(x) {
+                                        pca_values[id_vals] <- pc_projDF[, x]
+                                        pca_layer[] <- pca_values
+                                        return(pca_layer)
+                                      }))
     names(layers_to_proj) <- colnames(pc_projDF)
     results$pcs_layers_projection <- layers_to_proj
-
-    if((!is.null(sv_dir) && dir.exists(sv_dir)) && is.null(sv_proj_dir))
+    if ((!is.null(sv_dir) && dir.exists(sv_dir)) && is.null(sv_proj_dir))
       sv_proj_dir <- sv_dir
-
-    if(!dir.exists(sv_proj_dir)) dir.create(sv_proj_dir)
-
-    if(!is.null(results$pcs_layers_projection) && dir.exists(sv_proj_dir)){
-
-      if(sv_proj_dir == sv_dir){
-        sv_proj_dir <- file.path(sv_dir,"pca_projection")
+    if (!is.null(sv_proj_dir) && !dir.exists(sv_proj_dir))
+      dir.create(sv_proj_dir)
+    if (!is.null(results$pcs_layers_projection) && !is.null(sv_proj_dir) && dir.exists(sv_proj_dir)) {
+      if (sv_proj_dir == sv_dir) {
+        sv_proj_dir <- file.path(sv_dir, "pca_projection")
         dir.create(sv_proj_dir)
       }
-
-      layers_path_proj <- file.path(sv_proj_dir,
-                                    paste0(names(layers_to_proj),
-                                           layers_format))
-
-      if(exists("layers_path_proj")){
-        1:length(layers_path_proj) %>%
-          purrr::map(~raster::writeRaster(layers_to_proj[[.x]],
-                                          layers_path_proj[.x],
-                                          overwrite=TRUE))
+      layers_path_proj <- file.path(sv_proj_dir, paste0(names(layers_to_proj),
+                                                        layers_format))
+      if (exists("layers_path_proj")) {
+        1:length(layers_path_proj) %>% purrr::map(~raster::writeRaster(layers_to_proj[[.x]],
+                                                                       layers_path_proj[.x], overwrite = TRUE))
       }
     }
     return(results)
   }
-  if(length(results)>0L) return(results)
-  else
-    stop("layers: must be of class RasterStack")
+  if (length(results) > 0L)
+    return(results)
+  else stop("layers: must be of class RasterStack")
 }
-
 
 # This code is entirely adapted from
 # https://www.r-graph-gallery.com/297-circular-barplot-with-groups/
