@@ -10,7 +10,8 @@ swd_format(
   occs_points,
   sp_name = "sp",
   longitude,
-  latitude
+  latitude,
+  random_seed = NULL
 )
 }
 \arguments{
@@ -25,6 +26,8 @@ swd_format(
 \item{longitude}{Column name containing longitude data.}
 
 \item{latitude}{Column name containing latitude data.}
+
+\item{random_seed}{A numeric value for random seed}
 }
 \value{
 A list with the occurrence or/and background points in swd format.

@@ -5,6 +5,7 @@
 #' @param sp_name Species name. Default sp_name="sp".
 #' @param longitude Column name containing longitude data.
 #' @param latitude Column name containing latitude data.
+#' @param random_seed A numeric value for random seed
 #' @description swd_format It reshapes your occurrence and background information
 #' using the format samples with data (swd) to run maxent with an ordinary samples file.
 #' @details The difference between the typical way of running MaxEnt models and it
@@ -42,12 +43,14 @@
 #'
 #'}
 
-swd_format <- function(env_layers,nbg=NULL,occs_points,sp_name="sp",longitude, latitude){
+swd_format <- function(env_layers,nbg=NULL,occs_points,sp_name="sp",longitude,
+                       latitude,random_seed=NULL){
   if(is.numeric(nbg)){
     bg_swd <- ntbox::sample_envbg(env_layers,
                                   nbg = nbg,
                                   coordinates = T,
-                                  cellIDs = FALSE)
+                                  cellIDs = FALSE,
+                                  rseed = random_seed)
     bg_swd <- data.frame(sp_name="background",bg_swd)
   }
 
@@ -76,7 +79,7 @@ swd_format <- function(env_layers,nbg=NULL,occs_points,sp_name="sp",longitude, l
       d1 <- data.frame(r1[occs_cellID])
       names(d1) <- names(r1)
       return(d1)
-    })
+    },.options = furrr::furrr_options(seed = NULL))
     future::plan(future::sequential)
   }
 
