@@ -9,6 +9,7 @@
 #' @param coordinates Logical. If TRUE cell coordinates will be returned
 #' @param cellIDs Logical. If TRUE cell IDs will be returned
 #' @param rseed Random seed number. Default NULL
+#' @param parallel Run the process in parallel
 #' @param ncores Number of workers to run the parallel process.
 #' @import future
 #' @examples
@@ -25,7 +26,7 @@
 #' }
 #' @export
 sample_envbg <- function(envlayers,nbg,nprop=NULL,coordinates=FALSE,
-                         cellIDs=FALSE,rseed=NULL,ncores=4){
+                         cellIDs=FALSE,rseed=NULL,parallel=TRUE,ncores=4){
   if(class(envlayers) == "RasterStack" ||
      class(envlayers) == "RasterBrick"){
     envlayers <- raster::stack(envlayers)
@@ -58,10 +59,11 @@ sample_envbg <- function(envlayers,nbg,nprop=NULL,coordinates=FALSE,
       fnames <- sapply(envlayers@layers, function(x) x@file@name)
       fnames <- unique(fnames)
       indexL <- 1:raster::nlayers(envlayers)
-      furrr::furrr_options(globals = c("fnames",
-                                       "toSamp",
-                                       "indexL"))
-      plan(multisession,workers=n_cores)
+      if(parallel){
+        plan(multisession,workers=n_cores)
+      } else{
+        plan(sequential)
+      }
       options(future.globals.maxSize= 8500*1024^2)
       env_bg <- furrr::future_map_dfc(indexL, function(x){
         if(length(fnames) == 1)
@@ -72,7 +74,10 @@ sample_envbg <- function(envlayers,nbg,nprop=NULL,coordinates=FALSE,
         d1 <- data.frame(r2[toSamp])
         names(d1) <- names(r1)
         return(d1)
-      },.progress = TRUE,.options = furrr::furrr_options(seed = NULL))
+      },.progress = TRUE,.options = furrr::furrr_options(globals = c("fnames",
+                                                                     "toSamp",
+                                                                     "indexL"),
+                                                         seed = NULL))
       future::plan(future::sequential)
     }
     if(coordinates){

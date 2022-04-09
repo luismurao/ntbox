@@ -11,7 +11,9 @@ swd_format(
   sp_name = "sp",
   longitude,
   latitude,
-  random_seed = NULL
+  random_seed = NULL,
+  parallel = TRUE,
+  ncores = 4
 )
 }
 \arguments{
@@ -28,6 +30,10 @@ swd_format(
 \item{latitude}{Column name containing latitude data.}
 
 \item{random_seed}{A numeric value for random seed}
+
+\item{parallel}{Run the process in parallel}
+
+\item{ncores}{Number of cores to run the parallel process}
 }
 \value{
 A list with the occurrence or/and background points in swd format.

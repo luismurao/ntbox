@@ -6,6 +6,8 @@
 #' @param longitude Column name containing longitude data.
 #' @param latitude Column name containing latitude data.
 #' @param random_seed A numeric value for random seed
+#' @param parallel Run the process in parallel
+#' @param ncores Number of cores to run the parallel process
 #' @description swd_format It reshapes your occurrence and background information
 #' using the format samples with data (swd) to run maxent with an ordinary samples file.
 #' @details The difference between the typical way of running MaxEnt models and it
@@ -44,13 +46,14 @@
 #'}
 
 swd_format <- function(env_layers,nbg=NULL,occs_points,sp_name="sp",longitude,
-                       latitude,random_seed=NULL){
+                       latitude,random_seed=NULL,parallel=TRUE,ncores=4){
   if(is.numeric(nbg)){
     bg_swd <- ntbox::sample_envbg(env_layers,
                                   nbg = nbg,
                                   coordinates = T,
                                   cellIDs = FALSE,
-                                  rseed = random_seed)
+                                  rseed = random_seed,
+                                  ncores = ncores)
     bg_swd <- data.frame(sp_name="background",bg_swd)
   }
 
@@ -67,7 +70,7 @@ swd_format <- function(env_layers,nbg=NULL,occs_points,sp_name="sp",longitude,
   if (canP) {
     occs_env <-env_layers[occs_cellID]
   } else{
-    future::plan(future::multiprocess)
+    future::plan(future::multisession)
     fnames <- sapply(env_layers@layers, function(x) x@file@name)
     fnames <- unique(fnames)
     indexL <- 1:raster::nlayers(env_layers)
