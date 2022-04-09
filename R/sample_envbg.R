@@ -72,7 +72,7 @@ sample_envbg <- function(envlayers,nbg,nprop=NULL,coordinates=FALSE,
         d1 <- data.frame(r2[toSamp])
         names(d1) <- names(r1)
         return(d1)
-      },.progress = TRUE)
+      },.progress = TRUE,.options = furrr::furrr_options(seed = NULL))
       future::plan(future::sequential)
     }
     if(coordinates){
