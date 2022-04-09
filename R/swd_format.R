@@ -53,6 +53,7 @@ swd_format <- function(env_layers,nbg=NULL,occs_points,sp_name="sp",longitude,
                                   coordinates = T,
                                   cellIDs = FALSE,
                                   rseed = random_seed,
+                                  parallel = parallel,
                                   ncores = ncores)
     bg_swd <- data.frame(sp_name="background",bg_swd)
   }
