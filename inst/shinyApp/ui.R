@@ -1,6 +1,6 @@
 
 osSystem <- Sys.info()["sysname"]
-ui_files <- list.files(path = "ui_layers",pattern = "*.R$",full.names = TRUE)
+ui_files <- list.files(path = "ui_layers",pattern = ".R$",full.names = TRUE)
 load_ui <- sapply(ui_files,source)
 shinyUI(
   navbarPage(theme = shinytheme("cerulean"),
