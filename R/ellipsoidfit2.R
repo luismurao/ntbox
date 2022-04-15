@@ -41,21 +41,29 @@ ellipsoidfit2 <- function(envlayers,centroid,covar,level=0.95,
                          xlab1="niche var 1",ylab1= "niche var 2",zlab1="S",...){
 
   if(class(envlayers)=="RasterStack" || class(envlayers)=="RasterBrick"){
-    resolution <- raster::res(envlayers)
-    extention <- raster::extent(envlayers)
-    env_vars <- raster::getValues(envlayers)
+    ncells <- raster::ncell(envlayers[[1]])
+    nonaids <- which(!is.na(envlayers[[1]][]))
+
+    env_vars <- 1: raster::nlayers(envlayers) %>% purrr::map_dfc(function(x){
+      capa_val <- envlayers[[x]]
+      nombre_capa <- names(capa_val)
+      capa_val <- capa_val[]
+      capa_val <- capa_val[nonaids]
+      df <- data.frame(capa_val)
+      names(df) <- nombre_capa
+      return(df)
+    })
+    env_vars <- as.matrix(env_vars)
     suitRaster <- envlayers[[1]]
     names(suitRaster) <- "Suitability"
-    nonaids <- which(!is.na(env_vars[,1]))
     suitVals <- rep(NA,raster::ncell(suitRaster))
 
   }
   else{
     stop("envlayers should be of class 'RasterStack' or 'RasterBrick'")
   }
-  env_vars_nona <- env_vars[nonaids,]
   # Calculating distance to the centroid
-  mahalanobisD <- stats::mahalanobis(env_vars_nona,
+  mahalanobisD <- stats::mahalanobis(env_vars,
                                      center = centroid,
                                      cov = covar)
 
@@ -120,7 +128,7 @@ ellipsoidfit2 <- function(envlayers,centroid,covar,level=0.95,
 
   if(dim(env_vars)[2]==3 && plot==TRUE){
 
-    data1 <- env_vars_nona
+    data1 <- env_vars
     dfd <- dim(data1)[1] - 1
     dfn <- dim(data1)[2] - 1
     # Ellipsoid radius
