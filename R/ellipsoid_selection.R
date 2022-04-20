@@ -170,7 +170,7 @@ ellipsoid_selection <- function(env_train,env_test=NULL,env_vars,nvarstest,level
                                      "rseed","level"),
                          packages = c("Rcpp","ntbox"))
     plan(multisession,workers=n_cores)
-    options(future.globals.maxSize= 8500*1024^2)
+    options(future.globals.maxSize= 8500*1024^2,future.rng.onMisuse="ignore")
     model_select <- new.env()
     for (paso in pasosChar) {
       x <- as.numeric(paso)

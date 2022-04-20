@@ -112,6 +112,15 @@ pROC <- function(continuous_mod,test_data,
                          n_data, n_samp,
                          error_sens,rseed=NULL) {
     if(is.numeric(rseed)) set.seed(rseed)
+    trapz_roc <- function(x,y){
+      size_x <- length(x)
+      xp <- c(x, x[size_x:1])
+      yp <- c(numeric(size_x), y[size_x:1])
+      nda <- 2 * size_x
+      p1 <- sum(xp[1:(nda - 1)] * yp[2:nda]) + xp[nda] * yp[1]
+      p2 <- sum(xp[2:nda] * yp[1:(nda - 1)]) + xp[1] * yp[nda]
+      return(0.5 * (p1 - p2))
+    }
 
     rowsID <- sample(x = n_data,
                      size = n_samp,
@@ -124,15 +133,17 @@ pROC <- function(continuous_mod,test_data,
     xyTable <- rbind(xyTable,c(0,0))
     xyTable <- xyTable[order(xyTable$fractional_area,
                              decreasing = F),]
-    auc_model <- trapozoid_roc(xyTable$fractional_area,
+    auc_model <- trapz_roc(xyTable$fractional_area,
                                xyTable$sensibility)
+
+
     if(error_sens>0){
       less_ID <- which(xyTable$sensibility <= error_sens)
       xyTable <- xyTable[-less_ID, ]
-      auc_pmodel <- trapozoid_roc(xyTable$fractional_area,
+      auc_pmodel <- trapz_roc(xyTable$fractional_area,
                                   xyTable$sensibility)
 
-      auc_prand <- trapozoid_roc(xyTable$fractional_area,
+      auc_prand <- trapz_roc(xyTable$fractional_area,
                                  xyTable$fractional_area)
 
     }
