@@ -106,9 +106,9 @@
 #' }
 
 ellipsoid_selection <- function(env_train,env_test=NULL,env_vars,nvarstest,level=0.95,
-                                mve=TRUE,env_bg=NULL,omr_criteria,parallel=F,ncores=NULL,
-                                comp_each=100,proc=FALSE,
-                                proc_iter=100,rseed=TRUE){
+                                 mve=TRUE,env_bg=NULL,omr_criteria,parallel=F,ncores=NULL,
+                                 comp_each=100,proc=FALSE,
+                                 proc_iter=100,rseed=TRUE){
   n_vars <- length(env_vars)
   ntest <- sapply(nvarstest, function(x) choose(n_vars,x))
   nmodels <- sum(ntest)
@@ -164,56 +164,33 @@ ellipsoid_selection <- function(env_train,env_test=NULL,env_vars,nvarstest,level
     globs <- c("env_train",
                "env_test",
                "env_bg")
-    furrr::furrr_options(globals = c("env_train",
-                                     "env_test",
-                                     "env_bg",
-                                     "rseed","level"),
-                         packages = c("Rcpp","ntbox"))
     plan(multisession,workers=n_cores)
     options(future.globals.maxSize= 8500*1024^2,future.rng.onMisuse="ignore")
-    model_select <- new.env()
-    for (paso in pasosChar) {
-      x <- as.numeric(paso)
-      #fname <- file.path(dir1,paste0("eselection_",x,".txt"))
-      #if(x>n_cores) core <- 1
+    cat("Proceso de seleccion de modelos\\n\\n",file = "modelado_naty.txt")
 
+    rfinal  <- seq_along(pasos) %>% furrr::future_map_dfr(function(x){
+      seq_model <- kkk[x]:(kkk[x + 1] - 1)
+      combs_v <- as.matrix(big_vars[,seq_model])
+      results_df <- 1:ncol(combs_v) %>% purrr::map_dfr(function(x_comb) {
+        var_comb <- stats::na.omit(combs_v[,x_comb])
+        env_data0 <- stats::na.omit(env_train[,var_comb])
+        env_test0 <- stats::na.omit(env_test[,var_comb])
+        env_bg0 <-   stats::na.omit(env_bg[,var_comb])
+        r1 <- ntbox::ellipsoid_omr(env_data = env_data0,
+                                   env_test = env_test0,
+                                   env_bg = env_bg0,
+                                   cf_level = level,
+                                   proc = proc,
+                                   proc_iter,rseed=rseed)
+        return(r1)
+      })
       cat("Doing calibration from model ",
           kkk[x],"to ",kkk[x + 1] - 1,
-          "in process ",x,"\n\n")
-      model_select[[paso]] %<-% {
-
-        seq_model <- kkk[x]:(kkk[x + 1] - 1)
-        combs_v <- as.matrix(big_vars[,seq_model])
-
-        results_L <- lapply(1:ncol(combs_v),function(x_comb) {
-          var_comb <- stats::na.omit(combs_v[,x_comb])
-          env_data0 <- stats::na.omit(env_train[,var_comb])
-          env_test0 <- stats::na.omit(env_test[,var_comb])
-          env_bg0 <-   stats::na.omit(env_bg[,var_comb])
-          r1 <- ntbox::ellipsoid_omr(env_data = env_data0,
-                                     env_test = env_test0,
-                                     env_bg = env_bg0,
-                                     cf_level = level,
-                                     proc = proc,
-                                     proc_iter,rseed=rseed)
-          return(r1)
-        })
-        results_df <- do.call("rbind.data.frame",results_L)
-        cat("Finishing calibration of models ",kkk[x],"to ",kkk[x + 1] - 1,
-            "\n\n")
-        return(results_df)
-      }
-
-    }
-    mres <- as.list(model_select)
-
-    cat("Finishing...\n\n")
-    cat("-----------------------------------------------------------------------------------------\n")
-
-
-    rfinal <- do.call("rbind.data.frame", mres )
-
+          "in process ",x,"\n\n",file = "modelado_naty.txt",append = TRUE)
+      return(results_df)
+    },.options = furrr::furrr_options(seed = NULL),.progress = TRUE)
     future::plan(sequential)
+    gc()
   }
   else{
     cvars <- lapply(nvarstest, function(x) utils::combn(env_vars,x))
