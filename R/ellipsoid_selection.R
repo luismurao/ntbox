@@ -14,6 +14,8 @@
 #' @param ncores The number of cores that will be used for the parallel process. By default ntbox will use the total number of available cores less one.
 #' @param proc Logical if TRUE a partial roc test will be run.
 #' @param proc_iter Numeric. The total number of iterations for the partial ROC bootstrap.
+#' @param sub_sample Logical. Indicates whether the pROC test should run using a subsample of size sub_sample_size. It is recommended for big rasters
+#' @param sub_sample_size Numeric. Size of the sample to be used for computing pROC values.
 #' @param rseed Logical. Whether or not to set a random seed for partial roc bootstrap. Default TRUE.
 #' @param comp_each Number of models to run in each job in the parallel computation. Default 100
 #' @return A data.frame with 5 columns: i) "fitted_vars" the names of variables that were fitted; ii) "om_rate" omission rates of the model; iii) "bg_prevalence" approximated prevalence of the model see details section; iv) The rank value of importance in model selection by omission rate; v) The rank value by prevalence after if the value of omr_criteria is passed.
@@ -106,9 +108,11 @@
 #' }
 
 ellipsoid_selection <- function(env_train,env_test=NULL,env_vars,nvarstest,level=0.95,
-                                 mve=TRUE,env_bg=NULL,omr_criteria,parallel=F,ncores=NULL,
-                                 comp_each=100,proc=FALSE,
-                                 proc_iter=100,rseed=TRUE){
+                                mve=TRUE,env_bg=NULL,omr_criteria,parallel=F,ncores=NULL,
+                                comp_each=100,proc=FALSE,
+                                sub_sample=FALSE,
+                                sub_sample_size=10000,
+                                proc_iter=100,rseed=TRUE){
   n_vars <- length(env_vars)
   ntest <- sapply(nvarstest, function(x) choose(n_vars,x))
   nmodels <- sum(ntest)
@@ -280,6 +284,8 @@ ellipsoid_selection <- function(env_train,env_test=NULL,env_vars,nvarstest,level
 #' the function \code{\link[MASS]{cov.rob}} of the \pkg{MASS} package. If False the covariance matrix of the input data will be used.
 #' @param proc Logical if TRUE a partial roc test will be run.
 #' @param proc_iter Numeric. The total number of iterations for the partial ROC bootstrap.
+#' @param sub_sample Logical. Indicates whether the pROC test should run using a subsample of size sub_sample_size. It is recommended for big rasters
+#' @param sub_sample_size Numeric. Size of the sample to be used for computing pROC values.
 #' @param rseed Logical. Whether or not to set a random seed for partial roc bootstrap. Default TRUE.
 #' @return A data.frame with 5 columns: i) "fitted_vars" the names of variables that were fitted; ii) "om_rate" omission rates of the model; iii) "bg_prevalence" approximated prevalence of the model see details section.
 #' @export
@@ -322,7 +328,10 @@ ellipsoid_selection <- function(env_train,env_test=NULL,env_vars,nvarstest,level
 #'                             proc_iter=100,rseed=TRUE)
 #' print(ellip_eval)
 #' }
-ellipsoid_omr <- function(env_data,env_test=NULL,env_bg,cf_level,mve=TRUE,proc=FALSE,proc_iter=100,rseed=TRUE){
+ellipsoid_omr <- function(env_data,env_test=NULL,env_bg,cf_level,mve=TRUE,proc=FALSE,proc_iter=100,
+                          sub_sample = FALSE,
+                          sub_sample_size = 10000,
+                          rseed=TRUE){
   emd <- try(ntbox::cov_center(data = env_data,
                                mve = mve,
                                level = cf_level,
@@ -451,7 +460,9 @@ ellipsoid_omr <- function(env_data,env_test=NULL,env_bg,cf_level,mve=TRUE,proc=F
                               pval_bin=p_bin)
       if(proc){
         proc <- ntbox::pROC(suits_bg,test_data = suits_val,
-                            n_iter = proc_iter,rseed = rseed)
+                            n_iter = proc_iter,sub_sample = sub_sample,
+                            sub_sample_size = sub_sample_size,
+                            rseed = rseed)
         pval_proc <- proc$pROC_summary[3]
         mean_aucratio <- proc$pROC_summary[2]
         mean_auc <- proc$pROC_summary[1]

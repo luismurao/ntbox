@@ -12,6 +12,8 @@
 #' @param n_iter (numeric) number of bootstrap iterations to be performed;
 #' default = 1000.
 #' @param rseed Logical. Whether or not to set a random seed. Default FALSE.
+#' @param sub_sample Logical. Indicates whether the test should run using a subsample of size sub_sample_size. It is recommended for big rasters
+#' @param sub_sample_size Numeric. Size of the sample to be used for computing pROC values.
 #' @param parallel Logical to specify if the computation will be done in parallel. default=TRUE.
 #' @param ncores Numeric; the number of cores to be used for parallelization.
 #' @return A data.frame containing the AUC values and AUC ratios calculated for each iteration.
@@ -49,7 +51,8 @@
 pROC <- function(continuous_mod,test_data,
                  n_iter=1000,E_percent=5,
                  boost_percent=50,
-                 parallel=FALSE,ncores=4,rseed=FALSE){
+                 parallel=FALSE,ncores=4,rseed=FALSE,
+                 sub_sample=FALSE,sub_sample_size=10000){
 
   if (class(continuous_mod) == "RasterLayer") {
     if (continuous_mod@data@min == continuous_mod@data@max) {
@@ -67,6 +70,11 @@ pROC <- function(continuous_mod,test_data,
     if (!is.numeric(test_data))
       stop("If continuous_mod is of class numeric,
            test_data must be numeric...")
+  }
+  if(sub_sample){
+    nvals <- length(vals)
+    if(sub_sample_size> nvals) sub_sample_size <- nvals
+    vals <- base::sample(vals,size = sub_sample_size)
   }
   ndigits <- proc_precision(mod_vals = vals,
                             test_data = test_data)
