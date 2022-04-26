@@ -170,7 +170,6 @@ ellipsoid_selection <- function(env_train,env_test=NULL,env_vars,nvarstest,level
                "env_bg")
     plan(multisession,workers=n_cores)
     options(future.globals.maxSize= 8500*1024^2,future.rng.onMisuse="ignore")
-    cat("Proceso de seleccion de modelos\\n\\n",file = "modelado_naty.txt")
 
     rfinal  <- seq_along(pasos) %>% furrr::future_map_dfr(function(x){
       seq_model <- kkk[x]:(kkk[x + 1] - 1)
@@ -188,9 +187,6 @@ ellipsoid_selection <- function(env_train,env_test=NULL,env_vars,nvarstest,level
                                    proc_iter,rseed=rseed)
         return(r1)
       })
-      cat("Doing calibration from model ",
-          kkk[x],"to ",kkk[x + 1] - 1,
-          "in process ",x,"\n\n",file = "modelado_naty.txt",append = TRUE)
       return(results_df)
     },.options = furrr::furrr_options(seed = NULL),.progress = TRUE)
     future::plan(sequential)
