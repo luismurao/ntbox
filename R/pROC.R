@@ -141,18 +141,22 @@ pROC <- function(continuous_mod,test_data,
     xyTable <- rbind(xyTable,c(0,0))
     xyTable <- xyTable[order(xyTable$fractional_area,
                              decreasing = F),]
-    auc_model <- trapz_roc(xyTable$fractional_area,
-                               xyTable$sensibility)
+    auc_model <- try(trapz_roc(xyTable$fractional_area,
+                               xyTable$sensibility),silent = TRUE)
+    if(class(try(auc_model))=="try-error") auc_model <- NA
 
 
     if(error_sens>0){
       less_ID <- which(xyTable$sensibility <= error_sens)
       xyTable <- xyTable[-less_ID, ]
-      auc_pmodel <- trapz_roc(xyTable$fractional_area,
-                                  xyTable$sensibility)
+      auc_pmodel <- try(trapz_roc(xyTable$fractional_area,
+                                  xyTable$sensibility),silent = TRUE)
 
-      auc_prand <- trapz_roc(xyTable$fractional_area,
-                                 xyTable$fractional_area)
+      if(class(try(auc_pmodel))=="try-error") auc_pmodel <- NA
+
+      auc_prand <- try(trapz_roc(xyTable$fractional_area,
+                                 xyTable$fractional_area),silent = TRUE)
+      if(class(try(auc_prand))=="try-error") auc_prand <- NA
 
     }
     else{
