@@ -50,11 +50,13 @@ partialRoc <- reactive({
                         n_iter = sims,
                         E_percent = error,
                         boost_percent = randper,
+                        sub_sample = input$sub_sample,
+                        sub_sample_size = as.numeric(input$sub_sample_size),
                         parallel = parallel,
                         ncores = ncores)
     pRoc <- pRoc[[2]]
     pRoc <- data.frame(Iteration=1:dim(pRoc)[1],pRoc )
-    names(pRoc) <- c("Iteration","AUC_partial","AUC_prandom","AUC_ratio")
+    names(pRoc) <- c("Iteration","AUC_model","AUC_partial","AUC_prandom","AUC_ratio")
 
     return(pRoc)
   }
@@ -115,8 +117,12 @@ output$rocPartPlot <- renderPlot({
    hist(auc_res$aucRatio,prob=TRUE,col="grey",xlim=c(min(auc_res$dens_rnd$x,na.rm = TRUE),
                                                      max(auc_res$aucRatio,na.rm = TRUE)),
         main="Partial AUC distribution", xlab="AUC ratio")
-   lines(auc_res$dens_rnd,col='red')
+   #lines(auc_res$dens_rnd,col='red')
+   abline(v = 1,col="red")
    lines(auc_res$dens_ratio,col='blue')
+   legend("topleft",legend = c("AUC ratio distribution",
+                               "Critical value"),
+          col = c("blue","red"),bty = "n",lty = 1)
  }
   else{
    ifelse(!is.null(dat_raster()) == TRUE,
@@ -145,9 +151,10 @@ pRocStats <- reactive({
       cat('                          after',input$iter, 'simulations                          \n')
       cat('++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n\n')
 
-      cat('The mean value for AUC ratio at, ',1 - input$omission,' is:',mean(dataP[,4],na.rm=TRUE),'\n\n')
-      cat('The mean value for partial AUC at, ',1 - input$omission,' is:',mean(dataP[,2],na.rm=TRUE),'\n\n')
-      cat('The mean value for partial AUC at random is:',mean(dataP[,3],na.rm=TRUE),'\n\n')
+      cat('The mean value for AUC ratio at, ',1 - input$omission,' is:',mean(dataP[,5],na.rm=TRUE),'\n\n')
+      cat('The mean value for partial AUC at, ',1 - input$omission,' is:',mean(dataP[,3],na.rm=TRUE),'\n\n')
+      cat('The mean value for partial AUC at random is:',mean(dataP[,4],na.rm=TRUE),'\n\n')
+      cat('The mean value of AUC after ',input$iter,'iterations is:',mean(dataP[,2],na.rm=TRUE),'\n\n')
 
 
       cat('++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n')
@@ -160,7 +167,7 @@ pRocStats <- reactive({
 
       print(describe(dataP$AUC_ratio)[c(2,3,4,5,7,8,9,10,11,12)])
       #mod <- t.test(y = dataP$AUC_at_0.5,x = dataP[,2],alternative = 'greater')
-      mod <- 1 - (length(which(dataP[,4]>1))/length(which(!is.na(dataP[,4]))))
+      mod <- 1 - (length(which(dataP[,5]>1))/length(which(!is.na(dataP[,5]))))
       mod <- list(p.value=mod)
       cat('\n\n')
       if(mod$p.value<0.001) pval <- paste0(round(mod$p.value,4),' ***')
@@ -195,9 +202,10 @@ pRocStatsb <- reactive({
     cat('                          after',input$iter, 'simulations                          \n')
     cat('++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n\n')
 
-    cat('The mean value for AUC ratio at, ',1 - input$omission,' is:',mean(dataP[,4],na.rm=TRUE),'\n\n')
-    cat('The mean value for partial AUC at, ',1 - input$omission,' is:',mean(dataP[,2],na.rm=TRUE),'\n\n')
-    cat('The mean value for partial AUC at random is:',mean(dataP[,3],na.rm=TRUE),'\n\n')
+    cat('The mean value for AUC ratio at, ',1 - input$omission,' is:',mean(dataP[,5],na.rm=TRUE),'\n\n')
+    cat('The mean value for partial AUC at, ',1 - input$omission,' is:',mean(dataP[,3],na.rm=TRUE),'\n\n')
+    cat('The mean value for partial AUC at random is:',mean(dataP[,4],na.rm=TRUE),'\n\n')
+    cat('The mean value of AUC after ',input$iter,'iterations is:',mean(dataP[,2],na.rm=TRUE),'\n\n')
 
 
     cat('++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n')
@@ -210,7 +218,7 @@ pRocStatsb <- reactive({
 
     print(describe(dataP$AUC_ratio)[c(2,3,4,5,7,8,9,10,11,12)])
     #mod <- t.test(y = dataP$AUC_at_0.5,x = dataP[,2],alternative = 'greater')
-    mod <- 1 - (length(which(dataP[,4]>1))/length(which(!is.na(dataP[,4]))))
+    mod <- 1 - (length(which(dataP[,5]>1))/length(which(!is.na(dataP[,5]))))
     mod <- list(p.value=mod)
     cat('\n\n')
     if(mod$p.value<0.001) pval <- paste0(round(mod$p.value,4),' ***')
