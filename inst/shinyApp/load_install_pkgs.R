@@ -11,7 +11,7 @@ pkg_check <- c("shiny","rgeos","rgdal",
                "fields","devtools","psych",
                "magrittr","shinythemes","grid",
                "RColorBrewer","ade4","V8","shinyFiles",
-               "spocc","leaflet.extras","Rcpp","ntbox")
+               "spocc","leaflet.extras","Rcpp","ntbox","DT")
 
 pkgs_ntb_miss <- pkg_check[!(pkg_check %in% installed.packages())]
 ifelse("animation" %in% pkgs_ntb_miss,
