@@ -12,7 +12,9 @@ pROC(
   boost_percent = 50,
   parallel = FALSE,
   ncores = 4,
-  rseed = FALSE
+  rseed = FALSE,
+  sub_sample = FALSE,
+  sub_sample_size = 10000
 )
 }
 \arguments{
@@ -35,6 +37,10 @@ default = 50.}
 \item{ncores}{Numeric; the number of cores to be used for parallelization.}
 
 \item{rseed}{Logical. Whether or not to set a random seed. Default FALSE.}
+
+\item{sub_sample}{Logical. Indicates whether the test should run using a subsample of size sub_sample_size. It is recommended for big rasters}
+
+\item{sub_sample_size}{Numeric. Size of the sample to be used for computing pROC values.}
 }
 \value{
 A data.frame containing the AUC values and AUC ratios calculated for each iteration.

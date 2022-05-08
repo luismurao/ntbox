@@ -50,6 +50,14 @@ library(leaflet)
 options(rgl.useNULL=TRUE)
 #sapply(pkgs_ntb,function(x) library(x,character.only = TRUE))
 #rgl.init()
+install.packages('IRkernel')  # Don’t forget step 2/3!
 
 
 
+library(microbenchmark)
+
+x <- runif(100)
+microbenchmark(
+  sqrt(x),
+  x ^ 0.5
+)

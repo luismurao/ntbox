@@ -17,6 +17,8 @@ ellipsoid_selection(
   ncores = NULL,
   comp_each = 100,
   proc = FALSE,
+  sub_sample = FALSE,
+  sub_sample_size = 10000,
   proc_iter = 100,
   rseed = TRUE
 )
@@ -46,6 +48,10 @@ the function \code{\link[MASS]{cov.rob}} of the \pkg{MASS} package. If False the
 \item{comp_each}{Number of models to run in each job in the parallel computation. Default 100}
 
 \item{proc}{Logical if TRUE a partial roc test will be run.}
+
+\item{sub_sample}{Logical. Indicates whether the pROC test should run using a subsample of size sub_sample_size. It is recommended for big rasters}
+
+\item{sub_sample_size}{Numeric. Size of the sample to be used for computing pROC values.}
 
 \item{proc_iter}{Numeric. The total number of iterations for the partial ROC bootstrap.}
 

@@ -12,6 +12,8 @@ ellipsoid_omr(
   mve = TRUE,
   proc = FALSE,
   proc_iter = 100,
+  sub_sample = FALSE,
+  sub_sample_size = 10000,
   rseed = TRUE
 )
 }
@@ -30,6 +32,10 @@ the function \code{\link[MASS]{cov.rob}} of the \pkg{MASS} package. If False the
 \item{proc}{Logical if TRUE a partial roc test will be run.}
 
 \item{proc_iter}{Numeric. The total number of iterations for the partial ROC bootstrap.}
+
+\item{sub_sample}{Logical. Indicates whether the pROC test should run using a subsample of size sub_sample_size. It is recommended for big rasters}
+
+\item{sub_sample_size}{Numeric. Size of the sample to be used for computing pROC values.}
 
 \item{rseed}{Logical. Whether or not to set a random seed for partial roc bootstrap. Default TRUE.}
 }
