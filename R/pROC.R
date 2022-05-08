@@ -20,7 +20,6 @@
 #' @details Partial ROC is calculated following Peterson et al.
 #' (2008; \url{http://dx.doi.org/10.1016/j.ecolmodel.2007.11.008}). This function is a modification
 #' of the PartialROC funcion, available at \url{https://github.com/narayanibarve/ENMGadgets}.
-#' @import Rcpp
 #' @references Peterson, A.T. et al. (2008) Rethinking receiver operating characteristic analysis applications in ecological niche modeling. Ecol. Modell., 213, 63–72.
 #' @examples
 #' # Load a continuous model
@@ -44,7 +43,6 @@
 #'
 #' @importFrom purrr map_df
 #' @import future
-#' @useDynLib ntbox
 #' @export
 
 
@@ -178,7 +176,7 @@ pROC <- function(continuous_mod,test_data,
   if (parallel) {
     n_cores <- ntbox::nc(ncores)
 
-    furrr::furrr_options(packages = c("Rcpp","ntbox"))
+    #furrr::furrr_options(packages = c("Rcpp","ntbox"))
     plan(multisession,workers=n_cores)
     options(future.globals.maxSize= 8500*1024^2)
 
@@ -191,7 +189,6 @@ pROC <- function(continuous_mod,test_data,
     for (i in 1:length(n_runs)) {
       x <- as.character(i)
       roc_env[[x]] %<-% {
-        library(Rcpp)
         x1 <- 1:n_runs[i]
         auc_matrix1 <- x1 %>%
           purrr::map_df(~calc_aucDF(big_classpixels,
