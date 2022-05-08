@@ -79,15 +79,14 @@ spca <- function (layers_stack, layers_to_proj = NULL, pca_obj = NULL,
   if (!is.null(layers_stack)) {
     layers_stack <- raster::stack(layers_stack)
   }
-  if (class(layers_stack) == "RasterStack" && class(pca_obj) !=
-      "prcomp") {
+  if (methods::is(layers_stack, "RasterStack") && !methods::is(pca_obj,"prcomp")) {
     id_vals <- which(!is.na(layers_stack[[1]][]))
     layers_vals <- names(layers_stack) %>% purrr::map_dfc(function(x) {
       df1 <- data.frame(val = layers_stack[[x]][])
       df1 <- df1[id_vals,]
-      names(df1) <- x
       return(df1)
     })
+    names(layers_vals) <- names(layers_stack)
     layers_noNA <- as.matrix(layers_vals)
 
     #id_vals <- which(stats::complete.cases(layers_vals))
@@ -114,8 +113,11 @@ spca <- function (layers_stack, layers_to_proj = NULL, pca_obj = NULL,
     names(layers_pca) <- nombres_pcs
     results <- list(pc_layers = layers_pca, pc_results = pca_obj,
                     pca_plot = pca_plot)
-    if (!is.null(sv_dir) && dir.exists(sv_dir) && class(results$pc_layers) ==
-        "RasterStack") {
+    if(is.character(sv_dir)) {
+      sv_dir <- base::normalizePath(sv_dir)
+      if(!dir.exists(sv_dir)) dir.create(sv_dir)
+    }
+    if (!is.null(sv_dir) && dir.exists(sv_dir) && methods::is(results$pc_layers,"RasterStack")) {
       n_layers <- seq_along(names(layers_pca))
       pca_plot_path <- file.path(sv_dir, "pca_variance_exp.pdf")
       ggplot2::ggsave(pca_plot_path, plot = pca_plot, width = 8,
@@ -130,8 +132,10 @@ spca <- function (layers_stack, layers_to_proj = NULL, pca_obj = NULL,
 
     }
   }
-  if (class(layers_to_proj) == "RasterStack" && class(pca_obj) ==
-      "prcomp") {
+
+  if(inherits(layers_to_proj,what = "Raster"))
+    layers_to_proj <- raster::stack(layers_to_proj)
+  if (methods::is(layers_to_proj,"RasterStack") && methods::is(pca_obj, "prcomp")) {
     nombres_pcs <- colnames(pca_obj$x)
     if (raster::nlayers(layers_to_proj) > 9)
       nombres_pcs[1:9] <- paste0("PC0", 1:9)
@@ -144,10 +148,9 @@ spca <- function (layers_stack, layers_to_proj = NULL, pca_obj = NULL,
     proj_data <- names(layers_to_proj) %>% purrr::map_dfc(function(x) {
       df1 <- data.frame(val = layers_to_proj[[x]][])
       df1 <- df1[id_vals,]
-      names(df1) <- x
       return(df1)
     })
-
+    names(proj_data) <- names(layers_to_proj)
     proj_noNA <- as.matrix(proj_data)
     rm(proj_data)
     gc()
@@ -166,8 +169,11 @@ spca <- function (layers_stack, layers_to_proj = NULL, pca_obj = NULL,
     results$pcs_layers_projection <- layers_to_proj
     if ((!is.null(sv_dir) && dir.exists(sv_dir)) && is.null(sv_proj_dir))
       sv_proj_dir <- sv_dir
-    if (!is.null(sv_proj_dir) && !dir.exists(sv_proj_dir))
-      dir.create(sv_proj_dir)
+    if (is.character(sv_proj_dir)){
+      sv_proj_dir <- base::normalizePath(sv_proj_dir)
+      if(!dir.exists(sv_proj_dir))  dir.create(sv_proj_dir)
+    }
+
     if (!is.null(results$pcs_layers_projection) && !is.null(sv_proj_dir) && dir.exists(sv_proj_dir)) {
       if (sv_proj_dir == sv_dir) {
         sv_proj_dir <- file.path(sv_dir, "pca_projection")
@@ -224,28 +230,29 @@ spca <- function (layers_stack, layers_to_proj = NULL, pca_obj = NULL,
   grid_data$start <- grid_data$start - 1
   grid_data <- grid_data[-1,]
 
-  p <- ggplot(data_pca, aes_(x=~as.factor(id), y=~value, fill=~group)) +
+  p <- ggplot2::ggplot(data_pca, ggplot2::aes_(x=~as.factor(id),
+                                               y=~value, fill=~group)) +
 
-    geom_bar(aes_(x=~as.factor(id), y=~value, fill=~group),
-             stat="identity", alpha=0.5) +
+    ggplot2::geom_bar(ggplot2::aes_(x=~as.factor(id), y=~value, fill=~group),
+                      stat="identity", alpha=0.5) +
 
     # Add a val=100/75/50/25 lines. I do it at the beginning to make sur barplots are OVER it.
-    geom_segment(data=grid_data,
-                 aes_(x = ~end, y = 80, xend = ~start, yend = 80),
-                 colour = "grey", alpha=1, size=0.3 ,
-                 inherit.aes = FALSE ) +
-    geom_segment(data=grid_data,
-                 aes_(x = ~end, y = 60, xend = ~start, yend = 60),
-                 colour = "grey", alpha=1, size=0.3 ,
-                 inherit.aes = FALSE ) +
-    geom_segment(data=grid_data,
-                 aes_(x = ~end, y = 40, xend = ~start, yend = 40),
-                 colour = "grey", alpha=1, size=0.3 ,
-                 inherit.aes = FALSE ) +
-    geom_segment(data=grid_data,
-                 aes_(x = ~end, y = 20, xend = ~start, yend = 20),
-                 colour = "grey", alpha=1, size=0.3 ,
-                 inherit.aes = FALSE ) +
+    ggplot2::geom_segment(data=grid_data,
+                          ggplot2::aes_(x = ~end, y = 80, xend = ~start, yend = 80),
+                          colour = "grey", alpha=1, size=0.3 ,
+                          inherit.aes = FALSE ) +
+    ggplot2::geom_segment(data=grid_data,
+                          ggplot2::aes_(x = ~end, y = 60, xend = ~start, yend = 60),
+                          colour = "grey", alpha=1, size=0.3 ,
+                          inherit.aes = FALSE ) +
+    ggplot2::geom_segment(data=grid_data,
+                          ggplot2::aes_(x = ~end, y = 40, xend = ~start, yend = 40),
+                          colour = "grey", alpha=1, size=0.3 ,
+                          inherit.aes = FALSE ) +
+    ggplot2::geom_segment(data=grid_data,
+                          ggplot2::aes_(x = ~end, y = 20, xend = ~start, yend = 20),
+                          colour = "grey", alpha=1, size=0.3 ,
+                          inherit.aes = FALSE ) +
 
     # Add text showing the value of each 100/75/50/25 lines
     #annotate("text", x = rep(max(data_pca$id),4),
@@ -254,37 +261,37 @@ spca <- function (layers_stack, layers_to_proj = NULL, pca_obj = NULL,
     #         color="#A8A8A8", size=3.5 , angle=0,
     #         fontface="bold", hjust=1) +
 
-    geom_bar(aes_(x=~as.factor(id), y=~value,
-                  fill=~group), stat="identity",
-             alpha=0.5) +
-    ylim(-100,120) +
-    theme_minimal() +
-    theme(
+    ggplot2::geom_bar(ggplot2::aes_(x=~as.factor(id), y=~value,
+                                    fill=~group), stat="identity",
+                      alpha=0.5) +
+    ggplot2::ylim(-100,120) +
+    ggplot2::theme_minimal() +
+    ggplot2::theme(
       legend.position = "none",
-      axis.text = element_blank(),
-      axis.title = element_blank(),
-      panel.grid = element_blank(),
-      plot.margin = unit(rep(-1,4), "cm")
+      axis.text = ggplot2::element_blank(),
+      axis.title = ggplot2::element_blank(),
+      panel.grid = ggplot2::element_blank(),
+      plot.margin = grid::unit(rep(-1,4), "cm")
     ) +
-    coord_polar() +
-    geom_text(data=label_data,
-              aes_(x=~id, y=~value+10,
-                   label=~paste(pca,"\n",value),
-                   hjust=~hjust), color="black",
-              fontface="bold",alpha=0.6,
-              size=2.85, angle= label_data$angle,
-              inherit.aes = FALSE ) +
+    ggplot2::coord_polar() +
+    ggplot2::geom_text(data=label_data,
+                       ggplot2::aes_(x=~id, y=~value+10,
+                                     label=~paste(pca,"\n",value),
+                                     hjust=~hjust), color="black",
+                       fontface="bold",alpha=0.6,
+                       size=2.85, angle= label_data$angle,
+                       inherit.aes = FALSE ) +
 
     # Add base line information
-    geom_segment(data=base_data,
-                 aes_(x = ~start, y = -5, xend = ~end, yend = -5),
-                 colour = "black", alpha=0.8, size=0.6 ,
-                 inherit.aes = FALSE )  +
-    geom_text(data=base_data,
-              aes_(x = ~title, y = -18, label=~group),
-              hjust=c(1,0), colour = "black",
-              alpha=0.8, size=4, fontface="bold",
-              inherit.aes = FALSE)
+    ggplot2::geom_segment(data=base_data,
+                          ggplot2::aes_(x = ~start, y = -5, xend = ~end, yend = -5),
+                          colour = "black", alpha=0.8, size=0.6 ,
+                          inherit.aes = FALSE )  +
+    ggplot2::geom_text(data=base_data,
+                       ggplot2::aes_(x = ~title, y = -18, label=~group),
+                       hjust=c(1,0), colour = "black",
+                       alpha=0.8, size=4, fontface="bold",
+                       inherit.aes = FALSE)
 
   return(p)
 }
