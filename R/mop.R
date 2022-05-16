@@ -105,7 +105,7 @@ mop <- function(M_stack, G_stack, percent = 10, comp_each = 2000, parallel = FAL
           qdi <- stats::quantile(di, probs = percent / 100,
                                  na.rm = TRUE)
           ii <-  which(di <= qdi)
-          pond_mean <- mean(di,na.rm = TRUE)
+          pond_mean <- mean(di[ii],na.rm = TRUE)
           return(pond_mean)
         })
         mop <-unlist(mop_dist)
