@@ -40,6 +40,7 @@
 
 mop <- function(M_stack, G_stack, percent = 10, comp_each = 2000, parallel = FALSE,normalized=TRUE,ncores=4) {
   mop_raster <- G_stack[[1]]
+  names(mop_raster) <- "MOP"
   mValues <- raster::getValues(M_stack)
   m_noNA <- stats::na.omit(mValues)
   m_naIDs <- attr(m_noNA,"na.action")
@@ -85,7 +86,7 @@ mop <- function(M_stack, G_stack, percent = 10, comp_each = 2000, parallel = FAL
   }else {
     n_cores <- ntbox::nc(ncores)
     #future::plan(tweak(multiprocess, workers =n_cores))
-
+    options(future.globals.maxSize= 8500*1024^2,future.rng.onMisuse="ignore")
     multisession(globals =c("m1",
                             "m2",
                             "kkk",
