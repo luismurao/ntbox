@@ -42,7 +42,7 @@ ntb_mess <- function(M_stack, G_stack){
                                mVar = mMat_sorted[,.x] ))
     min_1 <- do.call(base::pmin, c1 )
     mess_vals <- rep(NA,raster::ncell(mess_res))
-    mess_vals[!g_naIDs] <- min_1
+    mess_vals[-g_naIDs] <- min_1
     mess_res[] <- mess_vals
     names(mess_res) <- "MESS"
     return(mess_res)
