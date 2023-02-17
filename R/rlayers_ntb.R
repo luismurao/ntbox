@@ -7,9 +7,9 @@
 #' @examples
 #' \dontrun{
 #' ## RasterStack with the niche variables
-#' nicheStack <- rlayers_ntb(list.files(system.file("extdata",
-#'                                                  package = "ntbox"),
-#'                                      pattern = ".asc$",full.names = TRUE))
+#' dir_bios <- system.file("extdata/bios",package = "ntbox")
+#' nicheStack <- ntbox::rlayers_ntb(dir_bios)
+#' raster::plot(nicheStack[[1]])
 #' }
 
 rlayers_ntb <- function(layers_path){
@@ -18,8 +18,21 @@ rlayers_ntb <- function(layers_path){
   layers_paths <- list.files(layers_path,
                              pattern = ras_formats,
                              full.names = T)
+  os <- sysinf['sysname']
+  if(os == "Windows") patt <- "\\\\" else patt <- "/"
   # Read raster layers
-  layers_list <- lapply(layers_paths, raster::raster)
+  layers_list <- lapply(seq_along(layers_paths), function(x){
+    r <- raster::raster(layers_paths[x])
+    np <- normalizePath(r@file@name)
+    sysinf <- Sys.info()
+
+    vs <- unlist(strsplit(np,split = patt))
+    vs <- unlist(strsplit(vs[length(vs)],
+                          split="[.]"))
+    lname <- vs[1]
+    names(r) <- lname
+    return(r)
+    })
   # Check resolution and extent
   resol <- unlist(lapply(layers_list,function(x) {
     ras_extent <- raster::extent(x)
@@ -33,7 +46,7 @@ rlayers_ntb <- function(layers_path){
   }))
   # Read layers only if they have the same extent and resolution
   if(length(unique(resol))==1){
-    raster_stack <- raster::stack(layers_paths)
+    raster_stack <- raster::stack(layers_list)
     return(raster_stack)
   }
 
