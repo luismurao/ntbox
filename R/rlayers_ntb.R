@@ -18,13 +18,13 @@ rlayers_ntb <- function(layers_path){
   layers_paths <- list.files(layers_path,
                              pattern = ras_formats,
                              full.names = T)
+  sysinf <- Sys.info()
   os <- sysinf['sysname']
   if(os == "Windows") patt <- "\\\\" else patt <- "/"
   # Read raster layers
   layers_list <- lapply(seq_along(layers_paths), function(x){
     r <- raster::raster(layers_paths[x])
     np <- normalizePath(r@file@name)
-    sysinf <- Sys.info()
 
     vs <- unlist(strsplit(np,split = patt))
     vs <- unlist(strsplit(vs[length(vs)],
