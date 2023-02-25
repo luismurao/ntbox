@@ -179,15 +179,16 @@ ellipsoid_selection <- function(env_train,env_test=NULL,env_vars,nvarstest,level
         env_data0 <- stats::na.omit(env_train[,var_comb])
         env_test0 <- stats::na.omit(env_test[,var_comb])
         env_bg0 <-   stats::na.omit(env_bg[,var_comb])
-        r1 <- ntbox::ellipsoid_omr(env_data = env_data0,
-                                   env_test = env_test0,
-                                   env_bg = env_bg0,
-                                   cf_level = level,
-                                   proc = proc,
-                                   sub_sample = sub_sample,
-                                   sub_sample_size = sub_sample_size,
-                                   proc_iter,rseed=rseed)
-        return(r1)
+        r2 <- try(
+          r1 <- ntbox::ellipsoid_omr(env_data = env_data0,
+                                     env_test = env_test0,
+                                     env_bg = env_bg0, cf_level = level,
+                                     proc = T,
+                                     sub_sample = sub_sample,
+                                     sub_sample_size = sub_sample_size,
+                                     proc_iter, rseed = rseed)
+          ,silent = TRUE)
+        if(is.data.frame(r2)) return(r1)
       })
       return(results_df)
     },.options = furrr::furrr_options(seed = NULL),.progress = TRUE)
@@ -205,15 +206,16 @@ ellipsoid_selection <- function(env_train,env_test=NULL,env_vars,nvarstest,level
         env_data0 <- stats::na.omit(env_train[,var_comb])
         env_test0 <- stats::na.omit(env_test[,var_comb])
         env_bg0 <-   stats::na.omit(env_bg[,var_comb])
-        r1 <- ntbox::ellipsoid_omr(env_data = env_data0,
-                                   env_test = env_test0,
-                                   env_bg = env_bg0,
-                                   cf_level = level,
-                                   proc = proc,
-                                   sub_sample = sub_sample,
-                                   sub_sample_size = sub_sample_size,
-                                   proc_iter,rseed=rseed)
-        return(r1)
+        r2 <- try(
+          r1 <- ntbox::ellipsoid_omr(env_data = env_data0,
+                                     env_test = env_test0,
+                                     env_bg = env_bg0, cf_level = level,
+                                     proc = T,
+                                     sub_sample = sub_sample,
+                                     sub_sample_size = sub_sample_size,
+                                     proc_iter, rseed = rseed)
+          ,silent = TRUE)
+        if(is.data.frame(r2)) return(r1)
       })
       results_df <- do.call("rbind.data.frame",results_L)
       return(results_df)
