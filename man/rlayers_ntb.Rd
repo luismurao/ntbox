@@ -19,8 +19,8 @@ all  \code{\link[raster]{raster-package}} formats are accepted (see \code{\link[
 \examples{
 \dontrun{
 ## RasterStack with the niche variables
-nicheStack <- rlayers_ntb(list.files(system.file("extdata",
-                                                 package = "ntbox"),
-                                     pattern = ".asc$",full.names = TRUE))
+dir_bios <- system.file("extdata/bios",package = "ntbox")
+nicheStack <- ntbox::rlayers_ntb(dir_bios)
+raster::plot(nicheStack[[1]])
 }
 }

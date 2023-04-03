@@ -102,4 +102,4 @@ LazyData: true
 Roxygen: list(markdown = TRUE)
 Suggests: animation (>= 2.5)
 VignetteBuilder: knitr
-RoxygenNote: 7.1.2
+RoxygenNote: 7.2.3

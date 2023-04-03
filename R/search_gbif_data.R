@@ -8,6 +8,9 @@
 #' @param showClusters Logical. Display geographic cluster on the leaflet map.
 #' @param ... Pass arguments to the function  \code{\link[spocc]{occ}}  from spocc
 #' @return Returns a data.frame with coordinate data from species
+#' @details Note that this function is for exploration proposes.
+#' If you want to use GBIF data for publications you should generate and cite
+#' DOI information according to \href{https://www.gbif.org/citation-guidelines}{this}
 #' @export
 #' @import leaflet
 #' @importFrom magrittr %>%
