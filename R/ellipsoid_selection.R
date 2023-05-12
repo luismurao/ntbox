@@ -183,7 +183,7 @@ ellipsoid_selection <- function(env_train,env_test=NULL,env_vars,nvarstest,level
           r1 <- ntbox::ellipsoid_omr(env_data = env_data0,
                                      env_test = env_test0,
                                      env_bg = env_bg0, cf_level = level,
-                                     proc = T,
+                                     proc = proc,
                                      sub_sample = sub_sample,
                                      sub_sample_size = sub_sample_size,
                                      proc_iter, rseed = rseed)
@@ -210,7 +210,7 @@ ellipsoid_selection <- function(env_train,env_test=NULL,env_vars,nvarstest,level
           r1 <- ntbox::ellipsoid_omr(env_data = env_data0,
                                      env_test = env_test0,
                                      env_bg = env_bg0, cf_level = level,
-                                     proc = T,
+                                     proc = proc,
                                      sub_sample = sub_sample,
                                      sub_sample_size = sub_sample_size,
                                      proc_iter, rseed = rseed)
