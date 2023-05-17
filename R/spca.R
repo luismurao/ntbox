@@ -139,7 +139,7 @@ spca <- function (layers_stack, layers_to_proj = NULL, pca_obj = NULL,
     nombres_pcs <- colnames(pca_obj$x)
     if (raster::nlayers(layers_to_proj) > 9)
       nombres_pcs[1:9] <- paste0("PC0", 1:9)
-    if (!all(names(layers_to_proj) == names(layers_pca)))
+    if (!all(names(layers_to_proj) == nombres_pcs))
       cat(paste("Assuming that the layers that have the same position in the",
                 "stack represent the same kind of variables\n\n"))
     layers_to_proj <- layers_to_proj[[1:length(names(pca_obj$center))]]
