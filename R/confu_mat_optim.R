@@ -63,7 +63,7 @@ confu_mat_optim <- function(sdm_raster,valData,longitude,latitude,pres_abs,optim
     valData <- data.frame(valData)
   }
   else stop("valData must be of class data.frame or matrix")
-  if (class(sdm_raster) == "raster")
+  if (!methods::is(sdm_raster, "RasterLayer"))
     stop("sdm_raster must be of class raster")
   values <- raster::extract(sdm_raster, valData[, c(longitude,
                                                     latitude)])
