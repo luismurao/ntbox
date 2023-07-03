@@ -24,15 +24,15 @@
 
 exdet_univar <- function(M_stack, G_stack,G_mold=NULL) {
 
-  if(class(M_stack) == "matrix")
+  if(methods::is(M_stack, "matrix"))
     m_Values <- M_stack
-  if(class(M_stack) == "RasterStack")
+  if(methods::is(M_stack, "RasterStack"))
     m_Values <- raster::getValues(M_stack)
-  if(class(G_stack) == "RasterStack"){
+  if(methods::is(G_stack, "RasterStack")){
     extD <- G_stack[[1]]
     g_Values <- raster::getValues(G_stack)
   }
-  if(class(G_stack) == "matrix" && class(G_mold) == "Raster"){
+  if(methods::is(G_stack, "matrix") && methods::is(G_mold, "RasterLayer")){
     g_Values <- G_stack
     extD <- G_mold
   }
