@@ -37,7 +37,7 @@ Searchs gbif data using the function \code{\link[spocc]{occ}} from the spocc pac
 }
 \details{
 Note that this function is for exploration proposes.
-If you want to use GBIF data for publications you should generate and cite
+If you want to use GBIF data in publications you should generate and cite
 DOI information according to \href{https://www.gbif.org/citation-guidelines}{this}
 }
 \examples{
