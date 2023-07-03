@@ -52,7 +52,7 @@ pROC <- function(continuous_mod,test_data,
                  parallel=FALSE,ncores=4,rseed=FALSE,
                  sub_sample=FALSE,sub_sample_size=10000){
 
-  if (class(continuous_mod) == "RasterLayer") {
+  if (methods::is(continuous_mod,"RasterLayer")) {
     if (continuous_mod@data@min == continuous_mod@data@max) {
       stop("\nModel with no variability.\n")
     }
@@ -141,7 +141,7 @@ pROC <- function(continuous_mod,test_data,
                              decreasing = F),]
     auc_model <- try(trapz_roc(xyTable$fractional_area,
                                xyTable$sensibility),silent = TRUE)
-    if(class(try(auc_model))=="try-error") auc_model <- NA
+    if(methods::is(try(auc_model), "try-error")) auc_model <- NA
 
 
     if(error_sens>0){
@@ -150,11 +150,11 @@ pROC <- function(continuous_mod,test_data,
       auc_pmodel <- try(trapz_roc(xyTable$fractional_area,
                                   xyTable$sensibility),silent = TRUE)
 
-      if(class(try(auc_pmodel))=="try-error") auc_pmodel <- NA
+      if(methods::is(try(auc_pmodel),"try-error")) auc_pmodel <- NA
 
       auc_prand <- try(trapz_roc(xyTable$fractional_area,
                                  xyTable$fractional_area),silent = TRUE)
-      if(class(try(auc_prand))=="try-error") auc_prand <- NA
+      if(methods::is(try(auc_prand), "try-error")) auc_prand <- NA
 
     }
     else{
