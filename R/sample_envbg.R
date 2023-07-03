@@ -27,8 +27,8 @@
 #' @export
 sample_envbg <- function(envlayers,nbg,nprop=NULL,coordinates=FALSE,
                          cellIDs=FALSE,rseed=NULL,parallel=TRUE,ncores=4){
-  if(class(envlayers) == "RasterStack" ||
-     class(envlayers) == "RasterBrick"){
+  if(methods::is(envlayers, "RasterStack") ||
+     methods::is(envlayers, "RasterBrick")){
     envlayers <- raster::stack(envlayers)
     l1 <- envlayers[[1]]
     #nona <- raster::Which(!is.na(l1),cells=TRUE)

@@ -54,7 +54,7 @@ rlayers_ntb <- function(layers_path){
     raster_stack <- raster::stack(c(layers_paths))
   },silent = TRUE)
 
-  if(class(emess) != "try-error"){
+  if(!methods::is(emess, "try-error")){
   warning(paste("Raster Layers in\n",
                 layers_path,"\n Some layer(s) have a resolution that is",
                   "not significantly different\n"))

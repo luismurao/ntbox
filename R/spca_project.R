@@ -39,7 +39,7 @@ spca_project <- function(layers_stack,layers_to_proj_dirs,
     })
   }
 
-  if(class(pca_obj) != "prcomp" && class(layers_stack)=="RasterStack"){
+  if(!methods::is(pca_obj, "prcomp") && methods::is(layers_stack, "RasterStack")){
     pcs <- spca(layers_stack =layers_stack,
                 pca_obj = NULL,
                 sv_dir=sv_dir_reference,
@@ -54,7 +54,7 @@ spca_project <- function(layers_stack,layers_to_proj_dirs,
   res_proj <- seq_along(pca_dir_paths) %>% purrr::map(function(x){
     layers_to_proj <- proj_layers_stackL[[x]]
 
-    if(class(layers_to_proj)=="RasterStack" && class(pca_obj) == "prcomp"){
+    if(methods::is(layers_to_proj, "RasterStack") && methods::is(pca_obj,"prcomp")){
 
       nombres_pcs <- colnames(pca_obj$x)
       if(length(nombres_pcs)>9)

@@ -21,11 +21,11 @@
 #' raster::plot(messVals)
 ntb_mess <- function(M_stack, G_stack){
 
-  if(class(M_stack) == "matrix")
+  if(methods::is(M_stack,"matrix"))
     mMat <- M_stack
-  if(class(M_stack) == "RasterStack")
+  if(methods::is(M_stack,"RasterStack"))
     mMat <- raster::getValues(M_stack)
-  if(class(G_stack) == "RasterStack"){
+  if(methods::is(G_stack, "RasterStack")){
     gMat <- raster::getValues(G_stack)
     mess_res <- G_stack[[1]]
     gMat <- stats::na.omit(gMat)
@@ -37,12 +37,16 @@ ntb_mess <- function(M_stack, G_stack){
 
   if(dim(gMat)[2] == dim(mMat)[2]){
 
-    c1 <- 1:dim(mMat)[2] %>%
+    c1 <- seq_len(ncol(mMat)) %>%
       purrr::map(~.dismo_mess2(gVar =gMat[,.x],
                                mVar = mMat_sorted[,.x] ))
     min_1 <- do.call(base::pmin, c1 )
     mess_vals <- rep(NA,raster::ncell(mess_res))
-    mess_vals[-g_naIDs] <- min_1
+    if(length(g_naIDs) > 0L) {
+      mess_vals[-g_naIDs] <- min_1
+    } else{
+      mess_vals <- min_1
+    }
     mess_res[] <- mess_vals
     names(mess_res) <- "MESS"
     return(mess_res)
