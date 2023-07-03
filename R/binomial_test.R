@@ -20,7 +20,7 @@
 
 binomial_test <- function(binary_model,validation_data){
 
-  if(class(binary_model) != "RasterLayer"){
+  if(!methods::is(binary_model,"RasterLayer")){
     warning("Object must be a raster layer")
     return()
   }
