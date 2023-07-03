@@ -107,6 +107,7 @@
 #' print(pg_proc$pROC_summary)
 #' }
 
+
 ellipsoid_selection <- function(env_train,env_test=NULL,env_vars,nvarstest,level=0.95,
                                 mve=TRUE,env_bg=NULL,omr_criteria,parallel=F,ncores=NULL,
                                 comp_each=100,proc=FALSE,
@@ -127,154 +128,183 @@ ellipsoid_selection <- function(env_train,env_test=NULL,env_vars,nvarstest,level
   cat("-----------------------------------------------------------------------------------------\n")
   cat("\t **A total number of",nmodels ,"models will be tested **\n\n")
   cat("-----------------------------------------------------------------------------------------\n")
+  n_cores <- future::availableCores() -1
+  if(ncores>n_cores || is.null(ncores)){
+    n_cores <- n_cores
+  } else{
+    n_cores <- ncores
+  }
 
-
-
-  if(nmodels >100 && parallel){
-    max_var <- max(nvarstest)
-    cvars <- lapply(nvarstest, function(x) {
-
-      cb <- utils::combn(env_vars,x)
-      if(x < max_var){
-        nrowNA <-max_var-nrow(cb)
-        na_mat <- matrix(nrow = nrowNA,ncol=ncol(cb))
-        cb <- rbind(cb,na_mat)
-      }
-      return(cb)
-    })
-    big_vars <- do.call(cbind,cvars)
-
-    n_cores <- future::availableCores() -1
-    if(ncores>n_cores || is.null(ncores)){
-      n_cores <- n_cores
-    } else{
-      n_cores <- ncores
-    }
-    niter_big <- floor(nmodels/n_cores)
-    if(niter_big>comp_each)
-      niter_big <- comp_each
-    steps <- seq(1, nmodels, niter_big)
-    nsteps <- length(steps)
-    if(steps[nsteps]<nmodels){
-      kkk <- c(steps,  nmodels + 1)
-    } else {
-      kkk <- steps
-      kkk[nsteps] <- kkk[nsteps] + 1
-    }
-
-    long_k <- length(kkk)
-    pasos <- 1:(length(kkk) - 1)
-    pasosChar <- paste0(pasos)
-    globs <- c("env_train",
-               "env_test",
-               "env_bg")
+  if(parallel){
     plan(multisession,workers=n_cores)
     options(future.globals.maxSize= 8500*1024^2,future.rng.onMisuse="ignore")
-
-    rfinal  <- seq_along(pasos) %>% furrr::future_map_dfr(function(x){
-      seq_model <- kkk[x]:(kkk[x + 1] - 1)
-      combs_v <- as.matrix(big_vars[,seq_model])
-      results_df <- 1:ncol(combs_v) %>% purrr::map_dfr(function(x_comb) {
-        var_comb <- stats::na.omit(combs_v[,x_comb])
-        env_data0 <- stats::na.omit(env_train[,var_comb])
-        env_test0 <- stats::na.omit(env_test[,var_comb])
-        env_bg0 <-   stats::na.omit(env_bg[,var_comb])
-        r2 <- try(
-          r1 <- ntbox::ellipsoid_omr(env_data = env_data0,
-                                     env_test = env_test0,
-                                     env_bg = env_bg0, cf_level = level,
-                                     proc = proc,
-                                     sub_sample = sub_sample,
-                                     sub_sample_size = sub_sample_size,
-                                     proc_iter, rseed = rseed)
-          ,silent = TRUE)
-        if(is.data.frame(r2)) return(r1)
-      })
-      return(results_df)
-    },.options = furrr::furrr_options(seed = NULL),.progress = TRUE)
-    future::plan(sequential)
-    rownames(rfinal) <- NULL
-    gc()
+  } else{
+    plan(sequential)
   }
-  else{
-    cvars <- lapply(nvarstest, function(x) utils::combn(env_vars,x))
+  max_var <- max(nvarstest)
+  cvars <- lapply(nvarstest, function(x) {
 
-    results_L <- lapply(1:length(cvars), function(x) {
-      combs_v <- cvars[[x]]
-      results_L <- lapply(1:ncol(combs_v),function(x_comb) {
-        var_comb <- stats::na.omit(combs_v[,x_comb])
-        env_data0 <- stats::na.omit(env_train[,var_comb])
-        env_test0 <- stats::na.omit(env_test[,var_comb])
-        env_bg0 <-   stats::na.omit(env_bg[,var_comb])
-        r2 <- try(
-          r1 <- ntbox::ellipsoid_omr(env_data = env_data0,
-                                     env_test = env_test0,
-                                     env_bg = env_bg0, cf_level = level,
-                                     proc = proc,
-                                     sub_sample = sub_sample,
-                                     sub_sample_size = sub_sample_size,
-                                     proc_iter, rseed = rseed)
-          ,silent = TRUE)
-        if(is.data.frame(r2)) return(r1)
-      })
-      results_df <- do.call("rbind.data.frame",results_L)
-      return(results_df)
+    cb <- utils::combn(env_vars,x)
+    if(x < max_var){
+      nrowNA <-max_var-nrow(cb)
+      na_mat <- matrix(nrow = nrowNA,ncol=ncol(cb))
+      cb <- rbind(cb,na_mat)
+    }
+    return(cb)
+  })
+  big_vars <- do.call(cbind,cvars)
+
+
+  niter_big <- floor(nmodels/n_cores)
+  if(niter_big>comp_each)
+    niter_big <- comp_each
+  steps <- seq(1, nmodels, niter_big)
+  nsteps <- length(steps)
+  if(steps[nsteps]<nmodels){
+    kkk <- c(steps,  nmodels + 1)
+  } else {
+    kkk <- steps
+    kkk[nsteps] <- kkk[nsteps] + 1
+  }
+
+  long_k <- length(kkk)
+  pasos <- 1:(length(kkk) - 1)
+  pasosChar <- paste0(pasos)
+  globs <- c("env_train",
+             "env_test",
+             "env_bg",
+             "kkk",
+             "big_vars","level")
+
+  df_omr  <- seq_along(pasos) %>% furrr::future_map_dfr(function(x){
+    seq_model <- kkk[x]:(kkk[x + 1] - 1)
+    combs_v <- as.matrix(big_vars[,seq_model])
+
+    results_df <- 1:ncol(combs_v) %>% purrr::map_dfr(function(x_comb) {
+      var_comb <- stats::na.omit(combs_v[,x_comb])
+      env_data0 <- stats::na.omit(env_train[,var_comb])
+      env_test0 <- stats::na.omit(env_test[,var_comb])
+      env_bg0 <-   stats::na.omit(env_bg[,var_comb])
+      mod <- ntbox::cov_center(env_data0,level = level,vars = var_comb)
+      train_inE <- ntbox::inEllipsoid(mod$centroid,
+                                      env_data = env_data0,
+                                      eShape = mod$covariance,
+                                      level = level)
+      test_inE <- ntbox::inEllipsoid(mod$centroid,
+                                     env_data = env_test0,
+                                     eShape = mod$covariance,
+                                     level = level)
+      train_omr <- 1 - sum(train_inE$in_Ellipsoid)/
+        length(train_inE$in_Ellipsoid)
+
+      test_omr <- 1 - sum(test_inE$in_Ellipsoid)/
+        length(test_inE$in_Ellipsoid)
+      variables <- paste0(var_comb,collapse = ",")
+      non_pred_train_ids <- paste0(which(train_inE$in_Ellipsoid %in% 0),
+                                   collapse = ",")
+      non_pred_test_ids <- paste0(which(test_inE$in_Ellipsoid %in% 0),
+                                  collapse = ",")
+
+      romr <- data.frame(fitted_vars=variables,
+                         nvars=length(var_comb),
+                         om_rate_train = train_omr,
+                         non_pred_train_ids,
+                         om_rate_test = test_omr,
+                         non_pred_test_ids,
+                         bg_prevalence = NA,
+                         pval_bin = NA,
+                         pval_proc = NA,
+                         env_bg_paucratio = NA,
+                         env_bg_auc=NA,
+                         mean_omr_train_test = mean(c(train_omr,test_omr)),
+                         rank_by_omr_train_test =NA,
+                         rank_omr_aucratio = NA)
+      return(romr)
     })
-    rfinal <- do.call("rbind.data.frame",results_L)
-    #rownames(rfinal) <- NULL
+    return(results_df)
+  },.options = furrr::furrr_options(seed = NULL,
+                                    globals = globs),.progress = TRUE)
+  om_rate_test <- om_rate_train <- NULL
+  #rfinal <- data.frame(rfinal,big_var_ID=1:nrow(rfinal))
+  df_omr <- df_omr %>% dplyr::arrange(om_rate_test,om_rate_train)
+  df_omr[["rank_by_omr_train_test"]] <- seq_len(nrow(df_omr))
+
+  met_criteriaID_train <- which(df_omr$om_rate_train <= (omr_criteria+1-level))
+  met_criteriaID_test <- which(df_omr$om_rate_test <= omr_criteria)
+  met_criteriaID_both <- intersect(met_criteriaID_train,
+                                   met_criteriaID_test)
+
+  if(length(met_criteriaID_train) > 0L){
+    cat("\n\t",length(met_criteriaID_train),
+        "models passed omr_criteria for train data\n")
   }
-  bg_omr <- c("bg_prevalence","om_rate_test") %in% names(rfinal)
-  bg_omr_in <- all(bg_omr)
-  if( bg_omr_in){
+  if(length(met_criteriaID_test) > 0L){
+    cat("\t",length(met_criteriaID_test),
+        "models passed omr_criteria for test data\n")
+
+  }
+  if(length(met_criteriaID_both) > 0L){
+    cat("\t",length(met_criteriaID_both),
+        "models passed omr_criteria for train and test data\n")
+  }
+  rfilter <- df_omr %>% dplyr::filter(om_rate_train <=omr_criteria+(1-level) &
+                                        om_rate_test <= omr_criteria)
+  pass_omr <- FALSE
+  if(nrow(rfilter)>0L){
+    #rfinal <- rfilter
+    pass_omr <- TRUE
+
+  } else{
+    rfinal <- df_omr
+    cat("\tNo model passed the omission criteria ranking by mean omission rates\n")
+    return(rfinal)
+  }
+  if(pass_omr){
+    cat("\n\n **Estimating environmental prevalence for models passing omission rate criteria**\n\n")
+    globs <- c(globs,"rfilter","proc","sub_sample",
+               "sub_sample_size","proc_iter","rseed")
+    rfinal <- seq_len(nrow(rfilter)) %>% furrr::future_map_dfr(function(x){
+
+      var_comb <- stringr::str_split(rfilter$fitted_vars[x],",")[[1]]
+      env_data0 <- stats::na.omit(env_train[,var_comb])
+      env_test0 <- stats::na.omit(env_test[,var_comb])
+      env_bg0 <-   stats::na.omit(env_bg[,var_comb])
+      r2 <- try(
+        r1 <- ntbox::ellipsoid_omr(env_data = env_data0,
+                                   env_test = env_test0,
+                                   env_bg = env_bg0, cf_level = level,
+                                   proc = proc,
+                                   sub_sample = sub_sample,
+                                   sub_sample_size = sub_sample_size,
+                                   proc_iter, rseed = rseed)
+        ,silent = TRUE)
+      if(is.data.frame(r2)) return(r1)
+    },.options = furrr::furrr_options(seed = NULL,
+                                      globals = globs),
+    .progress = TRUE)
+    rownames(rfinal) <- NULL
     mean_omr <- rowMeans(rfinal[,c("om_rate_train",
                                    "om_rate_test")])
     rfinal$mean_omr_train_test <- mean_omr
-    rfinal <- rfinal[order(rfinal$mean_omr_train_tes,
+    rfinal <- rfinal[order(rfinal$mean_omr_train_test,
                            rfinal$bg_prevalence,
                            decreasing = F),]
-
-    rfinal <- data.frame(rfinal,rank_by_omr_train_test=1:nrow(rfinal))
-    met_criteriaID_train <- which(rfinal$om_rate_train <= omr_criteria)
-    met_criteriaID_test <- which(rfinal$om_rate_test <= omr_criteria)
-    met_criteriaID_both <- intersect(met_criteriaID_train,
-                                     met_criteriaID_test)
-
-    if(length(met_criteriaID_train) > 0L){
-      cat("\t",length(met_criteriaID_train),
-          "models passed omr_criteria for train data\n")
-    }
-    if(length(met_criteriaID_test) > 0L){
-      cat("\t",length(met_criteriaID_test),
-          "models passed omr_criteria for test data\n")
-
-    }
-    if(length(met_criteriaID_both) > 0L){
-      cat("\t",length(met_criteriaID_both),
-          "models passed omr_criteria for train and test data\n")
-    }
-    else{
-      cat("\tNo model passed the omission criteria ranking by mean omission rates\n")
-      return(rfinal)
-    }
-    best_r <- rfinal[met_criteriaID_both,]
+    rfinal$rank_by_omr_train_test <- order(rfinal$mean_omr_train_test)
+    rfinal$rank_omr_aucratio <- NA
     if(proc){
-      best_r <- best_r[order(best_r$env_bg_paucratio,
-                             decreasing = TRUE),]
+      rfinal$rank_omr_aucratio <- order(rfinal$env_bg_paucratio,decreasing = TRUE)
+      rfinal <- rfinal[rfinal$rank_omr_aucratio,]
     }
-
-    rfinal <- rbind(best_r,
-                    rfinal[-met_criteriaID_both,])
-    if(proc){
-      rfinal <- data.frame(rfinal,
-                           rank_omr_aucratio=1:nrow(rfinal))
-    }
+    ids_not_passing <- which(!df_omr$fitted_vars %in% rfinal$fitted_vars)
+    rfinal <- rbind.data.frame(rfinal,df_omr[ids_not_passing,])
   }
-  else
-    rfinal <- rfinal[order(rfinal$om_rate_train,
-                           decreasing = F),]
+  future::plan(sequential)
   rownames(rfinal) <- NULL
+  gc()
+
   return(rfinal)
 }
+
 
 
 #' ellipsoid_omr
