@@ -155,73 +155,67 @@ ellipsoid_selection <- function(env_train,env_test=NULL,env_vars,nvarstest,level
   big_vars <- do.call(cbind,cvars)
 
 
-  niter_big <- floor(nmodels/n_cores)
-  if(niter_big>comp_each)
-    niter_big <- comp_each
-  steps <- seq(1, nmodels, niter_big)
-  nsteps <- length(steps)
-  if(steps[nsteps]<nmodels){
-    kkk <- c(steps,  nmodels + 1)
-  } else {
-    kkk <- steps
-    kkk[nsteps] <- kkk[nsteps] + 1
-  }
-
-  long_k <- length(kkk)
-  pasos <- 1:(length(kkk) - 1)
-  pasosChar <- paste0(pasos)
   globs <- c("env_train",
              "env_test",
              "env_bg",
-             "kkk",
-             "big_vars","level")
+             #"kkk",
+             "big_vars",
+             "level",
+             "mve")
 
-  df_omr  <- seq_along(pasos) %>% furrr::future_map_dfr(function(x){
-    seq_model <- kkk[x]:(kkk[x + 1] - 1)
-    combs_v <- as.matrix(big_vars[,seq_model])
+  df_omr  <- seq_len(ncol(big_vars)) %>% furrr::future_map_dfr(function(x){
 
-    results_df <- 1:ncol(combs_v) %>% purrr::map_dfr(function(x_comb) {
-      var_comb <- stats::na.omit(combs_v[,x_comb])
-      env_data0 <- stats::na.omit(env_train[,var_comb])
-      env_test0 <- stats::na.omit(env_test[,var_comb])
-      env_bg0 <-   stats::na.omit(env_bg[,var_comb])
-      mod <- ntbox::cov_center(env_data0,level = level,vars = var_comb)
-      train_inE <- ntbox::inEllipsoid(mod$centroid,
-                                      env_data = env_data0,
-                                      eShape = mod$covariance,
-                                      level = level)
-      test_inE <- ntbox::inEllipsoid(mod$centroid,
-                                     env_data = env_test0,
-                                     eShape = mod$covariance,
-                                     level = level)
-      train_omr <- 1 - sum(train_inE$in_Ellipsoid)/
-        length(train_inE$in_Ellipsoid)
+    var_comb <- stats::na.omit(big_vars[,x])
+    env_data0 <- stats::na.omit(env_train[,var_comb])
+    env_test0 <- stats::na.omit(env_test[,var_comb])
+    env_bg0 <-   stats::na.omit(env_bg[,var_comb])
 
-      test_omr <- 1 - sum(test_inE$in_Ellipsoid)/
-        length(test_inE$in_Ellipsoid)
-      variables <- paste0(var_comb,collapse = ",")
-      non_pred_train_ids <- paste0(which(train_inE$in_Ellipsoid %in% 0),
-                                   collapse = ",")
-      non_pred_test_ids <- paste0(which(test_inE$in_Ellipsoid %in% 0),
-                                  collapse = ",")
+    if(length(var_comb)==1){
+      env_data0 <- data.frame(env_data0)
+      env_test0 <- data.frame(env_test0)
+      env_bg0 <- data.frame(env_bg0)
+      names(env_data0) <- names(env_test0) <- names(env_bg0) <- var_comb
+    }
 
-      romr <- data.frame(fitted_vars=variables,
-                         nvars=length(var_comb),
-                         om_rate_train = train_omr,
-                         non_pred_train_ids,
-                         om_rate_test = test_omr,
-                         non_pred_test_ids,
-                         bg_prevalence = NA,
-                         pval_bin = NA,
-                         pval_proc = NA,
-                         env_bg_paucratio = NA,
-                         env_bg_auc=NA,
-                         mean_omr_train_test = mean(c(train_omr,test_omr)),
-                         rank_by_omr_train_test =NA,
-                         rank_omr_aucratio = NA)
-      return(romr)
-    })
-    return(results_df)
+    mod <- try(ntbox::cov_center(env_data0,level = level,
+                             vars = var_comb,mve = mve),
+               silent=TRUE)
+    if(methods::is(mod,"try-error")) return()
+    train_inE <- ntbox::inEllipsoid(mod$centroid,
+                                    env_data = env_data0,
+                                    eShape = mod$covariance,
+                                    level = level)
+    test_inE <- ntbox::inEllipsoid(mod$centroid,
+                                   env_data = env_test0,
+                                   eShape = mod$covariance,
+                                   level = level)
+    train_omr <- 1 - sum(train_inE$in_Ellipsoid)/
+      length(train_inE$in_Ellipsoid)
+
+    test_omr <- 1 - sum(test_inE$in_Ellipsoid)/
+      length(test_inE$in_Ellipsoid)
+    variables <- paste0(var_comb,collapse = ",")
+    non_pred_train_ids <- paste0(which(train_inE$in_Ellipsoid %in% 0),
+                                 collapse = ",")
+    non_pred_test_ids <- paste0(which(test_inE$in_Ellipsoid %in% 0),
+                                collapse = ",")
+
+    romr <- data.frame(fitted_vars=variables,
+                       nvars=length(var_comb),
+                       om_rate_train = train_omr,
+                       non_pred_train_ids,
+                       om_rate_test = test_omr,
+                       non_pred_test_ids,
+                       bg_prevalence = NA,
+                       pval_bin = NA,
+                       pval_proc = NA,
+                       env_bg_paucratio = NA,
+                       env_bg_auc=NA,
+                       mean_omr_train_test = mean(c(train_omr,test_omr)),
+                       rank_by_omr_train_test =NA,
+                       rank_omr_aucratio = NA)
+    return(romr)
+
   },.options = furrr::furrr_options(seed = NULL,
                                     globals = globs),.progress = TRUE)
   om_rate_test <- om_rate_train <- NULL
@@ -269,14 +263,23 @@ ellipsoid_selection <- function(env_train,env_test=NULL,env_vars,nvarstest,level
       env_data0 <- stats::na.omit(env_train[,var_comb])
       env_test0 <- stats::na.omit(env_test[,var_comb])
       env_bg0 <-   stats::na.omit(env_bg[,var_comb])
+      if(length(var_comb)==1){
+        env_data0 <- data.frame(env_data0)
+        env_test0 <- data.frame(env_test0)
+        env_bg0 <- data.frame(env_bg0)
+        names(env_data0) <- names(env_test0) <- names(env_bg0) <- var_comb
+      }
       r2 <- try(
         r1 <- ntbox::ellipsoid_omr(env_data = env_data0,
                                    env_test = env_test0,
-                                   env_bg = env_bg0, cf_level = level,
+                                   env_bg = env_bg0,
+                                   cf_level = level,
                                    proc = proc,
+                                   mve = mve,
                                    sub_sample = sub_sample,
                                    sub_sample_size = sub_sample_size,
-                                   proc_iter, rseed = rseed)
+                                   proc_iter = proc_iter,
+                                   rseed = rseed)
         ,silent = TRUE)
       if(is.data.frame(r2)) return(r1)
     },.options = furrr::furrr_options(seed = NULL,
@@ -362,7 +365,8 @@ ellipsoid_selection <- function(env_train,env_test=NULL,env_vars,nvarstest,level
 #'                             proc_iter=100,rseed=TRUE)
 #' print(ellip_eval)
 #' }
-ellipsoid_omr <- function(env_data,env_test=NULL,env_bg,cf_level,mve=TRUE,proc=FALSE,proc_iter=100,
+ellipsoid_omr <- function(env_data,env_test=NULL,env_bg,cf_level,
+                          mve=TRUE,proc=FALSE,proc_iter=100,
                           sub_sample = FALSE,
                           sub_sample_size = 10000,
                           rseed=TRUE){
@@ -408,7 +412,7 @@ ellipsoid_omr <- function(env_data,env_test=NULL,env_bg,cf_level,mve=TRUE,proc=F
   a_train <-  occs_fail
   omrate_train <- a_train /nrow( in_e)
 
-  d_results <- data.frame(fitted_vars =paste(names(emd$centroid),
+  d_results <- data.frame(fitted_vars =paste(names(env_data),
                                              collapse =  ","),
                           nvars=length(emd$centroid),
                           om_rate_train= omrate_train,
