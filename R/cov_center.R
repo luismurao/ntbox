@@ -59,7 +59,15 @@ cov_center <- function (data, mve = TRUE, level, vars = NULL)
       }
     }
   }
-  data <- data[, vars]
+  if (length(vars) > 1L) {
+    data <- data[, vars]
+  }else if(ncol(data) > 1L && length(vars)==1L){
+    data <- data.frame(data[, vars])
+    names(data) <- vars
+  } else {
+    data <- data.frame(data)
+    names(data) <- vars
+  }
   if (mve) {
 
     NDquntil <- function(nD, level) {
@@ -74,7 +82,11 @@ cov_center <- function (data, mve = TRUE, level, vars = NULL)
     vari <- cent_var$cov
   }
   else {
-    centroid <- colMeans(data)
+    if(length(vars)>1L) {
+      centroid <- colMeans(data,na.rm = TRUE)
+    } else{
+      centroid <- mean(data,na.rm = TRUE)
+    }
     vari <- stats::cov(data)
   }
   # Ellipsoid volume
