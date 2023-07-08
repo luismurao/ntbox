@@ -357,12 +357,13 @@ ellipsoid_selection <- function(env_train,env_test=NULL,env_vars,nvarstest,level
 #'                                        verbose = F)
 #' env_vars <- env_varsL$descriptors
 #' env_bg <- raster::sampleRandom(wc,10000)
-#' ellip_eval <- ellipsoid_omr(env_data=pg_etrain[,c("bio01","bio07","bio12")],
-#'                             env_test=pg_etest[,c("bio01","bio07","bio12")],
-#'                             env_bg = env_bg[,c("bio01","bio07","bio12")],
-#'                             cf_level = 0.97,
-#'                             mve=TRUE,proc=TRUE,
-#'                             proc_iter=100,rseed=TRUE)
+#' vars_to_test <- c("bio01","bio07","bio12")
+#' ellip_eval <- ntbox::ellipsoid_omr(env_data= pg_etrain[,vars_to_test],
+#'                                    env_test= pg_etest[,vars_to_test],
+#'                                    env_bg = env_bg[,vars_to_test],
+#'                                    cf_level = 0.97,
+#'                                    mve=TRUE,proc=TRUE,
+#'                                    proc_iter=100,rseed=TRUE)
 #' print(ellip_eval)
 #' }
 ellipsoid_omr <- function(env_data,env_test=NULL,env_bg,cf_level,
@@ -416,7 +417,14 @@ ellipsoid_omr <- function(env_data,env_test=NULL,env_bg,cf_level,
                                              collapse =  ","),
                           nvars=length(emd$centroid),
                           om_rate_train= omrate_train,
-                          non_pred_train_ids = fails_train_ids)
+                          non_pred_train_ids = fails_train_ids,
+                          om_rate_test = NA,
+                          non_pred_test_ids = NA,
+                          bg_prevalence = NA,
+                          pval_bin=NA,
+                          pval_proc =NA,
+                          env_bg_paucratio=NA,
+                          env_bg_auc = NA)
   if(is.data.frame(env_test) || is.matrix(env_test)){
     in_etest <-  ntbox::inEllipsoid(centroid = emd$centroid,
                                     eShape = emd$covariance,
@@ -450,11 +458,9 @@ ellipsoid_omr <- function(env_data,env_test=NULL,env_bg,cf_level,
     }
     a_test <-  occs_fail_test
     omrate_test <- a_test /nrow( in_etest)
-    d_results <- data.frame(d_results,
-                            om_rate_test=omrate_test,
-                            non_pred_test_ids=fails_test_ids)
+    d_results[["om_rate_test"]] <- omrate_test
+    d_results[["non_pred_test_ids"]] <- fails_test_ids
   }
-
   if(!is.null(env_bg)){
 
     env_bg <- data.frame(env_bg)
@@ -482,8 +488,8 @@ ellipsoid_omr <- function(env_data,env_test=NULL,env_bg,cf_level,
       0
     }
     prevBG <- bg_succs/(bg_fails+bg_succs)
-    d_results <-data.frame( d_results,
-                            bg_prevalence= prevBG)
+    d_results[["bg_prevalence"]] <- prevBG
+
 
     if(exists("in_etest")){
       #bin_table <- table(c(in_ebg$in_Ellipsoid,
@@ -494,8 +500,8 @@ ellipsoid_omr <- function(env_data,env_test=NULL,env_bg,cf_level,
       p_bin <- 1 - stats::pbinom(test_succs,
                                  size=test_succs+test_fail,
                                  prob = prevBG)
-      d_results <-data.frame( d_results,
-                              pval_bin=p_bin)
+      d_results[["pval_bin"]] <- p_bin
+
       if(proc){
         proc <- ntbox::pROC(suits_bg,test_data = suits_val,
                             n_iter = proc_iter,sub_sample = sub_sample,
@@ -504,10 +510,9 @@ ellipsoid_omr <- function(env_data,env_test=NULL,env_bg,cf_level,
         pval_proc <- proc$pROC_summary[3]
         mean_aucratio <- proc$pROC_summary[2]
         mean_auc <- proc$pROC_summary[1]
-        d_results <-data.frame( d_results,
-                                pval_proc,
-                                env_bg_paucratio= mean_aucratio,
-                                env_bg_auc = mean_auc)
+        d_results[["pval_proc"]] <- pval_proc
+        d_results[["env_bg_paucratio"]] <- mean_aucratio
+        d_results[["env_bg_auc"]] <- mean_auc
       }
 
 
