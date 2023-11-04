@@ -1,4 +1,4 @@
-pkg_check <- c("shiny","rgeos","rgdal",
+pkg_check <- c("shiny",
                "raster","maptools","dismo",
                "rgl","dygraphs","dygraphs",
                "png","XML","rmarkdown",
@@ -42,22 +42,18 @@ if(length(pkgs_ntb_miss1)>0L){
 #library(ENMGadgets)
 library(shinysky)
 library(leaflet)
+rgeos_path <- "https://cran.r-project.org/src/contrib/Archive/rgeos/rgeos_0.6-4.tar.gz"
 
-
+if(!require("rgeos")){
+  install.packages(rgeos_path,repos = NULL,type = "source")
+}
+rgdal_path <- "https://cran.r-project.org/src/contrib/Archive/rgdal/rgdal_1.6-7.tar.gz"
+if(!require("rgdal")){
+  install.packages(rgdal_path, repos = NULL,type = "source")
+}
 
 
 # Load packages
 options(rgl.useNULL=TRUE)
 #sapply(pkgs_ntb,function(x) library(x,character.only = TRUE))
 #rgl.init()
-install.packages('IRkernel')  # Don’t forget step 2/3!
-
-
-
-library(microbenchmark)
-
-x <- runif(100)
-microbenchmark(
-  sqrt(x),
-  x ^ 0.5
-)
