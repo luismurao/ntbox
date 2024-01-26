@@ -199,7 +199,13 @@ leaf_ellip_all_all_train <- reactive({
                         na.color = "transparent")
 
     crs(model) <- "+proj=longlat +ellps=WGS84 +towgs84=0,0,0,0,0,0,0 +no_defs"
-    map <- map %>% addRasterImage(model, colors = pal, opacity = 0.5) %>%
+    res_mod <- raster::res(model)[1]
+    if(res_mod < 10/60){
+      ag_fac <- round((10/60)/res_mod)
+      model <- raster::aggregate(model,fact=ag_fac)
+    }
+    model <- raster::projectRaster(model,crs = "+init=epsg:3857")
+    map <- map %>% addRasterImage(model, colors = pal, opacity = 0.5,project = FALSE) %>%
       addLegend(pal = pal, values = values(model),
                 position = "topleft",labFormat = labelFormat(),
                 title = "Suitability")
@@ -231,7 +237,13 @@ leaf_ellip_all_m_train <- reactive({
                         na.color = "transparent")
 
     crs(model) <- "+proj=longlat +ellps=WGS84 +towgs84=0,0,0,0,0,0,0 +no_defs"
-    map <- map %>% addRasterImage(model, colors = pal, opacity = 0.5) %>%
+    res_mod <- raster::res(model)[1]
+    if(res_mod < 10/60){
+      ag_fac <- round((10/60)/res_mod)
+      model <- raster::aggregate(model,fact=ag_fac)
+    }
+    model <- raster::projectRaster(model,crs = "+init=epsg:3857")
+    map <- map %>% addRasterImage(model, colors = pal, opacity = 0.5,project = FALSE) %>%
       addLegend(pal = pal, values = values(model),
                 position = "topleft",labFormat = labelFormat(),
                 title = "Suitability")
@@ -263,7 +275,13 @@ leaf_ellip_m_all_train <- reactive({
                         na.color = "transparent")
 
     crs(model) <- "+proj=longlat +ellps=WGS84 +towgs84=0,0,0,0,0,0,0 +no_defs"
-    map <- map %>% addRasterImage(model, colors = pal, opacity = 0.5) %>%
+    res_mod <- raster::res(model)[1]
+    if(res_mod < 10/60){
+      ag_fac <- round((10/60)/res_mod)
+      model <- raster::aggregate(model,fact=ag_fac)
+    }
+    model <- raster::projectRaster(model,crs = "+init=epsg:3857")
+    map <- map %>% addRasterImage(model, colors = pal, opacity = 0.5,project = FALSE) %>%
       addLegend(pal = pal, values = values(model),
                 position = "topleft",labFormat = labelFormat(),
                 title = "Suitability")
@@ -295,7 +313,13 @@ leaf_ellip_m_m_train <- reactive({
                         na.color = "transparent")
 
     crs(model) <- "+proj=longlat +ellps=WGS84 +towgs84=0,0,0,0,0,0,0 +no_defs"
-    map <- map %>% addRasterImage(model, colors = pal, opacity = 0.5) %>%
+    res_mod <- raster::res(model)[1]
+    if(res_mod < 10/60){
+      ag_fac <- round((10/60)/res_mod)
+      model <- raster::aggregate(model,fact=ag_fac)
+    }
+    model <- raster::projectRaster(model,crs = "+init=epsg:3857")
+    map <- map %>% addRasterImage(model, colors = pal, opacity = 0.5,project = FALSE) %>%
       addLegend(pal = pal, values = values(model),
                 position = "topleft",labFormat = labelFormat(),
                 title = "Suitability")
@@ -326,7 +350,13 @@ leaf_bio_all_all_train <- reactive({
                         na.color = "transparent")
 
     crs(model) <- "+proj=longlat +ellps=WGS84 +towgs84=0,0,0,0,0,0,0 +no_defs"
-    map <- map %>% addRasterImage(model, colors = pal, opacity = 0.5) %>%
+    res_mod <- raster::res(model)[1]
+    if(res_mod < 10/60){
+      ag_fac <- round((10/60)/res_mod)
+      model <- raster::aggregate(model,fact=ag_fac)
+    }
+    model <- raster::projectRaster(model,crs = "+init=epsg:3857")
+    map <- map %>% addRasterImage(model, colors = pal, opacity = 0.5,project = FALSE) %>%
       addLegend(pal = pal, values = values(model),
                 position = "topleft",labFormat = labelFormat(),
                 title = "Suitability")
@@ -357,7 +387,14 @@ leaf_bio_all_m_train <- reactive({
                         na.color = "transparent")
 
     crs(model) <- "+proj=longlat +ellps=WGS84 +towgs84=0,0,0,0,0,0,0 +no_defs"
-    map <- map %>% addRasterImage(model, colors = pal, opacity = 0.5) %>%
+    res_mod <- raster::res(model)[1]
+    if(res_mod < 10/60){
+      ag_fac <- round((10/60)/res_mod)
+      model <- raster::aggregate(model,fact=ag_fac)
+    }
+
+    model <- raster::projectRaster(model,crs = "+init=epsg:3857")
+    map <- map %>% addRasterImage(model, colors = pal, opacity = 0.5,project = FALSE) %>%
       addLegend(pal = pal, values = values(model),
                 position = "topleft",labFormat = labelFormat(),
                 title = "Suitability")
@@ -389,7 +426,13 @@ leaf_bio_m_all_train <- reactive({
                         na.color = "transparent")
 
     crs(model) <- "+proj=longlat +ellps=WGS84 +towgs84=0,0,0,0,0,0,0 +no_defs"
-    map <- map %>% addRasterImage(model, colors = pal, opacity = 0.5) %>%
+    res_mod <- raster::res(model)[1]
+    if(res_mod < 10/60){
+      ag_fac <- round((10/60)/res_mod)
+      model <- raster::aggregate(model,fact=ag_fac)
+    }
+    model <- raster::projectRaster(model,crs = "+init=epsg:3857")
+    map <- map %>% addRasterImage(model, colors = pal, opacity = 0.5,project = FALSE) %>%
       addLegend(pal = pal, values = values(model),
                 position = "topleft",labFormat = labelFormat(),
                 title = "Suitability")
@@ -421,7 +464,13 @@ leaf_bio_m_m_train <- reactive({
                         na.color = "transparent")
 
     crs(model) <- "+proj=longlat +ellps=WGS84 +towgs84=0,0,0,0,0,0,0 +no_defs"
-    map <- map %>% addRasterImage(model, colors = pal, opacity = 0.5) %>%
+    res_mod <- raster::res(model)[1]
+    if(res_mod < 10/60){
+      ag_fac <- round((10/60)/res_mod)
+      model <- raster::aggregate(model,fact=ag_fac)
+    }
+    model <- raster::projectRaster(model,crs = "+init=epsg:3857")
+    map <- map %>% addRasterImage(model, colors = pal, opacity = 0.5,project = FALSE) %>%
       addLegend(pal = pal, values = values(model),
                 position = "topleft",labFormat = labelFormat(),
                 title = "Suitability")
