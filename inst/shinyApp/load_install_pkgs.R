@@ -1,5 +1,5 @@
 pkg_check <- c("shiny",
-               "raster","maptools","dismo",
+               "raster","dismo",
                "rgl","dygraphs","dygraphs",
                "png","XML","rmarkdown",
                "knitr","stringr","stringr",
@@ -51,7 +51,10 @@ rgdal_path <- "https://cran.r-project.org/src/contrib/Archive/rgdal/rgdal_1.6-7.
 if(!require("rgdal")){
   install.packages(rgdal_path, repos = NULL,type = "source")
 }
-
+mt_path <- "https://cran.r-project.org/src/contrib/Archive/maptools/maptools_1.1-8.tar.gz"
+if(!require("maptools")){
+  install.packages(mt_path, repos = NULL,type = "source")
+}
 
 # Load packages
 options(rgl.useNULL=TRUE)
