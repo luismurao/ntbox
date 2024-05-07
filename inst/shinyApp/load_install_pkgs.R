@@ -5,7 +5,7 @@ pkg_check <- c("shiny",
                "knitr","stringr","stringr",
                "MASS","animation","mgcv",
                "googleVis","rasterVis","plyr",
-               "shinyBS","shinyjs","rglwidget",
+               "shinyBS","shinyjs",
                "car","maps","corrplot",
                "dplyr","cluster","sqldf",
                "fields","devtools","psych",
@@ -55,6 +55,11 @@ mt_path <- "https://cran.r-project.org/src/contrib/Archive/maptools/maptools_1.1
 if(!require("maptools")){
   install.packages(mt_path, repos = NULL,type = "source")
 }
+rglw_path <- "https://cran.r-project.org/src/contrib/Archive/rglwidget/rglwidget_0.2.tar.gz"
+if(!require("rglwidget")){
+  install.packages(rglw_path, repos = NULL,type = "source")
+}
+
 
 # Load packages
 options(rgl.useNULL=TRUE)
