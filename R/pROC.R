@@ -53,6 +53,7 @@ pROC <- function(continuous_mod,test_data,
                  sub_sample=FALSE,sub_sample_size=10000){
 
   if (methods::is(continuous_mod,"RasterLayer")) {
+    continuous_mod <- raster::setMinMax(continuous_mod)
     if (continuous_mod@data@min == continuous_mod@data@max) {
       stop("\nModel with no variability.\n")
     }
