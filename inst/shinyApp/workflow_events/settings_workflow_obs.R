@@ -27,9 +27,10 @@ if(osSystem %in% c("Darwin","Linux") ){
   # Raster layer directory
 
   #volumes <- getVolumes()
-  volumes <- c('home'="/Users/",'Volumes'="/")
+  #volumes <- c('home'="/Users/",'Volumes'="/")
+  volumes <- c("Home" = "/home", 'Volumes'="/")
   shinyFiles::shinyDirChoose(input, "ras_layers_directory",
-                             roots=  c('home'="/Users/",'Volumes'="/"),
+                             roots=   c("Home" = "/home", 'Volumes'="/"),
                              session = session
   )
 
@@ -39,6 +40,8 @@ if(osSystem %in% c("Darwin","Linux") ){
   # User raster (niche) layers
 
   output$layers_directory <- renderPrint({
+    #volumes <- c('root'="/")
+    #print(volumes)
     layers_dir <- shinyFiles::parseDirPath(volumes, input$ras_layers_directory)
     if(length(layers_dir)>0L)
       return(layers_dir)
@@ -80,7 +83,7 @@ if(osSystem %in% c("Darwin","Linux") ){
 
 
   shinyFiles::shinyDirChoose(input, "proj_layers_directory",
-                             roots=  c('home'="/Users/",'Volumes'="/"),
+                             roots=  c("Home" = "/home", 'Volumes'="/"),
                              session = session)
 
 
@@ -115,12 +118,12 @@ if(osSystem %in% c("Darwin","Linux") ){
   # Workflow directory
 
   shinyFiles::shinyDirChoose(input, "wf_directory",
-                             roots=  c('home'="/Users/",'Volumes'="/"),
+                             roots=   c("Home" = "/home", 'Volumes'="/"),
                              session = session)
 
 
   workflowDir <- reactive({
-    path <-shinyFiles::parseDirPath(volumes,
+    path <- shinyFiles::parseDirPath(volumes,
                                     input$wf_directory)
     ifelse(nchar(path)>0L, path <- paste0(path,"/"),path)
     if(length(path)>0L)
@@ -330,13 +333,20 @@ getEnvData <- eventReactive(input$get_now,{
     dir.create(layers_dir)
 
   if(input$env_data=="wc" && input$getEnvData){
-    wc <- raster::getData(name= 'worldclim',var=variable,res=resol)
+    #wc <- raster::getData(name= 'worldclim',var=variable,res=resol)
+
     layers_dir2 <- file.path(layers_dir,
                              paste0("wc_",input$wc_var,
                                     "_",input$wc_resol))
 
+
     if(!dir.exists(layers_dir2))
       dir.create(layers_dir2)
+
+    wc <- raster::stack(geodata::worldclim_global(var=variable,
+                                                  res=resol,
+                                                  path = layers_dir2))
+    #wc <- ntbox::wc_cmip5()
 
     archpaths <- file.path(layers_dir2,
                            paste0(names(wc),
@@ -613,7 +623,12 @@ myPolygon <- reactive({
     return(ntb_polygons)
   }
   if(input$define_M == 1 && input$poly_from == 0 && !is.null(poly_dir()) &&  !is.null(input$poly_files)){
-    map <- try(readOGR(dsn = poly_dir(),layer = input$poly_files),silent = TRUE)
+    #map <- try(readOGR(dsn = poly_dir(),layer = input$poly_files),silent = TRUE)
+    map <- try(sf::st_read(dsn = poly_dir(),
+                           layer = input$poly_files),
+               silent = TRUE)
+    map <- sf::as_Spatial(map)
+
     if(class(map) != "try-error")
       return(map)
     else
@@ -695,12 +710,16 @@ observeEvent(input$saveState, {
         #if(poly_name_ext %in% list.files(file_dir)){
         #  poly_name <- paste0(poly_name,"B_RandNUM",sample(1:1000,1))
         #}
-        rgdal::writeOGR(myPolygon(),
-                        file_dir,
-                        poly_name,"_",
-                        input$dataset_dynMap,
-                        driver="ESRI Shapefile",
-                        overwrite_layer = T)
+        poly_name_dir_ext <- file.path(file_dir,poly_name_ext)
+        sf_pol <- sf::st_as_sf(myPolygon())
+        sf::st_write(sf_pol,poly_name_dir_ext,delete_layer=TRUE)
+
+        #rgdal::writeOGR(myPolygon(),
+        #                file_dir,
+        #                poly_name,"_",
+        #                input$dataset_dynMap,
+        #                driver="ESRI Shapefile",
+        #                overwrite_layer = T)
 
       }
 

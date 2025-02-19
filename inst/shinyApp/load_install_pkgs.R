@@ -25,7 +25,7 @@ suppressPackageStartupMessages({
   loadntbPkg <- sapply(pkg_check,function(x) library(x,character.only = TRUE))
 })
 
-
+# devtools::install(reload = TRUE,build = TRUE,upgrade = FALSE)
 # Github dependencies
 #if(!require("leaflet.ntbox"))
 #  devtools::install_github("luismurao/leaflet.ntbox")
@@ -42,23 +42,23 @@ if(length(pkgs_ntb_miss1)>0L){
 #library(ENMGadgets)
 library(shinysky)
 library(leaflet)
-rgeos_path <- "https://cran.r-project.org/src/contrib/Archive/rgeos/rgeos_0.6-4.tar.gz"
+#rgeos_path <- "https://cran.r-project.org/src/contrib/Archive/rgeos/rgeos_0.6-4.tar.gz"
 
-if(!require("rgeos")){
-  install.packages(rgeos_path,repos = NULL,type = "source")
-}
-rgdal_path <- "https://cran.r-project.org/src/contrib/Archive/rgdal/rgdal_1.6-7.tar.gz"
-if(!require("rgdal")){
-  install.packages(rgdal_path, repos = NULL,type = "source")
-}
-mt_path <- "https://cran.r-project.org/src/contrib/Archive/maptools/maptools_1.1-8.tar.gz"
-if(!require("maptools")){
-  install.packages(mt_path, repos = NULL,type = "source")
-}
-rglw_path <- "https://cran.r-project.org/src/contrib/Archive/rglwidget/rglwidget_0.2.tar.gz"
-if(!require("rglwidget")){
-  install.packages(rglw_path, repos = NULL,type = "source")
-}
+#if(!require("rgeos")){
+#  install.packages(rgeos_path,repos = NULL,type = "source")
+#}
+#rgdal_path <- "https://cran.r-project.org/src/contrib/Archive/rgdal/rgdal_1.6-7.tar.gz"
+#if(!require("rgdal")){
+#  install.packages(rgdal_path, repos = NULL,type = "source")
+#}
+#mt_path <- "https://cran.r-project.org/src/contrib/Archive/maptools/maptools_1.1-8.tar.gz"
+#if(!require("maptools")){
+#  install.packages(mt_path, repos = NULL,type = "source")
+#}
+#rglw_path <- "https://cran.r-project.org/src/contrib/Archive/rglwidget/rglwidget_0.2.tar.gz"
+#if(!require("rglwidget")){
+#  install.packages(rglw_path, repos = NULL,type = "source")
+#}
 
 
 # Load packages
