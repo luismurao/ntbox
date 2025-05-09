@@ -76,12 +76,13 @@ env_varsL <- ntbox::correlation_finder(cor(pg_etrain),
                                        verbose = F)
 env_vars <- env_varsL$descriptors
 env_bg <- raster::sampleRandom(wc,10000)
-ellip_eval <- ellipsoid_omr(env_data=pg_etrain[,c("bio01","bio07","bio12")],
-                            env_test=pg_etest[,c("bio01","bio07","bio12")],
-                            env_bg = env_bg[,c("bio01","bio07","bio12")],
-                            cf_level = 0.97,
-                            mve=TRUE,proc=TRUE,
-                            proc_iter=100,rseed=TRUE)
+vars_to_test <- c("bio01","bio07","bio12")
+ellip_eval <- ntbox::ellipsoid_omr(env_data= pg_etrain[,vars_to_test],
+                                   env_test= pg_etest[,vars_to_test],
+                                   env_bg = env_bg[,vars_to_test],
+                                   cf_level = 0.97,
+                                   mve=TRUE,proc=TRUE,
+                                   proc_iter=100,rseed=TRUE)
 print(ellip_eval)
 }
 }
