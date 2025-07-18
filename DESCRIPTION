@@ -43,7 +43,7 @@ Description: NicheToolbox is an R package with a friendly Graphical User Interfa
              niche models and estimate the species distributions.
 Maintainer: Luis Osorio-Olvera <luismurao@gmail.com>
 Depends:
- R (>= 3.6.0)
+ R (>= 4.1.0)
 Imports:
     shiny (>= 1.1.0),
     methods,
@@ -65,6 +65,7 @@ Imports:
     stringi (>= 1.1),
     purrr (>= 0.2.5),
     spocc (>= 0.7.0),
+    fpROC,
     rio,
     terra,
     sdmpredictors (>= 0.2.8)

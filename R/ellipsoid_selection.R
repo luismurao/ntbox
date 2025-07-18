@@ -483,15 +483,13 @@ ellipsoid_omr <- function(env_data,env_test=NULL,env_bg,cf_level,
 
     bg_succs <-  if(length(succs_bg_ID)>0L){
       bg_table[[succs_bg_ID]]
-    }
-    else{
+    } else{
       0
     }
 
     bg_fails <-  if(length(fails_bg_ID)>0L){
       bg_table[[fails_bg_ID]]
-    }
-    else{
+    } else{
       0
     }
     prevBG <- bg_succs/(bg_fails+bg_succs)
@@ -510,13 +508,22 @@ ellipsoid_omr <- function(env_data,env_test=NULL,env_bg,cf_level,
       d_results[["pval_bin"]] <- p_bin
 
       if(proc){
-        proc <- ntbox::pROC(suits_bg,test_data = suits_val,
-                            n_iter = proc_iter,sub_sample = sub_sample,
-                            sub_sample_size = sub_sample_size,
-                            rseed = rseed)
-        pval_proc <- proc$pROC_summary[3]
-        mean_aucratio <- proc$pROC_summary[2]
-        mean_auc <- proc$pROC_summary[1]
+        #proc <- ntbox::pROC(suits_bg,test_data = suits_val,
+        #                    n_iter = proc_iter,sub_sample = sub_sample,
+        #                    sub_sample_size = sub_sample_size,
+        #                    rseed = rseed)
+        nvals <- length(suits_bg)
+        if (sub_sample_size > nvals)
+          sub_sample_size <- nvals
+        suits_bg <- base::sample(suits_bg, size = sub_sample_size)
+
+        proc <- fpROC::auc_metrics(test_prediction = suits_val,
+                                   prediction = suits_bg,
+                                   threshold = 5,compute_full_auc = TRUE)
+
+        pval_proc <- proc$summary[1,5]
+        mean_aucratio <- proc$summary[1,4]
+        mean_auc <- proc$summary[1,1]
         d_results[["pval_proc"]] <- pval_proc
         d_results[["env_bg_paucratio"]] <- mean_aucratio
         d_results[["env_bg_auc"]] <- mean_auc
