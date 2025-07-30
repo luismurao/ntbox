@@ -74,6 +74,7 @@
 #'                                       level = level,
 #'                                       nvarstest = nvarstest,
 #'                                       env_bg = env_bg,
+#'                                       proc = TRUE,
 #'                                       omr_criteria=0.07)
 #'
 #'# Best ellipsoid model for "omr_criteria" and prevalence
@@ -242,7 +243,7 @@ ellipsoid_selection <- function(env_train,env_test=NULL,env_vars,nvarstest,level
     cat("\t",length(met_criteriaID_both),
         "models passed omr_criteria for train and test data\n")
   }
-  rfilter <- df_omr %>% dplyr::filter(om_rate_train <=omr_criteria+(1-level) &
+  rfilter <- df_omr |> dplyr::filter(om_rate_train <=omr_criteria+(1-level) &
                                         om_rate_test <= omr_criteria)
   pass_omr <- FALSE
   if(nrow(rfilter)>0L){
@@ -255,7 +256,13 @@ ellipsoid_selection <- function(env_train,env_test=NULL,env_vars,nvarstest,level
     return(rfinal)
   }
   if(pass_omr){
-    cat("\n\n **Estimating environmental prevalence for models passing omission rate criteria**\n\n")
+    if(!proc){
+      mssg <-"\n\n **Estimating environmental prevalence for models passing omission rate criteria**\n\n"
+    } else{
+      mssg <- "\n\n **Estimating environmental prevalence and partial AUC for models passing omission rate criteria**\n\n"
+    }
+
+    cat(mssg)
     globs <- c(globs,"rfilterL","proc","sub_sample",
                "sub_sample_size","proc_iter","rseed")
     comp_each <- ifelse(nrow(rfilter)<comp_each,nrow(rfilter),comp_each)
@@ -275,18 +282,38 @@ ellipsoid_selection <- function(env_train,env_test=NULL,env_vars,nvarstest,level
           env_bg0 <- data.frame(env_bg0)
           names(env_data0) <- names(env_test0) <- names(env_bg0) <- var_comb
         }
-        r1 <- try(
-          ntbox::ellipsoid_omr(env_data = env_data0,
-                               env_test = env_test0,
-                               env_bg = env_bg0,
-                               cf_level = level,
-                               proc = proc,
-                               mve = mve,
-                               sub_sample = sub_sample,
-                               sub_sample_size = sub_sample_size,
-                               proc_iter = proc_iter,
-                               rseed = rseed)
-          ,silent = TRUE)
+        r1 <- rfilter0[y,]
+        mod <- try(ntbox::cov_center(env_data0,level = level,
+                                     vars = var_comb,mve = mve),
+                   silent=TRUE)
+        test_inE <- ntbox::inEllipsoid(centroid = mod$centroid,
+                                       eShape = mod$covariance,
+                                       env_data = env_test0,level = level)
+        suit_test <- exp(-0.5*test_inE$mh_dist)
+        test_succs <- length(which(test_inE$in_Ellipsoid == 1))
+        test_fail <- nrow(test_inE) - test_succs
+        bg_inE <- ntbox::inEllipsoid(centroid = mod$centroid,
+                                     eShape = mod$covariance,
+                                     env_data = env_bg0,level = level)
+
+        suit_bg <- exp(-0.5*bg_inE$mh_dist)
+
+        bg_prev <- sum(bg_inE$in_Ellipsoid)/nrow(bg_inE)
+
+        pauc <- fpROC::auc_metrics(test_prediction = suit_test,
+                                   prediction = suit_bg,threshold = 5,
+                                   sample_percentage = 50,
+                                   iterations = proc_iter)
+        nd <- length(which(!is.na(pauc$proc_results[,4])))
+        r1$pval_proc[y] <-  1 - (length(which(pauc$proc_results[,4] > 1))/nd) #pauc[1,5]
+
+        pauc <- pauc$summary
+        r1$bg_prevalence[y] <- bg_prev
+        r1$pval_bin[y] <- 1 - stats::pbinom(test_succs,
+                                                  size=test_succs+test_fail,
+                                                  prob = bg_prev)
+        r1$env_bg_paucratio[y] <- pauc[1,4]
+        r1$env_bg_auc[y] <- pauc[1,1]
         if(is.data.frame(r1)) return(r1)
       })
       r00

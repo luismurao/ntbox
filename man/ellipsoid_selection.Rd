@@ -116,6 +116,7 @@ e_selct <- ntbox::ellipsoid_selection(env_train = pg_etrain,
                                       level = level,
                                       nvarstest = nvarstest,
                                       env_bg = env_bg,
+                                      proc = TRUE,
                                       omr_criteria=0.07)
 
 # Best ellipsoid model for "omr_criteria" and prevalence
