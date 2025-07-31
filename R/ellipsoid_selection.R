@@ -305,15 +305,15 @@ ellipsoid_selection <- function(env_train,env_test=NULL,env_vars,nvarstest,level
                                    sample_percentage = 50,
                                    iterations = proc_iter)
         nd <- length(which(!is.na(pauc$proc_results[,4])))
-        r1$pval_proc[y] <-  1 - (length(which(pauc$proc_results[,4] > 1))/nd) #pauc[1,5]
+        r1$pval_proc <-  1 - (length(which(pauc$proc_results[,4] > 1))/nd) #pauc[1,5]
 
         pauc <- pauc$summary
-        r1$bg_prevalence[y] <- bg_prev
-        r1$pval_bin[y] <- 1 - stats::pbinom(test_succs,
+        r1$bg_prevalence <- bg_prev
+        r1$pval_bin <- 1 - stats::pbinom(test_succs,
                                                   size=test_succs+test_fail,
                                                   prob = bg_prev)
-        r1$env_bg_paucratio[y] <- pauc[1,4]
-        r1$env_bg_auc[y] <- pauc[1,1]
+        r1$env_bg_paucratio <- pauc[1,4]
+        r1$env_bg_auc <- pauc[1,1]
         if(is.data.frame(r1)) return(r1)
       })
       r00
