@@ -266,7 +266,11 @@ ellipsoid_selection <- function(env_train,env_test=NULL,env_vars,nvarstest,level
     globs <- c(globs,"rfilterL","proc","sub_sample",
                "sub_sample_size","proc_iter","rseed")
     comp_each <- ifelse(nrow(rfilter)<comp_each,nrow(rfilter),comp_each)
-    parchunks <- cut(seq_len(nrow(rfilter)),comp_each)
+    if(nrow(rfilter) == 1){
+      parchunks <- 1
+    } else{
+      parchunks <- cut(seq_len(nrow(rfilter)), comp_each)
+    }
     rfilterL <- rfilter |> split(parchunks)
     rfinal <- seq_along(rfilterL) |> furrr::future_map_dfr(function(x){
 
