@@ -290,6 +290,7 @@ ellipsoid_selection <- function(env_train,env_test=NULL,env_vars,nvarstest,level
         mod <- try(ntbox::cov_center(env_data0,level = level,
                                      vars = var_comb,mve = mve),
                    silent=TRUE)
+        if(methods::is(mod,"try-error")) return()
         test_inE <- ntbox::inEllipsoid(centroid = mod$centroid,
                                        eShape = mod$covariance,
                                        env_data = env_test0,level = level)
